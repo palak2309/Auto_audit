@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { useMockAuth } from "@/providers/mock-auth-provider";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -21,20 +22,55 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { session, loadingSession } = useMockAuth();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ first: "", last: "", email: "", org: "", password: "" });
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  useEffect(() => {
+    if (!loadingSession && session) {
+      void navigate({ to: "/" });
+    }
+  }, [loadingSession, session, navigate]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const first = form.first.trim();
+    const last = form.last.trim();
+    const email = form.email.trim().toLowerCase();
+    const org = form.org.trim();
+    const password = form.password;
+
+    if (!first || !last) {
+      toast.error("Please enter your full first and last name.");
+      return;
+    }
+    if (!email || !email.includes("@") || !email.includes(".")) {
+      toast.error("Please enter a valid work email address.");
+      return;
+    }
+    if (!org) {
+      toast.error("Please enter your organisation name.");
+      return;
+    }
+    if (!password || password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
+      return;
+    }
+
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
+      email,
+      password,
       options: {
         emailRedirectTo: `${window.location.origin}/`,
-        data: { full_name: `${form.first} ${form.last}`.trim(), organisation: form.org },
+        data: {
+          full_name: `${first} ${last}`.trim(),
+          organisation: org,
+          company: org,
+        },
       },
     });
     setLoading(false);
@@ -43,12 +79,12 @@ function RegisterPage() {
       return;
     }
     if (data.session) {
+      toast.success("Account created successfully!");
       void navigate({ to: "/" });
     } else {
       toast.success("Check your inbox to confirm your email.");
-      void navigate({ to: "/verify-email", search: { email: form.email } });
+      void navigate({ to: "/verify-email", search: { email } });
     }
-
   };
 
   return (

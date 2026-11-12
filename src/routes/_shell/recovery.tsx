@@ -180,7 +180,7 @@ function RecoveryPage() {
   const [generatedNotice, setGeneratedNotice] = useState<{
     subject: string;
     letter: string;
-    recipientEmail?: string | null;
+    recipientEmail?: string | null | undefined;
   } | null>(null);
   const [copiedSubject, setCopiedSubject] = useState(false);
   const [copiedLetter, setCopiedLetter] = useState(false);
@@ -894,7 +894,7 @@ function RecoveryPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <ToneBadge tone={leak.severity === "critical" ? "critical" : leak.severity === "high" ? "warning" : "info"}>
+                      <ToneBadge tone={leak.severity === "critical" ? "danger" : leak.severity === "high" ? "warning" : "accent"}>
                         {leak.severity.toUpperCase()}
                       </ToneBadge>
                       <span className="text-[11px] text-muted-foreground">

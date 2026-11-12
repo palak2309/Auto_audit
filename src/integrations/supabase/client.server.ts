@@ -45,10 +45,12 @@ function createSupabaseAdminClient() {
   const apiKey =
     SUPABASE_SERVICE_ROLE_KEY ||
     process.env['SUPABASE_PUBLISHABLE_KEY'] ||
-    process.env['VITE_SUPABASE_PUBLISHABLE_KEY'];
+    process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
+    process.env['SUPABASE_ANON_KEY'] ||
+    process.env['VITE_SUPABASE_ANON_KEY'];
 
   if (!apiKey) {
-    const message = "Missing Supabase API key (SUPABASE_SERVICE_ROLE_KEY or SUPABASE_PUBLISHABLE_KEY).";
+    const message = "Missing Supabase API key (SUPABASE_SERVICE_ROLE_KEY, SUPABASE_PUBLISHABLE_KEY, or SUPABASE_ANON_KEY).";
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }

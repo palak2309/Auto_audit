@@ -192,7 +192,7 @@ export const Route = createFileRoute("/api/public/erp/ingest")({
           if (paymentRows.length > 0) {
             const { error: pErr } = await supabaseAdmin
               .from("erp_payments")
-              .upsert(paymentRows, { onConflict: "connection_id,external_id" });
+              .upsert(paymentRows as any, { onConflict: "connection_id,external_id" });
             if (pErr) throw new Error(`Payment ingest error: ${pErr.message}`);
           }
 

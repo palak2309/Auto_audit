@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   Bell,
   Command,
@@ -31,8 +32,9 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { SeverityBadge } from "@/components/common/tone-badge";
 
 export function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useMockAuth();
+  const { user, signOut } = useMockAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const role = roleMap[user.role];
 
@@ -180,10 +182,15 @@ export function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/login">
-                <LogOut className="size-4" /> Sign out
-              </Link>
+            <DropdownMenuItem
+              className="cursor-pointer text-destructive focus:text-destructive"
+              onClick={async () => {
+                await signOut();
+                toast.success("Signed out successfully.");
+                void navigate({ to: "/login" });
+              }}
+            >
+              <LogOut className="size-4" /> Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

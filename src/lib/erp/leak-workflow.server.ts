@@ -1279,8 +1279,8 @@ export async function generateVendorNoticeForRecoveryCase(
   const targetAmount = Number(recoveryCase.target_amount) || Number(leak.amount) || 0;
   const currencyCode = recoveryCase.currency || leak.currency || "USD";
   const evidenceObj = (leak.evidence ?? {}) as Record<string, any>;
-  const invoices = Array.isArray(evidenceObj.invoices) ? evidenceObj.invoices : [];
-  const payments = Array.isArray(evidenceObj.payments) ? evidenceObj.payments : [];
+  const invoices = Array.isArray(evidenceObj["invoices"]) ? evidenceObj["invoices"] : [];
+  const payments = Array.isArray(evidenceObj["payments"]) ? evidenceObj["payments"] : [];
 
   const invoiceSummary = invoices.length > 0
     ? invoices.map((inv: any) => `Invoice #${inv.invoice_number || inv.external_id || "N/A"} (${inv.issue_date || "date unknown"}, Amount: ${currencyCode} ${inv.amount ?? 0})`).join("; ")
@@ -1297,7 +1297,7 @@ Discrepancy Category: ${leak.type} (${leak.title})
 Disputed Exposure Amount: ${currencyCode} ${targetAmount.toLocaleString()}
 Associated Invoices: ${invoiceSummary}
 Disbursements / Payments: ${paymentSummary}
-Audit Findings: ${evidenceObj.detail || leak.title}
+Audit Findings: ${evidenceObj["detail"] || leak.title}
 Preferred Tone: ${tone} (${tone === "firm" ? "strict legal demand, 7-day turnaround" : tone === "collaborative" ? "courteous commercial inquiry, reconciliation focus" : "formal executive audit notice, 10-day settlement"})
 ${customNotes ? `Specific Recovery Instructions: ${customNotes}` : ""}
 `;
@@ -1359,8 +1359,8 @@ AutoAudit Enterprise Platform`;
 
     if (text.includes("SUBJECT:") && text.includes("LETTER:")) {
       const parts = text.split("LETTER:");
-      subject = parts[0].replace("SUBJECT:", "").trim();
-      letter = parts[1].trim();
+      subject = (parts[0] ?? "").replace("SUBJECT:", "").trim();
+      letter = (parts[1] ?? "").trim();
     } else {
       const firstLine = text.split("\n")[0] || "";
       if (firstLine.toLowerCase().startsWith("subject:")) {

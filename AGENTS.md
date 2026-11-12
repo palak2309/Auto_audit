@@ -1,12 +1,5 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# Auto Audit Developer & Agent Guidelines
 
-- AI leakage analysis runs in an authenticated TanStack server function, uses the server-only Lovable AI Responses SDK, and returns a validated transient result; this keeps financial records and AI credentials out of the browser.
+- **AI Leakage Analysis**: Runs in an authenticated TanStack server function using server-only AI SDKs (Google Gemini, Vertex AI, OpenAI, or local heuristics fallback), returning validated transient results. This keeps financial records and API credentials strictly out of the browser.
+- **Server Architecture**: TanStack Start + Nitro server-side functions authenticate all data mutations against Supabase with strict tenant isolation.
+- **Client Bundle**: Built with Vite and React 19; client-side environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) are baked at build time.

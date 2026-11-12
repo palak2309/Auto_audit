@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { NoObjectGeneratedError, Output, streamText } from "ai";
 import { loadFinancials, loadOverview, type Row } from "@/lib/erp/data.server";
-import { createLovableResponsesModel } from "@/lib/erp/ai-gateway-responses";
 
 const leakageAnalysisSchema = z.object({
   summary: z.string().min(1),
@@ -189,12 +188,6 @@ export async function resolveAiModel(request?: Request) {
     const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
     const google = createGoogleGenerativeAI({ apiKey: geminiKey });
     return google(process.env["GEMINI_MODEL"] || "gemini-2.5-flash");
-  }
-
-  // 3. Lovable AI Responses Gateway (Production cloud)
-  const lovableKey = process.env["LOVABLE_API_KEY"];
-  if (lovableKey) {
-    return createLovableResponsesModel(request, lovableKey, "openai/gpt-6-astra");
   }
 
   // 4. OpenAI API Key
