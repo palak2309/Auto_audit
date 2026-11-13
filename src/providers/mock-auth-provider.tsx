@@ -55,7 +55,32 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
 
   const accessQuery = useQuery({
     queryKey: ["my-access", session?.user.id ?? null],
-    queryFn: () => fetchAccess(),
+    queryFn: async () => {
+      try {
+        return await fetchAccess();
+      } catch (err: any) {
+        console.warn("[Auth] Failed to load permissions from Supabase, using mock admin fallback:", err?.message);
+        if (err?.message?.includes("Invalid API key") || err?.message?.includes("Unauthorized")) {
+          void supabase.auth.signOut().catch(() => {});
+        }
+        return {
+          userId: currentUser.id,
+          role: "admin" as AppRole,
+          permissions: [
+            "view", "create", "edit", "delete", "approve", "recover",
+            "manage_users", "manage_roles", "export", "configure"
+          ] as AppPermission[],
+          profile: {
+            full_name: currentUser.name,
+            company: "AutoAudit Workspace",
+            department: currentUser.department,
+            job_title: "Administrator",
+            status: "active",
+            email: currentUser.email,
+          },
+        };
+      }
+    },
     enabled: Boolean(session),
     staleTime: 30_000,
   });
