@@ -35,7 +35,8 @@ function createSupabaseClient() {
   const SUPABASE_URL =
     env["VITE_SUPABASE_URL"] ||
     procEnv["VITE_SUPABASE_URL"] ||
-    procEnv["SUPABASE_URL"];
+    procEnv["SUPABASE_URL"] ||
+    "https://blvugdimplgugqbeirwr.supabase.co";
 
   const SUPABASE_PUBLISHABLE_KEY =
     env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
@@ -43,17 +44,8 @@ function createSupabaseClient() {
     procEnv["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
     procEnv["SUPABASE_PUBLISHABLE_KEY"] ||
     procEnv["VITE_SUPABASE_ANON_KEY"] ||
-    procEnv["SUPABASE_ANON_KEY"];
-
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ["VITE_SUPABASE_URL / SUPABASE_URL"] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ["VITE_SUPABASE_PUBLISHABLE_KEY / VITE_SUPABASE_ANON_KEY / SUPABASE_ANON_KEY"] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Please configure these in your Vercel project settings or .env file.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
-  }
+    procEnv["SUPABASE_ANON_KEY"] ||
+    "sb_publishable_ErGq3qsuVBkPQ19OYZw4Ow_h6SQrswa";
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {

@@ -32,28 +32,21 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 let hasWarnedMissingKey = false;
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env['SUPABASE_URL'] || process.env['VITE_SUPABASE_URL'];
+  const SUPABASE_URL =
+    process.env['SUPABASE_URL'] ||
+    process.env['VITE_SUPABASE_URL'] ||
+    "https://blvugdimplgugqbeirwr.supabase.co";
+
   const SUPABASE_SERVICE_ROLE_KEY =
     process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['SUPABASE_SECRET_KEY'];
-
-  if (!SUPABASE_URL) {
-    const message = "Missing Supabase environment variable(s): SUPABASE_URL. Check your .env file.";
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
-  }
 
   const apiKey =
     SUPABASE_SERVICE_ROLE_KEY ||
     process.env['SUPABASE_PUBLISHABLE_KEY'] ||
     process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
     process.env['SUPABASE_ANON_KEY'] ||
-    process.env['VITE_SUPABASE_ANON_KEY'];
-
-  if (!apiKey) {
-    const message = "Missing Supabase API key (SUPABASE_SERVICE_ROLE_KEY, SUPABASE_PUBLISHABLE_KEY, or SUPABASE_ANON_KEY).";
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
-  }
+    process.env['VITE_SUPABASE_ANON_KEY'] ||
+    "sb_publishable_ErGq3qsuVBkPQ19OYZw4Ow_h6SQrswa";
 
   if (!SUPABASE_SERVICE_ROLE_KEY && !hasWarnedMissingKey) {
     hasWarnedMissingKey = true;
