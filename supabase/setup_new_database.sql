@@ -37,14 +37,19 @@ $$;
 -- 4. PROFILES & AUTH SYNCHRONIZATION
 CREATE TABLE IF NOT EXISTS public.profiles (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email text,
   full_name text,
   company text,
   department text,
   job_title text,
   status text NOT NULL DEFAULT 'active',
+  last_seen_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_seen_at timestamptz;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;
 GRANT ALL ON public.profiles TO service_role;
@@ -55,21 +60,6 @@ CREATE POLICY "own profile" ON public.profiles FOR ALL TO authenticated USING (a
 
 DROP TRIGGER IF EXISTS t_profiles_updated ON public.profiles;
 CREATE TRIGGER t_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
-
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-BEGIN
-  INSERT INTO public.profiles (id, full_name, company)
-  VALUES (NEW.id, NEW.raw_user_meta_data ->> 'full_name', NEW.raw_user_meta_data ->> 'company')
-  ON CONFLICT (id) DO NOTHING;
-  RETURN NEW;
-END; $$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users
-FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
-REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
 
 -- 5. ROLES & PERMISSIONS
 CREATE TABLE IF NOT EXISTS public.user_roles (
@@ -82,6 +72,36 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_roles TO authenticated;
 GRANT ALL ON public.user_roles TO service_role;
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE first_user boolean;
+BEGIN
+  INSERT INTO public.profiles (id, full_name, company, email)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data ->> 'full_name',
+    COALESCE(NEW.raw_user_meta_data ->> 'company', NEW.raw_user_meta_data ->> 'organisation'),
+    NEW.email
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    full_name = COALESCE(EXCLUDED.full_name, public.profiles.full_name),
+    company = COALESCE(EXCLUDED.company, public.profiles.company);
+
+  SELECT NOT EXISTS (SELECT 1 FROM public.user_roles) INTO first_user;
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (NEW.id, CASE WHEN first_user THEN 'admin'::public.app_role ELSE 'viewer'::public.app_role END)
+  ON CONFLICT (user_id, role) DO NOTHING;
+
+  RETURN NEW;
+END; $$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
 
 CREATE TABLE IF NOT EXISTS public.role_permissions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -694,3 +714,405 @@ VALUES
   ('auditor', 'view'), ('auditor', 'export'),
   ('viewer', 'view')
 ON CONFLICT (role, permission) DO NOTHING;
+
+
+-- ============================================================================
+-- 11. BILLING & BUSINESS MANAGEMENT EXTENSION (myBillBook-grade capabilities)
+-- ============================================================================
+
+-- 11.1 BUSINESS PROFILES
+CREATE TABLE IF NOT EXISTS public.business_profiles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  company_name text NOT NULL DEFAULT 'My Business',
+  business_type text DEFAULT 'Retail',
+  gstin text,
+  pan text,
+  email text,
+  phone text,
+  address_line1 text,
+  address_line2 text,
+  city text,
+  state text NOT NULL DEFAULT 'Maharashtra',
+  pincode text,
+  country text DEFAULT 'India',
+  bank_name text,
+  account_number text,
+  ifsc_code text,
+  branch_name text,
+  upi_id text,
+  upi_qr_url text,
+  logo_url text,
+  signature_url text,
+  invoice_prefix text DEFAULT 'INV',
+  invoice_template text DEFAULT 'classic',
+  invoice_terms text DEFAULT '1. Goods once sold will not be taken back or exchanged.\n2. All disputes subject to local jurisdiction.',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_business_profiles_user_id ON public.business_profiles(user_id);
+GRANT ALL ON public.business_profiles TO authenticated, service_role;
+ALTER TABLE public.business_profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "business_profiles_manage" ON public.business_profiles;
+CREATE POLICY "business_profiles_manage" ON public.business_profiles FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_business_profiles_updated ON public.business_profiles;
+CREATE TRIGGER t_business_profiles_updated BEFORE UPDATE ON public.business_profiles FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.2 CUSTOMERS
+CREATE TABLE IF NOT EXISTS public.customers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  company_name text,
+  phone text,
+  email text,
+  gstin text,
+  pan text,
+  billing_address text,
+  billing_city text,
+  billing_state text DEFAULT 'Maharashtra',
+  billing_pincode text,
+  shipping_address text,
+  shipping_city text,
+  shipping_state text,
+  shipping_pincode text,
+  opening_balance numeric(12,2) NOT NULL DEFAULT 0,
+  current_balance numeric(12,2) NOT NULL DEFAULT 0,
+  credit_limit numeric(12,2) NOT NULL DEFAULT 0,
+  payment_terms_days integer NOT NULL DEFAULT 30,
+  status text NOT NULL DEFAULT 'active',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_customers_user_id ON public.customers(user_id);
+CREATE INDEX IF NOT EXISTS idx_customers_name ON public.customers(name);
+GRANT ALL ON public.customers TO authenticated, service_role;
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "customers_manage" ON public.customers;
+CREATE POLICY "customers_manage" ON public.customers FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_customers_updated ON public.customers;
+CREATE TRIGGER t_customers_updated BEFORE UPDATE ON public.customers FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.3 SUPPLIERS
+CREATE TABLE IF NOT EXISTS public.suppliers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  company_name text,
+  phone text,
+  email text,
+  gstin text,
+  pan text,
+  address text,
+  city text,
+  state text DEFAULT 'Maharashtra',
+  pincode text,
+  opening_balance numeric(12,2) NOT NULL DEFAULT 0,
+  current_balance numeric(12,2) NOT NULL DEFAULT 0,
+  payment_terms_days integer NOT NULL DEFAULT 30,
+  bank_name text,
+  account_number text,
+  ifsc_code text,
+  status text NOT NULL DEFAULT 'active',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_suppliers_user_id ON public.suppliers(user_id);
+CREATE INDEX IF NOT EXISTS idx_suppliers_name ON public.suppliers(name);
+GRANT ALL ON public.suppliers TO authenticated, service_role;
+ALTER TABLE public.suppliers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "suppliers_manage" ON public.suppliers;
+CREATE POLICY "suppliers_manage" ON public.suppliers FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_suppliers_updated ON public.suppliers;
+CREATE TRIGGER t_suppliers_updated BEFORE UPDATE ON public.suppliers FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.4 PRODUCT CATEGORIES
+CREATE TABLE IF NOT EXISTS public.product_categories (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id, name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_categories_user_id ON public.product_categories(user_id);
+GRANT ALL ON public.product_categories TO authenticated, service_role;
+ALTER TABLE public.product_categories ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "product_categories_manage" ON public.product_categories;
+CREATE POLICY "product_categories_manage" ON public.product_categories FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- 11.5 PRODUCTS & INVENTORY
+CREATE TABLE IF NOT EXISTS public.products (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  category_id uuid REFERENCES public.product_categories(id) ON DELETE SET NULL,
+  name text NOT NULL,
+  item_code text,
+  barcode text,
+  hsn_code text,
+  description text,
+  unit text NOT NULL DEFAULT 'PCS',
+  purchase_price numeric(12,2) NOT NULL DEFAULT 0,
+  selling_price numeric(12,2) NOT NULL DEFAULT 0,
+  mrp numeric(12,2) DEFAULT 0,
+  min_selling_price numeric(12,2) DEFAULT 0,
+  tax_rate numeric(5,2) NOT NULL DEFAULT 18,
+  tax_inclusive boolean NOT NULL DEFAULT false,
+  current_stock numeric(12,2) NOT NULL DEFAULT 0,
+  low_stock_threshold numeric(12,2) NOT NULL DEFAULT 5,
+  opening_stock numeric(12,2) NOT NULL DEFAULT 0,
+  opening_stock_date date DEFAULT CURRENT_DATE,
+  batch_number text,
+  expiry_date date,
+  status text NOT NULL DEFAULT 'active',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_products_user_id ON public.products(user_id);
+CREATE INDEX IF NOT EXISTS idx_products_name ON public.products(name);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
+CREATE INDEX IF NOT EXISTS idx_products_low_stock ON public.products(user_id, current_stock, low_stock_threshold);
+GRANT ALL ON public.products TO authenticated, service_role;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "products_manage" ON public.products;
+CREATE POLICY "products_manage" ON public.products FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_products_updated ON public.products;
+CREATE TRIGGER t_products_updated BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.6 STOCK ADJUSTMENTS
+CREATE TABLE IF NOT EXISTS public.stock_adjustments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_id uuid NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  adjustment_type text NOT NULL, -- 'add', 'reduce', 'audit_correction', 'damage', 'loss', 'return'
+  quantity numeric(12,2) NOT NULL,
+  previous_stock numeric(12,2) NOT NULL,
+  new_stock numeric(12,2) NOT NULL,
+  reason text,
+  reference_id text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_stock_adjustments_user_id ON public.stock_adjustments(user_id);
+CREATE INDEX IF NOT EXISTS idx_stock_adjustments_product_id ON public.stock_adjustments(product_id);
+GRANT ALL ON public.stock_adjustments TO authenticated, service_role;
+ALTER TABLE public.stock_adjustments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "stock_adjustments_manage" ON public.stock_adjustments;
+CREATE POLICY "stock_adjustments_manage" ON public.stock_adjustments FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- 11.7 SALES INVOICES & BILLING
+CREATE TABLE IF NOT EXISTS public.sales_invoices (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  customer_id uuid REFERENCES public.customers(id) ON DELETE SET NULL,
+  document_type text NOT NULL DEFAULT 'tax_invoice', -- 'tax_invoice', 'quotation', 'proforma', 'sales_order', 'credit_note', 'delivery_challan'
+  invoice_number text NOT NULL,
+  reference_number text,
+  invoice_date date NOT NULL DEFAULT CURRENT_DATE,
+  due_date date,
+  place_of_supply text NOT NULL DEFAULT 'Maharashtra',
+  status text NOT NULL DEFAULT 'unpaid', -- 'draft', 'unpaid', 'partially_paid', 'paid', 'cancelled'
+  subtotal numeric(12,2) NOT NULL DEFAULT 0,
+  discount_type text DEFAULT 'percentage', -- 'percentage', 'amount'
+  discount_value numeric(12,2) DEFAULT 0,
+  discount_amount numeric(12,2) DEFAULT 0,
+  taxable_amount numeric(12,2) NOT NULL DEFAULT 0,
+  cgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  sgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  igst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  total_tax numeric(12,2) NOT NULL DEFAULT 0,
+  round_off numeric(12,2) DEFAULT 0,
+  grand_total numeric(12,2) NOT NULL DEFAULT 0,
+  amount_paid numeric(12,2) NOT NULL DEFAULT 0,
+  balance_due numeric(12,2) NOT NULL DEFAULT 0,
+  payment_mode text DEFAULT 'cash',
+  notes text,
+  terms_and_conditions text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id, document_type, invoice_number)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sales_invoices_user_id ON public.sales_invoices(user_id);
+CREATE INDEX IF NOT EXISTS idx_sales_invoices_customer_id ON public.sales_invoices(customer_id);
+CREATE INDEX IF NOT EXISTS idx_sales_invoices_doc_type ON public.sales_invoices(document_type);
+CREATE INDEX IF NOT EXISTS idx_sales_invoices_status ON public.sales_invoices(status);
+CREATE INDEX IF NOT EXISTS idx_sales_invoices_date ON public.sales_invoices(invoice_date);
+GRANT ALL ON public.sales_invoices TO authenticated, service_role;
+ALTER TABLE public.sales_invoices ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sales_invoices_manage" ON public.sales_invoices;
+CREATE POLICY "sales_invoices_manage" ON public.sales_invoices FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_sales_invoices_updated ON public.sales_invoices;
+CREATE TRIGGER t_sales_invoices_updated BEFORE UPDATE ON public.sales_invoices FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.8 SALES INVOICE ITEMS
+CREATE TABLE IF NOT EXISTS public.sales_invoice_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_id uuid NOT NULL REFERENCES public.sales_invoices(id) ON DELETE CASCADE,
+  product_id uuid REFERENCES public.products(id) ON DELETE SET NULL,
+  item_name text NOT NULL,
+  hsn_code text,
+  quantity numeric(12,2) NOT NULL DEFAULT 1,
+  unit text NOT NULL DEFAULT 'PCS',
+  unit_price numeric(12,2) NOT NULL DEFAULT 0,
+  discount_percentage numeric(5,2) DEFAULT 0,
+  discount_amount numeric(12,2) DEFAULT 0,
+  taxable_value numeric(12,2) NOT NULL DEFAULT 0,
+  gst_rate numeric(5,2) NOT NULL DEFAULT 0,
+  cgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  sgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  igst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  total_tax numeric(12,2) NOT NULL DEFAULT 0,
+  total_amount numeric(12,2) NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sales_invoice_items_invoice ON public.sales_invoice_items(invoice_id);
+GRANT ALL ON public.sales_invoice_items TO authenticated, service_role;
+ALTER TABLE public.sales_invoice_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sales_invoice_items_manage" ON public.sales_invoice_items;
+CREATE POLICY "sales_invoice_items_manage" ON public.sales_invoice_items FOR ALL TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.sales_invoices i WHERE i.id = sales_invoice_items.invoice_id AND i.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM public.sales_invoices i WHERE i.id = sales_invoice_items.invoice_id AND i.user_id = auth.uid()));
+
+-- 11.9 PURCHASE BILLS
+CREATE TABLE IF NOT EXISTS public.purchase_bills (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  supplier_id uuid REFERENCES public.suppliers(id) ON DELETE SET NULL,
+  document_type text NOT NULL DEFAULT 'bill', -- 'bill', 'debit_note', 'purchase_order'
+  bill_number text NOT NULL,
+  supplier_invoice_number text,
+  bill_date date NOT NULL DEFAULT CURRENT_DATE,
+  due_date date,
+  place_of_supply text NOT NULL DEFAULT 'Maharashtra',
+  status text NOT NULL DEFAULT 'unpaid', -- 'draft', 'unpaid', 'partially_paid', 'paid', 'cancelled'
+  subtotal numeric(12,2) NOT NULL DEFAULT 0,
+  discount_amount numeric(12,2) DEFAULT 0,
+  taxable_amount numeric(12,2) NOT NULL DEFAULT 0,
+  cgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  sgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  igst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  total_tax numeric(12,2) NOT NULL DEFAULT 0,
+  round_off numeric(12,2) DEFAULT 0,
+  grand_total numeric(12,2) NOT NULL DEFAULT 0,
+  amount_paid numeric(12,2) NOT NULL DEFAULT 0,
+  balance_due numeric(12,2) NOT NULL DEFAULT 0,
+  payment_mode text DEFAULT 'bank',
+  notes text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id, document_type, bill_number)
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchase_bills_user_id ON public.purchase_bills(user_id);
+CREATE INDEX IF NOT EXISTS idx_purchase_bills_supplier_id ON public.purchase_bills(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_purchase_bills_status ON public.purchase_bills(status);
+CREATE INDEX IF NOT EXISTS idx_purchase_bills_date ON public.purchase_bills(bill_date);
+GRANT ALL ON public.purchase_bills TO authenticated, service_role;
+ALTER TABLE public.purchase_bills ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "purchase_bills_manage" ON public.purchase_bills;
+CREATE POLICY "purchase_bills_manage" ON public.purchase_bills FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_purchase_bills_updated ON public.purchase_bills;
+CREATE TRIGGER t_purchase_bills_updated BEFORE UPDATE ON public.purchase_bills FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.10 PURCHASE BILL ITEMS
+CREATE TABLE IF NOT EXISTS public.purchase_bill_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bill_id uuid NOT NULL REFERENCES public.purchase_bills(id) ON DELETE CASCADE,
+  product_id uuid REFERENCES public.products(id) ON DELETE SET NULL,
+  item_name text NOT NULL,
+  hsn_code text,
+  quantity numeric(12,2) NOT NULL DEFAULT 1,
+  unit text NOT NULL DEFAULT 'PCS',
+  unit_price numeric(12,2) NOT NULL DEFAULT 0,
+  discount_amount numeric(12,2) DEFAULT 0,
+  taxable_value numeric(12,2) NOT NULL DEFAULT 0,
+  gst_rate numeric(5,2) NOT NULL DEFAULT 0,
+  cgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  sgst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  igst_amount numeric(12,2) NOT NULL DEFAULT 0,
+  total_tax numeric(12,2) NOT NULL DEFAULT 0,
+  total_amount numeric(12,2) NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchase_bill_items_bill ON public.purchase_bill_items(bill_id);
+GRANT ALL ON public.purchase_bill_items TO authenticated, service_role;
+ALTER TABLE public.purchase_bill_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "purchase_bill_items_manage" ON public.purchase_bill_items;
+CREATE POLICY "purchase_bill_items_manage" ON public.purchase_bill_items FOR ALL TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.purchase_bills b WHERE b.id = purchase_bill_items.bill_id AND b.user_id = auth.uid()))
+  WITH CHECK (EXISTS (SELECT 1 FROM public.purchase_bills b WHERE b.id = purchase_bill_items.bill_id AND b.user_id = auth.uid()));
+
+-- 11.11 PAYMENTS (PAYMENT-IN & PAYMENT-OUT)
+CREATE TABLE IF NOT EXISTS public.payments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  payment_type text NOT NULL, -- 'payment_in', 'payment_out'
+  payment_number text NOT NULL,
+  payment_date date NOT NULL DEFAULT CURRENT_DATE,
+  party_type text NOT NULL, -- 'customer', 'supplier'
+  customer_id uuid REFERENCES public.customers(id) ON DELETE SET NULL,
+  supplier_id uuid REFERENCES public.suppliers(id) ON DELETE SET NULL,
+  invoice_id uuid REFERENCES public.sales_invoices(id) ON DELETE SET NULL,
+  bill_id uuid REFERENCES public.purchase_bills(id) ON DELETE SET NULL,
+  payment_mode text NOT NULL DEFAULT 'cash', -- 'cash', 'bank_transfer', 'upi', 'cheque', 'card'
+  bank_name text,
+  reference_number text,
+  amount numeric(12,2) NOT NULL DEFAULT 0,
+  notes text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON public.payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_party ON public.payments(customer_id, supplier_id);
+CREATE INDEX IF NOT EXISTS idx_payments_date ON public.payments(payment_date);
+GRANT ALL ON public.payments TO authenticated, service_role;
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "payments_manage" ON public.payments;
+CREATE POLICY "payments_manage" ON public.payments FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_payments_updated ON public.payments;
+CREATE TRIGGER t_payments_updated BEFORE UPDATE ON public.payments FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
+
+-- 11.12 EXPENSES
+CREATE TABLE IF NOT EXISTS public.expenses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  expense_number text NOT NULL,
+  expense_date date NOT NULL DEFAULT CURRENT_DATE,
+  category text NOT NULL,
+  amount numeric(12,2) NOT NULL DEFAULT 0,
+  payment_mode text NOT NULL DEFAULT 'cash', -- 'cash', 'bank', 'upi', 'card'
+  paid_to text,
+  reference_number text,
+  notes text,
+  receipt_url text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_expenses_user_id ON public.expenses(user_id);
+CREATE INDEX IF NOT EXISTS idx_expenses_category ON public.expenses(category);
+CREATE INDEX IF NOT EXISTS idx_expenses_date ON public.expenses(expense_date);
+GRANT ALL ON public.expenses TO authenticated, service_role;
+ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "expenses_manage" ON public.expenses;
+CREATE POLICY "expenses_manage" ON public.expenses FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS t_expenses_updated ON public.expenses;
+CREATE TRIGGER t_expenses_updated BEFORE UPDATE ON public.expenses FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();

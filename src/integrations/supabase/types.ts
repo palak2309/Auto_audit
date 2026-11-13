@@ -663,6 +663,798 @@ export type Database = {
         }
         Relationships: []
       }
+      business_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          company_name: string
+          business_type: string | null
+          gstin: string | null
+          pan: string | null
+          email: string | null
+          phone: string | null
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          state: string
+          pincode: string | null
+          country: string | null
+          bank_name: string | null
+          account_number: string | null
+          ifsc_code: string | null
+          branch_name: string | null
+          upi_id: string | null
+          upi_qr_url: string | null
+          logo_url: string | null
+          signature_url: string | null
+          invoice_prefix: string | null
+          invoice_template: string | null
+          invoice_terms: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_name?: string
+          business_type?: string | null
+          gstin?: string | null
+          pan?: string | null
+          email?: string | null
+          phone?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          state?: string
+          pincode?: string | null
+          country?: string | null
+          bank_name?: string | null
+          account_number?: string | null
+          ifsc_code?: string | null
+          branch_name?: string | null
+          upi_id?: string | null
+          upi_qr_url?: string | null
+          logo_url?: string | null
+          signature_url?: string | null
+          invoice_prefix?: string | null
+          invoice_template?: string | null
+          invoice_terms?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_name?: string
+          business_type?: string | null
+          gstin?: string | null
+          pan?: string | null
+          email?: string | null
+          phone?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          state?: string
+          pincode?: string | null
+          country?: string | null
+          bank_name?: string | null
+          account_number?: string | null
+          ifsc_code?: string | null
+          branch_name?: string | null
+          upi_id?: string | null
+          upi_qr_url?: string | null
+          logo_url?: string | null
+          signature_url?: string | null
+          invoice_prefix?: string | null
+          invoice_template?: string | null
+          invoice_terms?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          company_name: string | null
+          phone: string | null
+          email: string | null
+          gstin: string | null
+          pan: string | null
+          billing_address: string | null
+          billing_city: string | null
+          billing_state: string | null
+          billing_pincode: string | null
+          shipping_address: string | null
+          shipping_city: string | null
+          shipping_state: string | null
+          shipping_pincode: string | null
+          opening_balance: number
+          current_balance: number
+          credit_limit: number
+          payment_terms_days: number
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          company_name?: string | null
+          phone?: string | null
+          email?: string | null
+          gstin?: string | null
+          pan?: string | null
+          billing_address?: string | null
+          billing_city?: string | null
+          billing_state?: string | null
+          billing_pincode?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_state?: string | null
+          shipping_pincode?: string | null
+          opening_balance?: number
+          current_balance?: number
+          credit_limit?: number
+          payment_terms_days?: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          company_name?: string | null
+          phone?: string | null
+          email?: string | null
+          gstin?: string | null
+          pan?: string | null
+          billing_address?: string | null
+          billing_city?: string | null
+          billing_state?: string | null
+          billing_pincode?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_state?: string | null
+          shipping_pincode?: string | null
+          opening_balance?: number
+          current_balance?: number
+          credit_limit?: number
+          payment_terms_days?: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          company_name: string | null
+          phone: string | null
+          email: string | null
+          gstin: string | null
+          pan: string | null
+          address: string | null
+          city: string | null
+          state: string | null
+          pincode: string | null
+          opening_balance: number
+          current_balance: number
+          payment_terms_days: number
+          bank_name: string | null
+          account_number: string | null
+          ifsc_code: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          company_name?: string | null
+          phone?: string | null
+          email?: string | null
+          gstin?: string | null
+          pan?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          pincode?: string | null
+          opening_balance?: number
+          current_balance?: number
+          payment_terms_days?: number
+          bank_name?: string | null
+          account_number?: string | null
+          ifsc_code?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          company_name?: string | null
+          phone?: string | null
+          email?: string | null
+          gstin?: string | null
+          pan?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          pincode?: string | null
+          opening_balance?: number
+          current_balance?: number
+          payment_terms_days?: number
+          bank_name?: string | null
+          account_number?: string | null
+          ifsc_code?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      product_categories: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          id: string
+          user_id: string
+          category_id: string | null
+          name: string
+          item_code: string | null
+          barcode: string | null
+          hsn_code: string | null
+          description: string | null
+          unit: string
+          purchase_price: number
+          selling_price: number
+          mrp: number | null
+          min_selling_price: number | null
+          tax_rate: number
+          tax_inclusive: boolean
+          current_stock: number
+          low_stock_threshold: number
+          opening_stock: number
+          opening_stock_date: string | null
+          batch_number: string | null
+          expiry_date: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category_id?: string | null
+          name: string
+          item_code?: string | null
+          barcode?: string | null
+          hsn_code?: string | null
+          description?: string | null
+          unit?: string
+          purchase_price?: number
+          selling_price?: number
+          mrp?: number | null
+          min_selling_price?: number | null
+          tax_rate?: number
+          tax_inclusive?: boolean
+          current_stock?: number
+          low_stock_threshold?: number
+          opening_stock?: number
+          opening_stock_date?: string | null
+          batch_number?: string | null
+          expiry_date?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category_id?: string | null
+          name?: string
+          item_code?: string | null
+          barcode?: string | null
+          hsn_code?: string | null
+          description?: string | null
+          unit?: string
+          purchase_price?: number
+          selling_price?: number
+          mrp?: number | null
+          min_selling_price?: number | null
+          tax_rate?: number
+          tax_inclusive?: boolean
+          current_stock?: number
+          low_stock_threshold?: number
+          opening_stock?: number
+          opening_stock_date?: string | null
+          batch_number?: string | null
+          expiry_date?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stock_adjustments: {
+        Row: {
+          id: string
+          user_id: string
+          product_id: string
+          adjustment_type: string
+          quantity: number
+          previous_stock: number
+          new_stock: number
+          reason: string | null
+          reference_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          product_id: string
+          adjustment_type: string
+          quantity: number
+          previous_stock: number
+          new_stock: number
+          reason?: string | null
+          reference_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          product_id?: string
+          adjustment_type?: string
+          quantity?: number
+          previous_stock?: number
+          new_stock?: number
+          reason?: string | null
+          reference_id?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      sales_invoices: {
+        Row: {
+          id: string
+          user_id: string
+          customer_id: string | null
+          document_type: string
+          invoice_number: string
+          reference_number: string | null
+          invoice_date: string
+          due_date: string | null
+          place_of_supply: string
+          status: string
+          subtotal: number
+          discount_type: string | null
+          discount_value: number
+          discount_amount: number
+          taxable_amount: number
+          cgst_amount: number
+          sgst_amount: number
+          igst_amount: number
+          total_tax: number
+          round_off: number
+          grand_total: number
+          amount_paid: number
+          balance_due: number
+          payment_mode: string | null
+          notes: string | null
+          terms_and_conditions: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          customer_id?: string | null
+          document_type?: string
+          invoice_number: string
+          reference_number?: string | null
+          invoice_date?: string
+          due_date?: string | null
+          place_of_supply?: string
+          status?: string
+          subtotal?: number
+          discount_type?: string | null
+          discount_value?: number
+          discount_amount?: number
+          taxable_amount?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          round_off?: number
+          grand_total?: number
+          amount_paid?: number
+          balance_due?: number
+          payment_mode?: string | null
+          notes?: string | null
+          terms_and_conditions?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          customer_id?: string | null
+          document_type?: string
+          invoice_number?: string
+          reference_number?: string | null
+          invoice_date?: string
+          due_date?: string | null
+          place_of_supply?: string
+          status?: string
+          subtotal?: number
+          discount_type?: string | null
+          discount_value?: number
+          discount_amount?: number
+          taxable_amount?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          round_off?: number
+          grand_total?: number
+          amount_paid?: number
+          balance_due?: number
+          payment_mode?: string | null
+          notes?: string | null
+          terms_and_conditions?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sales_invoice_items: {
+        Row: {
+          id: string
+          invoice_id: string
+          product_id: string | null
+          item_name: string
+          hsn_code: string | null
+          quantity: number
+          unit: string
+          unit_price: number
+          discount_percentage: number
+          discount_amount: number
+          taxable_value: number
+          gst_rate: number
+          cgst_amount: number
+          sgst_amount: number
+          igst_amount: number
+          total_tax: number
+          total_amount: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          invoice_id: string
+          product_id?: string | null
+          item_name: string
+          hsn_code?: string | null
+          quantity?: number
+          unit?: string
+          unit_price?: number
+          discount_percentage?: number
+          discount_amount?: number
+          taxable_value?: number
+          gst_rate?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          total_amount?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          invoice_id?: string
+          product_id?: string | null
+          item_name?: string
+          hsn_code?: string | null
+          quantity?: number
+          unit?: string
+          unit_price?: number
+          discount_percentage?: number
+          discount_amount?: number
+          taxable_value?: number
+          gst_rate?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          total_amount?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      purchase_bills: {
+        Row: {
+          id: string
+          user_id: string
+          supplier_id: string | null
+          document_type: string
+          bill_number: string
+          supplier_invoice_number: string | null
+          bill_date: string
+          due_date: string | null
+          place_of_supply: string
+          status: string
+          subtotal: number
+          discount_amount: number
+          taxable_amount: number
+          cgst_amount: number
+          sgst_amount: number
+          igst_amount: number
+          total_tax: number
+          round_off: number
+          grand_total: number
+          amount_paid: number
+          balance_due: number
+          payment_mode: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          supplier_id?: string | null
+          document_type?: string
+          bill_number: string
+          supplier_invoice_number?: string | null
+          bill_date?: string
+          due_date?: string | null
+          place_of_supply?: string
+          status?: string
+          subtotal?: number
+          discount_amount?: number
+          taxable_amount?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          round_off?: number
+          grand_total?: number
+          amount_paid?: number
+          balance_due?: number
+          payment_mode?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          supplier_id?: string | null
+          document_type?: string
+          bill_number?: string
+          supplier_invoice_number?: string | null
+          bill_date?: string
+          due_date?: string | null
+          place_of_supply?: string
+          status?: string
+          subtotal?: number
+          discount_amount?: number
+          taxable_amount?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          round_off?: number
+          grand_total?: number
+          amount_paid?: number
+          balance_due?: number
+          payment_mode?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      purchase_bill_items: {
+        Row: {
+          id: string
+          bill_id: string
+          product_id: string | null
+          item_name: string
+          hsn_code: string | null
+          quantity: number
+          unit: string
+          unit_price: number
+          discount_amount: number
+          taxable_value: number
+          gst_rate: number
+          cgst_amount: number
+          sgst_amount: number
+          igst_amount: number
+          total_tax: number
+          total_amount: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          bill_id: string
+          product_id?: string | null
+          item_name: string
+          hsn_code?: string | null
+          quantity?: number
+          unit?: string
+          unit_price?: number
+          discount_amount?: number
+          taxable_value?: number
+          gst_rate?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          total_amount?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          bill_id?: string
+          product_id?: string | null
+          item_name?: string
+          hsn_code?: string | null
+          quantity?: number
+          unit?: string
+          unit_price?: number
+          discount_amount?: number
+          taxable_value?: number
+          gst_rate?: number
+          cgst_amount?: number
+          sgst_amount?: number
+          igst_amount?: number
+          total_tax?: number
+          total_amount?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          id: string
+          user_id: string
+          payment_type: string
+          payment_number: string
+          payment_date: string
+          party_type: string
+          customer_id: string | null
+          supplier_id: string | null
+          invoice_id: string | null
+          bill_id: string | null
+          payment_mode: string
+          bank_name: string | null
+          reference_number: string | null
+          amount: number
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          payment_type: string
+          payment_number: string
+          payment_date?: string
+          party_type: string
+          customer_id?: string | null
+          supplier_id?: string | null
+          invoice_id?: string | null
+          bill_id?: string | null
+          payment_mode?: string
+          bank_name?: string | null
+          reference_number?: string | null
+          amount?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          payment_type?: string
+          payment_number?: string
+          payment_date?: string
+          party_type?: string
+          customer_id?: string | null
+          supplier_id?: string | null
+          invoice_id?: string | null
+          bill_id?: string | null
+          payment_mode?: string
+          bank_name?: string | null
+          reference_number?: string | null
+          amount?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          id: string
+          user_id: string
+          expense_number: string
+          expense_date: string
+          category: string
+          amount: number
+          payment_mode: string
+          paid_to: string | null
+          reference_number: string | null
+          notes: string | null
+          receipt_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          expense_number: string
+          expense_date?: string
+          category: string
+          amount?: number
+          payment_mode?: string
+          paid_to?: string | null
+          reference_number?: string | null
+          notes?: string | null
+          receipt_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          expense_number?: string
+          expense_date?: string
+          category?: string
+          amount?: number
+          payment_mode?: string
+          paid_to?: string | null
+          reference_number?: string | null
+          notes?: string | null
+          receipt_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

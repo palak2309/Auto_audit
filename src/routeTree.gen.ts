@@ -23,17 +23,22 @@ import { Route as ShellIndexRouteImport } from './routes/_shell/index'
 import { Route as ShellAiInsightsRouteImport } from './routes/_shell/ai-insights'
 import { Route as ShellAnalyticsRouteImport } from './routes/_shell/analytics'
 import { Route as ShellContractsRouteImport } from './routes/_shell/contracts'
+import { Route as ShellCustomersRouteImport } from './routes/_shell/customers'
+import { Route as ShellExpensesRouteImport } from './routes/_shell/expenses'
 import { Route as ShellIntegrationsRouteImport } from './routes/_shell/integrations'
 import { Route as ShellInvoicesRouteImport } from './routes/_shell/invoices'
 import { Route as ShellLeaksRouteImport } from './routes/_shell/leaks'
 import { Route as ShellNotificationsRouteImport } from './routes/_shell/notifications'
 import { Route as ShellPaymentsRouteImport } from './routes/_shell/payments'
+import { Route as ShellProductsRouteImport } from './routes/_shell/products'
 import { Route as ShellProfileRouteImport } from './routes/_shell/profile'
+import { Route as ShellPurchasesRouteImport } from './routes/_shell/purchases'
 import { Route as ShellRecoveryRouteImport } from './routes/_shell/recovery'
 import { Route as ShellReportsRouteImport } from './routes/_shell/reports'
 import { Route as ShellRolesRouteImport } from './routes/_shell/roles'
 import { Route as ShellSecurityRouteImport } from './routes/_shell/security'
 import { Route as ShellSettingsRouteImport } from './routes/_shell/settings'
+import { Route as ShellSuppliersRouteImport } from './routes/_shell/suppliers'
 import { Route as ShellTransactionsRouteImport } from './routes/_shell/transactions'
 import { Route as ShellUsersRouteImport } from './routes/_shell/users'
 import { Route as ShellVendorsRouteImport } from './routes/_shell/vendors'
@@ -109,6 +114,16 @@ const ShellContractsRoute = ShellContractsRouteImport.update({
   path: '/contracts',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellCustomersRoute = ShellCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellExpensesRoute = ShellExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellIntegrationsRoute = ShellIntegrationsRouteImport.update({
   id: '/integrations',
   path: '/integrations',
@@ -134,9 +149,19 @@ const ShellPaymentsRoute = ShellPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellProductsRoute = ShellProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellProfileRoute = ShellProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellPurchasesRoute = ShellPurchasesRouteImport.update({
+  id: '/purchases',
+  path: '/purchases',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellRecoveryRoute = ShellRecoveryRouteImport.update({
@@ -162,6 +187,11 @@ const ShellSecurityRoute = ShellSecurityRouteImport.update({
 const ShellSettingsRoute = ShellSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellSuppliersRoute = ShellSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellTransactionsRoute = ShellTransactionsRouteImport.update({
@@ -204,17 +234,22 @@ export interface FileRoutesByFullPath {
   '/ai-insights': typeof ShellAiInsightsRoute
   '/analytics': typeof ShellAnalyticsRoute
   '/contracts': typeof ShellContractsRoute
+  '/customers': typeof ShellCustomersRoute
+  '/expenses': typeof ShellExpensesRoute
   '/integrations': typeof ShellIntegrationsRoute
   '/invoices': typeof ShellInvoicesRoute
   '/leaks': typeof ShellLeaksRoute
   '/notifications': typeof ShellNotificationsRoute
   '/payments': typeof ShellPaymentsRoute
+  '/products': typeof ShellProductsRoute
   '/profile': typeof ShellProfileRoute
+  '/purchases': typeof ShellPurchasesRoute
   '/recovery': typeof ShellRecoveryRoute
   '/reports': typeof ShellReportsRoute
   '/roles': typeof ShellRolesRoute
   '/security': typeof ShellSecurityRoute
   '/settings': typeof ShellSettingsRoute
+  '/suppliers': typeof ShellSuppliersRoute
   '/transactions': typeof ShellTransactionsRoute
   '/users': typeof ShellUsersRoute
   '/vendors': typeof ShellVendorsRoute
@@ -234,17 +269,22 @@ export interface FileRoutesByTo {
   '/ai-insights': typeof ShellAiInsightsRoute
   '/analytics': typeof ShellAnalyticsRoute
   '/contracts': typeof ShellContractsRoute
+  '/customers': typeof ShellCustomersRoute
+  '/expenses': typeof ShellExpensesRoute
   '/integrations': typeof ShellIntegrationsRoute
   '/invoices': typeof ShellInvoicesRoute
   '/leaks': typeof ShellLeaksRoute
   '/notifications': typeof ShellNotificationsRoute
   '/payments': typeof ShellPaymentsRoute
+  '/products': typeof ShellProductsRoute
   '/profile': typeof ShellProfileRoute
+  '/purchases': typeof ShellPurchasesRoute
   '/recovery': typeof ShellRecoveryRoute
   '/reports': typeof ShellReportsRoute
   '/roles': typeof ShellRolesRoute
   '/security': typeof ShellSecurityRoute
   '/settings': typeof ShellSettingsRoute
+  '/suppliers': typeof ShellSuppliersRoute
   '/transactions': typeof ShellTransactionsRoute
   '/users': typeof ShellUsersRoute
   '/vendors': typeof ShellVendorsRoute
@@ -267,17 +307,22 @@ export interface FileRoutesById {
   '/_shell/ai-insights': typeof ShellAiInsightsRoute
   '/_shell/analytics': typeof ShellAnalyticsRoute
   '/_shell/contracts': typeof ShellContractsRoute
+  '/_shell/customers': typeof ShellCustomersRoute
+  '/_shell/expenses': typeof ShellExpensesRoute
   '/_shell/integrations': typeof ShellIntegrationsRoute
   '/_shell/invoices': typeof ShellInvoicesRoute
   '/_shell/leaks': typeof ShellLeaksRoute
   '/_shell/notifications': typeof ShellNotificationsRoute
   '/_shell/payments': typeof ShellPaymentsRoute
+  '/_shell/products': typeof ShellProductsRoute
   '/_shell/profile': typeof ShellProfileRoute
+  '/_shell/purchases': typeof ShellPurchasesRoute
   '/_shell/recovery': typeof ShellRecoveryRoute
   '/_shell/reports': typeof ShellReportsRoute
   '/_shell/roles': typeof ShellRolesRoute
   '/_shell/security': typeof ShellSecurityRoute
   '/_shell/settings': typeof ShellSettingsRoute
+  '/_shell/suppliers': typeof ShellSuppliersRoute
   '/_shell/transactions': typeof ShellTransactionsRoute
   '/_shell/users': typeof ShellUsersRoute
   '/_shell/vendors': typeof ShellVendorsRoute
@@ -301,17 +346,22 @@ export interface FileRouteTypes {
     | '/ai-insights'
     | '/analytics'
     | '/contracts'
+    | '/customers'
+    | '/expenses'
     | '/integrations'
     | '/invoices'
     | '/leaks'
     | '/notifications'
     | '/payments'
+    | '/products'
     | '/profile'
+    | '/purchases'
     | '/recovery'
     | '/reports'
     | '/roles'
     | '/security'
     | '/settings'
+    | '/suppliers'
     | '/transactions'
     | '/users'
     | '/vendors'
@@ -331,17 +381,22 @@ export interface FileRouteTypes {
     | '/ai-insights'
     | '/analytics'
     | '/contracts'
+    | '/customers'
+    | '/expenses'
     | '/integrations'
     | '/invoices'
     | '/leaks'
     | '/notifications'
     | '/payments'
+    | '/products'
     | '/profile'
+    | '/purchases'
     | '/recovery'
     | '/reports'
     | '/roles'
     | '/security'
     | '/settings'
+    | '/suppliers'
     | '/transactions'
     | '/users'
     | '/vendors'
@@ -363,17 +418,22 @@ export interface FileRouteTypes {
     | '/_shell/ai-insights'
     | '/_shell/analytics'
     | '/_shell/contracts'
+    | '/_shell/customers'
+    | '/_shell/expenses'
     | '/_shell/integrations'
     | '/_shell/invoices'
     | '/_shell/leaks'
     | '/_shell/notifications'
     | '/_shell/payments'
+    | '/_shell/products'
     | '/_shell/profile'
+    | '/_shell/purchases'
     | '/_shell/recovery'
     | '/_shell/reports'
     | '/_shell/roles'
     | '/_shell/security'
     | '/_shell/settings'
+    | '/_shell/suppliers'
     | '/_shell/transactions'
     | '/_shell/users'
     | '/_shell/vendors'
@@ -497,6 +557,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellContractsRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/customers': {
+      id: '/_shell/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof ShellCustomersRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/expenses': {
+      id: '/_shell/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof ShellExpensesRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/integrations': {
       id: '/_shell/integrations'
       path: '/integrations'
@@ -532,11 +606,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellPaymentsRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/products': {
+      id: '/_shell/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ShellProductsRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/profile': {
       id: '/_shell/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ShellProfileRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/purchases': {
+      id: '/_shell/purchases'
+      path: '/purchases'
+      fullPath: '/purchases'
+      preLoaderRoute: typeof ShellPurchasesRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/recovery': {
@@ -572,6 +660,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof ShellSettingsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/suppliers': {
+      id: '/_shell/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof ShellSuppliersRouteImport
       parentRoute: typeof ShellRoute
     }
     '/_shell/transactions': {
@@ -616,17 +711,22 @@ interface ShellRouteChildren {
   ShellAiInsightsRoute: typeof ShellAiInsightsRoute
   ShellAnalyticsRoute: typeof ShellAnalyticsRoute
   ShellContractsRoute: typeof ShellContractsRoute
+  ShellCustomersRoute: typeof ShellCustomersRoute
+  ShellExpensesRoute: typeof ShellExpensesRoute
   ShellIntegrationsRoute: typeof ShellIntegrationsRoute
   ShellInvoicesRoute: typeof ShellInvoicesRoute
   ShellLeaksRoute: typeof ShellLeaksRoute
   ShellNotificationsRoute: typeof ShellNotificationsRoute
   ShellPaymentsRoute: typeof ShellPaymentsRoute
+  ShellProductsRoute: typeof ShellProductsRoute
   ShellProfileRoute: typeof ShellProfileRoute
+  ShellPurchasesRoute: typeof ShellPurchasesRoute
   ShellRecoveryRoute: typeof ShellRecoveryRoute
   ShellReportsRoute: typeof ShellReportsRoute
   ShellRolesRoute: typeof ShellRolesRoute
   ShellSecurityRoute: typeof ShellSecurityRoute
   ShellSettingsRoute: typeof ShellSettingsRoute
+  ShellSuppliersRoute: typeof ShellSuppliersRoute
   ShellTransactionsRoute: typeof ShellTransactionsRoute
   ShellUsersRoute: typeof ShellUsersRoute
   ShellVendorsRoute: typeof ShellVendorsRoute
@@ -637,17 +737,22 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellAiInsightsRoute: ShellAiInsightsRoute,
   ShellAnalyticsRoute: ShellAnalyticsRoute,
   ShellContractsRoute: ShellContractsRoute,
+  ShellCustomersRoute: ShellCustomersRoute,
+  ShellExpensesRoute: ShellExpensesRoute,
   ShellIntegrationsRoute: ShellIntegrationsRoute,
   ShellInvoicesRoute: ShellInvoicesRoute,
   ShellLeaksRoute: ShellLeaksRoute,
   ShellNotificationsRoute: ShellNotificationsRoute,
   ShellPaymentsRoute: ShellPaymentsRoute,
+  ShellProductsRoute: ShellProductsRoute,
   ShellProfileRoute: ShellProfileRoute,
+  ShellPurchasesRoute: ShellPurchasesRoute,
   ShellRecoveryRoute: ShellRecoveryRoute,
   ShellReportsRoute: ShellReportsRoute,
   ShellRolesRoute: ShellRolesRoute,
   ShellSecurityRoute: ShellSecurityRoute,
   ShellSettingsRoute: ShellSettingsRoute,
+  ShellSuppliersRoute: ShellSuppliersRoute,
   ShellTransactionsRoute: ShellTransactionsRoute,
   ShellUsersRoute: ShellUsersRoute,
   ShellVendorsRoute: ShellVendorsRoute,

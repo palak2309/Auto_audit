@@ -20,7 +20,7 @@ export interface FinancialsPayload {
 
 export async function loadFinancials(userId: string): Promise<FinancialsPayload> {
   const db = await admin();
-  const [invoices, payments, vendors] = await Promise.all([
+  const [invoices, payments, vendors, bills, billingPayments, suppliers] = await Promise.all([
     db
       .from("erp_invoices")
       .select("id, connection_id, created_at, external_id, invoice_number, vendor_name, issue_date, due_date, amount, tax_amount, amount_paid, currency, status, type")
@@ -39,13 +39,78 @@ export async function loadFinancials(userId: string): Promise<FinancialsPayload>
       .eq("user_id", userId)
       .order("name", { ascending: true })
       .limit(1000),
+    db
+      .from("purchase_bills")
+      .select("id, created_at, bill_number, supplier_invoice_number, bill_date, due_date, grand_total, total_tax, amount_paid, status, document_type, supplier:suppliers(name)")
+      .eq("user_id", userId)
+      .neq("status", "cancelled")
+      .limit(1000),
+    db
+      .from("payments")
+      .select("id, created_at, payment_number, reference_number, bill_id, payment_date, amount, payment_mode, supplier:suppliers(name)")
+      .eq("user_id", userId)
+      .eq("party_type", "supplier")
+      .limit(1000),
+    db
+      .from("suppliers")
+      .select("id, created_at, name, email, phone, status")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .limit(1000),
   ]);
 
+  const mappedBills: Row[] = (bills.data ?? []).map((b) => ({
+    id: b.id,
+    connection_id: "billing-system",
+    created_at: b.created_at,
+    external_id: b.bill_number,
+    invoice_number: b.supplier_invoice_number || b.bill_number,
+    vendor_name: (b.supplier as any)?.name || "Supplier",
+    issue_date: b.bill_date,
+    due_date: b.due_date,
+    amount: b.grand_total,
+    tax_amount: b.total_tax,
+    amount_paid: b.amount_paid,
+    currency: "INR",
+    status: b.status,
+    type: b.document_type,
+  }));
+
+  const mappedPayments: Row[] = (billingPayments.data ?? []).map((p) => ({
+    id: p.id,
+    connection_id: "billing-system",
+    created_at: p.created_at,
+    external_id: p.payment_number,
+    reference: p.reference_number || p.payment_number,
+    invoice_external_id: p.bill_id,
+    vendor_name: (p.supplier as any)?.name || "Supplier",
+    paid_date: p.payment_date,
+    amount: p.amount,
+    currency: "INR",
+    method: p.payment_mode,
+    status: "completed",
+  }));
+
+  const mappedSuppliers: Row[] = (suppliers.data ?? []).map((s) => ({
+    id: s.id,
+    connection_id: "billing-system",
+    created_at: s.created_at,
+    external_id: s.id,
+    name: s.name,
+    email: s.email,
+    phone: s.phone,
+    status: s.status,
+  }));
+
+  const mergedInvoices = [...(invoices.data ?? []), ...mappedBills] as Row[];
+  const mergedPayments = [...(payments.data ?? []), ...mappedPayments] as Row[];
+  const mergedVendors = [...(vendors.data ?? []), ...mappedSuppliers] as Row[];
+
   return {
-    connected: (invoices.data?.length ?? 0) + (payments.data?.length ?? 0) + (vendors.data?.length ?? 0) > 0,
-    invoices: (invoices.data ?? []) as Row[],
-    payments: (payments.data ?? []) as Row[],
-    vendors: (vendors.data ?? []) as Row[],
+    connected: mergedInvoices.length + mergedPayments.length + mergedVendors.length > 0,
+    invoices: mergedInvoices,
+    payments: mergedPayments,
+    vendors: mergedVendors,
   };
 }
 

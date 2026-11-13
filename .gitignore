@@ -20,6 +20,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Vercel
+.vercel/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -30,4 +33,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.bak
 .env

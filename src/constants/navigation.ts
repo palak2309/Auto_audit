@@ -6,20 +6,23 @@ import {
   Building2,
   Calculator,
   ClipboardCheck,
+  CreditCard,
+  Crown,
   Eye,
   FileText,
   Gauge,
   LayoutDashboard,
   LifeBuoy,
+  Package,
   Plug,
   Receipt,
   Settings,
   ShieldCheck,
   ShoppingCart,
+  Store,
+  TrendingDown,
   Users,
   Wallet,
-  Crown,
-  TrendingDown,
   type LucideIcon,
 } from "lucide-react";
 import type { RoleId } from "@/types";
@@ -43,36 +46,43 @@ export const navGroups: NavGroup[] = [
     label: "Overview",
     items: [
       { label: "Dashboard", to: "/", icon: LayoutDashboard },
-      { label: "AI Insights", to: "/ai-insights", icon: Brain, badge: "New" },
-      { label: "Financial Leaks", to: "/leaks", icon: TrendingDown },
-    ],
-  },
-  {
-    label: "Finance",
-    items: [
-      { label: "Transactions", to: "/transactions", icon: Activity },
-      { label: "Invoices", to: "/invoices", icon: Receipt },
-      { label: "Payments", to: "/payments", icon: Wallet },
-      { label: "Contracts", to: "/contracts", icon: FileText },
-      { label: "Vendors", to: "/vendors", icon: Building2 },
-      { label: "Recovery Center", to: "/recovery", icon: LifeBuoy, permission: "recover" },
-    ],
-  },
-  {
-    label: "Intelligence",
-    items: [
-      { label: "Reports", to: "/reports", icon: ClipboardCheck },
+      { label: "Reports & GST", to: "/reports", icon: ClipboardCheck },
       { label: "Analytics", to: "/analytics", icon: BarChart3 },
-      { label: "Notifications", to: "/notifications", icon: Bell },
+    ],
+  },
+  {
+    label: "Sales & Billing",
+    items: [
+      { label: "Invoices & Quotes", to: "/invoices", icon: Receipt },
+      { label: "Customers", to: "/customers", icon: Users },
+      { label: "Payments", to: "/payments", icon: Wallet },
+    ],
+  },
+  {
+    label: "Purchases & Inventory",
+    items: [
+      { label: "Purchase Bills", to: "/purchases", icon: ShoppingCart },
+      { label: "Products & Stock", to: "/products", icon: Package },
+      { label: "Suppliers", to: "/suppliers", icon: Building2 },
+      { label: "Expenses", to: "/expenses", icon: CreditCard },
+    ],
+  },
+  {
+    label: "Auto Audit & Recovery",
+    items: [
+      { label: "Financial Leaks", to: "/leaks", icon: TrendingDown },
+      { label: "Recovery Center", to: "/recovery", icon: LifeBuoy, permission: "recover" },
+      { label: "AI Insights", to: "/ai-insights", icon: Brain, badge: "AI" },
+      { label: "ERP Transactions", to: "/transactions", icon: Activity },
     ],
   },
   {
     label: "Administration",
     items: [
+      { label: "Business Settings", to: "/settings", icon: Settings, permission: "configure" },
       { label: "Users", to: "/users", icon: Users, permission: "manage_users" },
       { label: "Roles & Permissions", to: "/roles", icon: ShieldCheck, permission: "manage_roles" },
-      { label: "Integrations", to: "/integrations", icon: Plug, permission: "configure" },
-      { label: "Settings", to: "/settings", icon: Settings, permission: "configure" },
+      { label: "ERP Integrations", to: "/integrations", icon: Plug, permission: "configure" },
     ],
   },
 ];

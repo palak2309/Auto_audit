@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { useMockAuth } from "@/providers/mock-auth-provider";
 import { getAccountStatus, type AccountState } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/login")({
@@ -74,6 +75,7 @@ const BANNERS: Record<
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { session, loadingSession } = useMockAuth();
   const checkStatus = useServerFn(getAccountStatus);
 
   const [loading, setLoading] = useState(false);
@@ -82,14 +84,21 @@ function LoginPage() {
   const [status, setStatus] = useState<AccountState>("unknown");
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!loadingSession && session) {
+      void navigate({ to: "/" });
+    }
+  }, [loadingSession, session, navigate]);
+
   const refreshStatus = async (value: string) => {
-    if (!value.includes("@")) {
+    const clean = value.trim().toLowerCase();
+    if (!clean.includes("@")) {
       setStatus("unknown");
       return "unknown" as AccountState;
     }
 
     try {
-      const r = await checkStatus({ data: { email: value } });
+      const r = await checkStatus({ data: { email: clean } });
       setStatus(r.state);
       return r.state;
     } catch {
@@ -100,25 +109,66 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
+      const msg = "Please enter your work email.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      const msg = "Please enter a valid work email address.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    if (!password) {
+      const msg = "Please enter your password.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    let signInError: any = null;
+    try {
+      const res = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+      signInError = res.error;
+    } catch (err: any) {
+      signInError = err;
+    }
 
     if (signInError) {
-      const state = await refreshStatus(email);
+      const state = await refreshStatus(cleanEmail);
 
       setLoading(false);
 
-      const message =
-        state === "unconfirmed"
-          ? "Your email is not confirmed yet — confirm it before signing in."
-          : state === "blocked"
-            ? "This account is blocked. Ask an administrator to restore access."
-            : signInError.message;
+      let message = signInError.message || "Failed to connect to authentication service.";
+      if (
+        message.toLowerCase().includes("failed to fetch") ||
+        message.toLowerCase().includes("networkerror")
+      ) {
+        message =
+          "Cannot reach Supabase. Please add your real Supabase Anon Key to .env (from your open Supabase dashboard tab), or click 'Sign in with Demo Account' below.";
+      } else if (
+        state === "unconfirmed" ||
+        signInError.message?.toLowerCase().includes("email not confirmed")
+      ) {
+        setStatus("unconfirmed");
+        message = "Your email is not confirmed yet — confirm it before signing in.";
+      } else if (state === "blocked") {
+        setStatus("blocked");
+        message = "This account is blocked. Ask an administrator to restore access.";
+      } else if (signInError.message?.toLowerCase().includes("invalid login credentials")) {
+        message = "Invalid email or password. Please verify your credentials.";
+      }
 
       setError(message);
       toast.error(message);
@@ -126,6 +176,7 @@ function LoginPage() {
     }
 
     setLoading(false);
+    toast.success("Signed in successfully.");
     void navigate({ to: "/" });
   };
 
@@ -265,6 +316,27 @@ function LoginPage() {
           onClick={google}
         >
           Continue with Google
+        </Button>
+
+        <div className="relative my-2">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">or test locally</span>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full font-medium"
+          onClick={() => {
+            toast.success("Signed in with Demo Admin Workspace.");
+            void navigate({ to: "/" });
+          }}
+        >
+          Sign in with Demo Workspace
         </Button>
       </form>
     </AuthLayout>
