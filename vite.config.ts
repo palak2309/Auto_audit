@@ -29,6 +29,6 @@ export default defineConfig({
           },
     ),
     viteReact(),
-    ...(isGitHubPages ? [] : [nitro({ defaultPreset: "cloudflare-module" })]),
+    ...(isGitHubPages ? [] : [nitro()]),
   ],
 });
