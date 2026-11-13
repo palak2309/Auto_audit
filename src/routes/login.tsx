@@ -134,27 +134,39 @@ function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
-    });
+    let signInError: any = null;
+    try {
+      const res = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+      signInError = res.error;
+    } catch (err: any) {
+      signInError = err;
+    }
 
     if (signInError) {
       const state = await refreshStatus(cleanEmail);
 
       setLoading(false);
 
-      let message = signInError.message;
+      let message = signInError.message || "Failed to connect to authentication service.";
       if (
+        message.toLowerCase().includes("failed to fetch") ||
+        message.toLowerCase().includes("networkerror")
+      ) {
+        message =
+          "Cannot reach Supabase. Please add your real Supabase Anon Key to .env (from your open Supabase dashboard tab), or click 'Sign in with Demo Account' below.";
+      } else if (
         state === "unconfirmed" ||
-        signInError.message.toLowerCase().includes("email not confirmed")
+        signInError.message?.toLowerCase().includes("email not confirmed")
       ) {
         setStatus("unconfirmed");
         message = "Your email is not confirmed yet — confirm it before signing in.";
       } else if (state === "blocked") {
         setStatus("blocked");
         message = "This account is blocked. Ask an administrator to restore access.";
-      } else if (signInError.message.toLowerCase().includes("invalid login credentials")) {
+      } else if (signInError.message?.toLowerCase().includes("invalid login credentials")) {
         message = "Invalid email or password. Please verify your credentials.";
       }
 
@@ -304,6 +316,27 @@ function LoginPage() {
           onClick={google}
         >
           Continue with Google
+        </Button>
+
+        <div className="relative my-2">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">or test locally</span>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full font-medium"
+          onClick={() => {
+            toast.success("Signed in with Demo Admin Workspace.");
+            void navigate({ to: "/" });
+          }}
+        >
+          Sign in with Demo Workspace
         </Button>
       </form>
     </AuthLayout>
