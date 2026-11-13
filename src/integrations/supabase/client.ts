@@ -35,8 +35,7 @@ function createSupabaseClient() {
   const SUPABASE_URL =
     env["VITE_SUPABASE_URL"] ||
     procEnv["VITE_SUPABASE_URL"] ||
-    procEnv["SUPABASE_URL"] ||
-    "https://blvugdimplgugqbeirwr.supabase.co";
+    procEnv["SUPABASE_URL"];
 
   const SUPABASE_PUBLISHABLE_KEY =
     env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
@@ -44,8 +43,18 @@ function createSupabaseClient() {
     procEnv["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
     procEnv["SUPABASE_PUBLISHABLE_KEY"] ||
     procEnv["VITE_SUPABASE_ANON_KEY"] ||
-    procEnv["SUPABASE_ANON_KEY"] ||
-    "sb_publishable_ErGq3qsuVBkPQ19OYZw4Ow_h6SQrswa";
+    procEnv["SUPABASE_ANON_KEY"];
+
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    // Return inert dummy client in development when env is not configured so the app does not
+    // crash into an unhandled error boundary or accidentally connect to an unintended external database.
+    return createClient<Database>("https://placeholder.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy.dummy", {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
+  }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {

@@ -34,8 +34,7 @@ let hasWarnedMissingKey = false;
 function createSupabaseAdminClient() {
   const SUPABASE_URL =
     process.env['SUPABASE_URL'] ||
-    process.env['VITE_SUPABASE_URL'] ||
-    "https://blvugdimplgugqbeirwr.supabase.co";
+    process.env['VITE_SUPABASE_URL'];
 
   const SUPABASE_SERVICE_ROLE_KEY =
     process.env['SUPABASE_SERVICE_ROLE_KEY'] || process.env['SUPABASE_SECRET_KEY'];
@@ -45,8 +44,13 @@ function createSupabaseAdminClient() {
     process.env['SUPABASE_PUBLISHABLE_KEY'] ||
     process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
     process.env['SUPABASE_ANON_KEY'] ||
-    process.env['VITE_SUPABASE_ANON_KEY'] ||
-    "sb_publishable_ErGq3qsuVBkPQ19OYZw4Ow_h6SQrswa";
+    process.env['VITE_SUPABASE_ANON_KEY'];
+
+  if (!SUPABASE_URL || !apiKey) {
+    return createClient<Database>("https://placeholder.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy.dummy", {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
 
   if (!SUPABASE_SERVICE_ROLE_KEY && !hasWarnedMissingKey) {
     hasWarnedMissingKey = true;
