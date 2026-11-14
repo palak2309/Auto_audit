@@ -21,7 +21,10 @@ export function CookieConsentBanner() {
 
   const handleAccept = () => {
     try {
-      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ essential: true, analytics: false, timestamp: new Date().toISOString() }));
+      localStorage.setItem(
+        COOKIE_CONSENT_KEY,
+        JSON.stringify({ essential: true, analytics: false, timestamp: new Date().toISOString() }),
+      );
     } catch {
       // ignore
     }
@@ -30,7 +33,15 @@ export function CookieConsentBanner() {
 
   const handleDecline = () => {
     try {
-      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ essential: true, analytics: false, declined: true, timestamp: new Date().toISOString() }));
+      localStorage.setItem(
+        COOKIE_CONSENT_KEY,
+        JSON.stringify({
+          essential: true,
+          analytics: false,
+          declined: true,
+          timestamp: new Date().toISOString(),
+        }),
+      );
     } catch {
       // ignore
     }
@@ -58,10 +69,17 @@ export function CookieConsentBanner() {
               </span>
             </p>
             <p className="leading-relaxed max-w-3xl">
-              AutoAudit uses strictly necessary session cookies required for secure user authentication, workspace tenancy, and CSRF protection. We do not use third-party advertising trackers or sell personal data. Learn more in our{" "}
-              <Link to="/cookie-policy" className="text-primary underline hover:text-primary/80">Cookie Policy</Link>{" "}
+              AutoAudit uses strictly necessary session cookies required for secure user
+              authentication, workspace tenancy, and CSRF protection. We do not use third-party
+              advertising trackers or sell personal data. Learn more in our{" "}
+              <Link to="/cookie-policy" className="text-primary underline hover:text-primary/80">
+                Cookie Policy
+              </Link>{" "}
               and{" "}
-              <Link to="/privacy-policy" className="text-primary underline hover:text-primary/80">Privacy Policy</Link>.
+              <Link to="/privacy-policy" className="text-primary underline hover:text-primary/80">
+                Privacy Policy
+              </Link>
+              .
             </p>
           </div>
         </div>
@@ -75,12 +93,7 @@ export function CookieConsentBanner() {
           >
             Essential Only
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleAccept}
-            className="text-xs"
-          >
+          <Button type="button" size="sm" onClick={handleAccept} className="text-xs">
             Accept Essential Cookies
           </Button>
         </div>

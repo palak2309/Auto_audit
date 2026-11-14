@@ -18,7 +18,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listSuppliers,
   getSupplier,
@@ -34,7 +40,11 @@ export const Route = createFileRoute("/_shell/suppliers")({
   head: () => ({
     meta: [
       { title: "Suppliers & Vendors — Auto Audit" },
-      { name: "description", content: "Manage suppliers, vendor bank details, GSTIN, purchase history and outstanding payables." },
+      {
+        name: "description",
+        content:
+          "Manage suppliers, vendor bank details, GSTIN, purchase history and outstanding payables.",
+      },
     ],
   }),
   component: SuppliersPage,
@@ -195,7 +205,12 @@ function SuppliersPage() {
         description="Manage vendor accounts, bank details, purchase histories and outstanding payables."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={suppliers.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={suppliers.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -287,21 +302,29 @@ function SuppliersPage() {
                         )}
                       </td>
                       <td className="py-3 px-3 text-xs">
-                        <div className="font-mono font-medium text-foreground">{s.gstin || "-"}</div>
+                        <div className="font-mono font-medium text-foreground">
+                          {s.gstin || "-"}
+                        </div>
                         <div className="text-muted-foreground text-[11px]">{s.state}</div>
                       </td>
                       <td className="py-3 px-3 text-xs text-muted-foreground font-mono">
                         {s.bank_name ? (
                           <div>
                             <div>{s.bank_name}</div>
-                            <div className="text-[11px] text-muted-foreground">{s.account_number}</div>
+                            <div className="text-[11px] text-muted-foreground">
+                              {s.account_number}
+                            </div>
                           </div>
                         ) : (
                           "-"
                         )}
                       </td>
                       <td className="py-3 px-3 text-right font-mono font-bold">
-                        <span className={bal > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600"}>
+                        <span
+                          className={
+                            bal > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600"
+                          }
+                        >
                           {currencyIn(bal, "INR")}
                         </span>
                       </td>
@@ -399,7 +422,9 @@ function SuppliersPage() {
                   placeholder="e.g. 27AAAAA0000A1Z5"
                   maxLength={15}
                   value={formData.gstin}
-                  onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gstin: e.target.value.toUpperCase() })
+                  }
                 />
               </div>
 
@@ -447,7 +472,9 @@ function SuppliersPage() {
               </div>
 
               <div className="col-span-2 border-t pt-2">
-                <span className="text-xs font-bold text-muted-foreground uppercase">Bank Details for Payouts</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase">
+                  Bank Details for Payouts
+                </span>
               </div>
 
               <div>
@@ -474,7 +501,9 @@ function SuppliersPage() {
                   placeholder="e.g. HDFC0001234"
                   maxLength={11}
                   value={formData.ifscCode}
-                  onChange={(e) => setFormData({ ...formData, ifscCode: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, ifscCode: e.target.value.toUpperCase() })
+                  }
                 />
               </div>
 
@@ -486,7 +515,9 @@ function SuppliersPage() {
                     step="0.01"
                     placeholder="Positive if you owe supplier"
                     value={formData.openingBalance}
-                    onChange={(e) => setFormData({ ...formData, openingBalance: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, openingBalance: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
               )}
@@ -511,7 +542,12 @@ function SuppliersPage() {
                 <DialogTitle>Supplier Ledger Statement</DialogTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">{selectedSupplier?.name}</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => window.print()} className="print:hidden">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.print()}
+                className="print:hidden"
+              >
                 <Printer className="w-4 h-4 mr-1.5" />
                 Print Statement
               </Button>
@@ -524,16 +560,26 @@ function SuppliersPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3 p-3 bg-muted/50 rounded-lg text-center">
                 <div>
-                  <span className="text-[11px] text-muted-foreground uppercase">Bills (Credits)</span>
-                  <p className="font-mono font-bold text-foreground">{currencyIn(ledgerData.totalCredits, "INR")}</p>
+                  <span className="text-[11px] text-muted-foreground uppercase">
+                    Bills (Credits)
+                  </span>
+                  <p className="font-mono font-bold text-foreground">
+                    {currencyIn(ledgerData.totalCredits, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-[11px] text-muted-foreground uppercase">Paid (Debits)</span>
-                  <p className="font-mono font-bold text-emerald-600">{currencyIn(ledgerData.totalDebits, "INR")}</p>
+                  <p className="font-mono font-bold text-emerald-600">
+                    {currencyIn(ledgerData.totalDebits, "INR")}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-muted-foreground uppercase">Closing Payable Due</span>
-                  <p className="font-mono font-bold text-amber-600">{currencyIn(ledgerData.closingBalance, "INR")}</p>
+                  <span className="text-[11px] text-muted-foreground uppercase">
+                    Closing Payable Due
+                  </span>
+                  <p className="font-mono font-bold text-amber-600">
+                    {currencyIn(ledgerData.closingBalance, "INR")}
+                  </p>
                 </div>
               </div>
 
@@ -571,7 +617,9 @@ function SuppliersPage() {
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground">No ledger transactions found</div>
+            <div className="py-8 text-center text-muted-foreground">
+              No ledger transactions found
+            </div>
           )}
         </DialogContent>
       </Dialog>

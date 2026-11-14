@@ -24,7 +24,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listSalesInvoices,
   getSalesInvoice,
@@ -36,11 +42,7 @@ import {
 import { listCustomers } from "@/lib/billing/parties.functions";
 import { listProducts } from "@/lib/billing/products.functions";
 import { getBusinessProfile } from "@/lib/billing/business.functions";
-import {
-  calculateDocumentSummary,
-  STANDARD_GST_RATES,
-  INDIAN_STATES,
-} from "@/lib/gst/calculator";
+import { calculateDocumentSummary, STANDARD_GST_RATES, INDIAN_STATES } from "@/lib/gst/calculator";
 import { currencyIn, dateShort } from "@/lib/format";
 import { InvoicePreview, type InvoicePreviewData } from "@/components/billing/invoice-preview";
 import { downloadCsv } from "@/lib/csv";
@@ -50,7 +52,11 @@ export const Route = createFileRoute("/_shell/invoices")({
   head: () => ({
     meta: [
       { title: "Invoices & Billing — Auto Audit" },
-      { name: "description", content: "Create professional GST invoices, quotations, proforma bills and track payment collections." },
+      {
+        name: "description",
+        content:
+          "Create professional GST invoices, quotations, proforma bills and track payment collections.",
+      },
     ],
   }),
   component: InvoicesPage,
@@ -301,7 +307,12 @@ function InvoicesPage() {
   };
 
   const handleCancelInvoice = async (id: string, no: string) => {
-    if (!confirm(`Are you sure you want to cancel invoice "${no}"? This will revert inventory deductions.`)) return;
+    if (
+      !confirm(
+        `Are you sure you want to cancel invoice "${no}"? This will revert inventory deductions.`,
+      )
+    )
+      return;
     try {
       await deleteInvoiceFn({ data: { id } });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -338,11 +349,19 @@ function InvoicesPage() {
         description="Generate GST compliant tax invoices, quotations, proforma bills and manage payment collections."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={invoices.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={invoices.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
-            <Button size="sm" onClick={() => handleOpenCreate(docType === "erp_imported" ? "tax_invoice" : docType)}>
+            <Button
+              size="sm"
+              onClick={() => handleOpenCreate(docType === "erp_imported" ? "tax_invoice" : docType)}
+            >
               <Plus className="w-4 h-4 mr-1.5" />
               Create Invoice
             </Button>
@@ -353,18 +372,28 @@ function InvoicesPage() {
       {/* Summary Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-card rounded-xl border">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Total Billed</span>
-          <p className="text-2xl font-bold font-mono text-foreground mt-1">{currencyIn(totalBilled, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Total Billed
+          </span>
+          <p className="text-2xl font-bold font-mono text-foreground mt-1">
+            {currencyIn(totalBilled, "INR")}
+          </p>
           <span className="text-xs text-muted-foreground">{invoices.length} total documents</span>
         </div>
         <div className="p-4 bg-card rounded-xl border">
           <span className="text-xs font-semibold text-muted-foreground uppercase">Collected</span>
-          <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">{currencyIn(totalPaid, "INR")}</p>
+          <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">
+            {currencyIn(totalPaid, "INR")}
+          </p>
           <span className="text-xs text-emerald-600">Settled payments</span>
         </div>
         <div className="p-4 bg-card rounded-xl border">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Balance Outstanding</span>
-          <p className="text-2xl font-bold font-mono text-rose-600 mt-1">{currencyIn(totalDue, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Balance Outstanding
+          </span>
+          <p className="text-2xl font-bold font-mono text-rose-600 mt-1">
+            {currencyIn(totalDue, "INR")}
+          </p>
           <span className="text-xs text-rose-600">Receivable from clients</span>
         </div>
       </div>
@@ -450,21 +479,30 @@ function InvoicesPage() {
                 ) : (erpData?.invoices ?? []).length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-muted-foreground">
-                      No ERP invoices synchronized yet. Connect your ERP in Settings or record manual invoices.
+                      No ERP invoices synchronized yet. Connect your ERP in Settings or record
+                      manual invoices.
                     </td>
                   </tr>
                 ) : (
                   (erpData?.invoices ?? []).map((r: any, idx: number) => (
                     <tr key={r.id || idx} className="hover:bg-muted/30">
-                      <td className="py-3 px-4 font-mono font-medium">{r.invoice_number || r.external_id}</td>
+                      <td className="py-3 px-4 font-mono font-medium">
+                        {r.invoice_number || r.external_id}
+                      </td>
                       <td className="py-3 px-3">{r.vendor_name || "—"}</td>
-                      <td className="py-3 px-3 text-xs text-muted-foreground">{dateShort(r.issue_date)}</td>
-                      <td className="py-3 px-3 text-right font-mono font-medium">{currencyIn(r.amount, "INR")}</td>
+                      <td className="py-3 px-3 text-xs text-muted-foreground">
+                        {dateShort(r.issue_date)}
+                      </td>
+                      <td className="py-3 px-3 text-right font-mono font-medium">
+                        {currencyIn(r.amount, "INR")}
+                      </td>
                       <td className="py-3 px-3 text-right font-mono text-emerald-600">
                         {currencyIn(r.amount_paid, "INR")}
                       </td>
                       <td className="py-3 px-3 text-center">
-                        <span className="text-xs px-2 py-0.5 rounded bg-muted capitalize">{r.status}</span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-muted capitalize">
+                          {r.status}
+                        </span>
                       </td>
                     </tr>
                   ))
@@ -513,9 +551,13 @@ function InvoicesPage() {
                   invoices.map((inv) => (
                     <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
                       <td className="py-3 px-4">
-                        <div className="font-mono font-bold text-foreground">{inv.invoice_number}</div>
+                        <div className="font-mono font-bold text-foreground">
+                          {inv.invoice_number}
+                        </div>
                         {inv.reference_number && (
-                          <div className="text-xs text-muted-foreground">Ref: {inv.reference_number}</div>
+                          <div className="text-xs text-muted-foreground">
+                            Ref: {inv.reference_number}
+                          </div>
                         )}
                       </td>
                       <td className="py-3 px-3">
@@ -530,13 +572,19 @@ function InvoicesPage() {
                       </td>
                       <td className="py-3 px-3 text-xs text-muted-foreground">
                         <div>{dateShort(inv.invoice_date)}</div>
-                        {inv.due_date && <div className="text-[11px]">Due: {dateShort(inv.due_date)}</div>}
+                        {inv.due_date && (
+                          <div className="text-[11px]">Due: {dateShort(inv.due_date)}</div>
+                        )}
                       </td>
                       <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
                         {currencyIn(inv.grand_total, "INR")}
                       </td>
                       <td className="py-3 px-3 text-right font-mono font-medium">
-                        <span className={Number(inv.balance_due) > 0 ? "text-rose-600" : "text-emerald-600"}>
+                        <span
+                          className={
+                            Number(inv.balance_due) > 0 ? "text-rose-600" : "text-emerald-600"
+                          }
+                        >
                           {currencyIn(inv.balance_due, "INR")}
                         </span>
                       </td>
@@ -546,10 +594,10 @@ function InvoicesPage() {
                             inv.status === "paid"
                               ? "bg-emerald-100 text-emerald-800"
                               : inv.status === "partially_paid"
-                              ? "bg-amber-100 text-amber-800"
-                              : inv.status === "cancelled"
-                              ? "bg-muted text-muted-foreground line-through"
-                              : "bg-rose-100 text-rose-800"
+                                ? "bg-amber-100 text-amber-800"
+                                : inv.status === "cancelled"
+                                  ? "bg-muted text-muted-foreground line-through"
+                                  : "bg-rose-100 text-rose-800"
                           }`}
                         >
                           {inv.status.replace("_", " ")}
@@ -593,7 +641,12 @@ function InvoicesPage() {
         <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Create New {docType === "quotation" ? "Quotation" : docType === "credit_note" ? "Credit Note" : "Tax Invoice"}
+              Create New{" "}
+              {docType === "quotation"
+                ? "Quotation"
+                : docType === "credit_note"
+                  ? "Credit Note"
+                  : "Tax Invoice"}
             </DialogTitle>
           </DialogHeader>
 
@@ -676,7 +729,9 @@ function InvoicesPage() {
             {/* Line Items Table */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Line Items</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Line Items
+                </span>
                 <Button type="button" variant="outline" size="sm" onClick={handleAddItemRow}>
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add Row
                 </Button>
@@ -771,7 +826,11 @@ function InvoicesPage() {
                               max="100"
                               value={it.discountPercentage || 0}
                               onChange={(e) =>
-                                handleItemChange(idx, "discountPercentage", parseFloat(e.target.value) || 0)
+                                handleItemChange(
+                                  idx,
+                                  "discountPercentage",
+                                  parseFloat(e.target.value) || 0,
+                                )
                               }
                               className="h-8 text-xs font-mono"
                             />
@@ -857,45 +916,61 @@ function InvoicesPage() {
               <div className="space-y-1.5 text-xs text-right">
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-mono font-medium">{currencyIn(liveSummary.subtotal, "INR")}</span>
+                  <span className="font-mono font-medium">
+                    {currencyIn(liveSummary.subtotal, "INR")}
+                  </span>
                 </div>
                 {liveSummary.totalDiscount > 0 && (
                   <div className="flex justify-between py-1 border-b text-rose-600">
                     <span>Discount:</span>
-                    <span className="font-mono font-medium">- {currencyIn(liveSummary.totalDiscount, "INR")}</span>
+                    <span className="font-mono font-medium">
+                      - {currencyIn(liveSummary.totalDiscount, "INR")}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Taxable Value:</span>
-                  <span className="font-mono font-medium">{currencyIn(liveSummary.taxableAmount, "INR")}</span>
+                  <span className="font-mono font-medium">
+                    {currencyIn(liveSummary.taxableAmount, "INR")}
+                  </span>
                 </div>
 
                 {liveSummary.igstAmount > 0 ? (
                   <div className="flex justify-between py-1 border-b">
                     <span className="text-muted-foreground">IGST (Inter-state):</span>
-                    <span className="font-mono font-medium">{currencyIn(liveSummary.igstAmount, "INR")}</span>
+                    <span className="font-mono font-medium">
+                      {currencyIn(liveSummary.igstAmount, "INR")}
+                    </span>
                   </div>
                 ) : (
                   <>
                     <div className="flex justify-between py-1 border-b">
                       <span className="text-muted-foreground">CGST:</span>
-                      <span className="font-mono font-medium">{currencyIn(liveSummary.cgstAmount, "INR")}</span>
+                      <span className="font-mono font-medium">
+                        {currencyIn(liveSummary.cgstAmount, "INR")}
+                      </span>
                     </div>
                     <div className="flex justify-between py-1 border-b">
                       <span className="text-muted-foreground">SGST:</span>
-                      <span className="font-mono font-medium">{currencyIn(liveSummary.sgstAmount, "INR")}</span>
+                      <span className="font-mono font-medium">
+                        {currencyIn(liveSummary.sgstAmount, "INR")}
+                      </span>
                     </div>
                   </>
                 )}
 
                 <div className="flex justify-between py-2 border-t-2 border-foreground text-sm font-bold text-foreground">
                   <span>Grand Total:</span>
-                  <span className="font-mono text-base">{currencyIn(liveSummary.grandTotal, "INR")}</span>
+                  <span className="font-mono text-base">
+                    {currencyIn(liveSummary.grandTotal, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-1 text-muted-foreground">
                   <span>Paid:</span>
-                  <span className="font-mono text-emerald-600">{currencyIn(amountPaid, "INR")}</span>
+                  <span className="font-mono text-emerald-600">
+                    {currencyIn(amountPaid, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-1 text-foreground font-bold bg-amber-500/10 px-2 rounded">
@@ -923,9 +998,7 @@ function InvoicesPage() {
           {previewData && (
             <InvoicePreview
               data={previewData}
-              template={
-                (previewData.businessProfile?.invoice_template as any) || "classic"
-              }
+              template={(previewData.businessProfile?.invoice_template as any) || "classic"}
               onClose={() => setIsPreviewOpen(false)}
             />
           )}

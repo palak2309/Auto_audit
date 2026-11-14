@@ -27,27 +27,31 @@ export interface RecordPaymentInput {
 
 export const listPayments = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: {
-    paymentType?: string | undefined;
-    partyType?: string | undefined;
-    customerId?: string | undefined;
-    supplierId?: string | undefined;
-    paymentMode?: string | undefined;
-    fromDate?: string | undefined;
-    toDate?: string | undefined;
-    limit?: number | undefined;
-  }) => input ?? {})
+  .validator(
+    (input?: {
+      paymentType?: string | undefined;
+      partyType?: string | undefined;
+      customerId?: string | undefined;
+      supplierId?: string | undefined;
+      paymentMode?: string | undefined;
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      limit?: number | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("payments")
-      .select(`
+      .select(
+        `
         *,
         customer:customers(id, name, company_name),
         supplier:suppliers(id, name, company_name),
         invoice:sales_invoices(id, invoice_number, grand_total),
         bill:purchase_bills(id, bill_number, grand_total)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .order("payment_date", { ascending: false })
       .order("created_at", { ascending: false });

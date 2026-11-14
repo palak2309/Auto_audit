@@ -15,15 +15,23 @@ async function getAdmin() {
 
 export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { search?: string | undefined; categoryId?: string | undefined; lowStockOnly?: boolean | undefined }) => input ?? {})
+  .validator(
+    (input?: {
+      search?: string | undefined;
+      categoryId?: string | undefined;
+      lowStockOnly?: boolean | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("products")
-      .select(`
+      .select(
+        `
         *,
         category:product_categories(id, name)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .eq("status", "active")
       .order("name", { ascending: true });
@@ -34,7 +42,9 @@ export const listProducts = createServerFn({ method: "POST" })
 
     if (data.search?.trim()) {
       const term = `%${data.search.trim()}%`;
-      query = query.or(`name.ilike.${term},item_code.ilike.${term},barcode.ilike.${term},hsn_code.ilike.${term}`);
+      query = query.or(
+        `name.ilike.${term},item_code.ilike.${term},barcode.ilike.${term},hsn_code.ilike.${term}`,
+      );
     }
 
     const { data: products, error } = await query;
@@ -43,7 +53,9 @@ export const listProducts = createServerFn({ method: "POST" })
     }
 
     if (data.lowStockOnly) {
-      return (products ?? []).filter((p) => Number(p.current_stock) <= Number(p.low_stock_threshold));
+      return (products ?? []).filter(
+        (p) => Number(p.current_stock) <= Number(p.low_stock_threshold),
+      );
     }
 
     return products ?? [];
@@ -69,26 +81,28 @@ export const getProduct = createServerFn({ method: "POST" })
 
 export const saveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: {
-    id?: string;
-    category_id?: string | null;
-    name: string;
-    item_code?: string | null;
-    barcode?: string | null;
-    hsn_code?: string | null;
-    description?: string | null;
-    unit?: string;
-    purchase_price: number;
-    selling_price: number;
-    mrp?: number | null;
-    min_selling_price?: number | null;
-    tax_rate?: number;
-    tax_inclusive?: boolean;
-    opening_stock?: number;
-    low_stock_threshold?: number;
-    batch_number?: string | null;
-    expiry_date?: string | null;
-  }) => input)
+  .validator(
+    (input: {
+      id?: string;
+      category_id?: string | null;
+      name: string;
+      item_code?: string | null;
+      barcode?: string | null;
+      hsn_code?: string | null;
+      description?: string | null;
+      unit?: string;
+      purchase_price: number;
+      selling_price: number;
+      mrp?: number | null;
+      min_selling_price?: number | null;
+      tax_rate?: number;
+      tax_inclusive?: boolean;
+      opening_stock?: number;
+      low_stock_threshold?: number;
+      batch_number?: string | null;
+      expiry_date?: string | null;
+    }) => input,
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
 
@@ -105,7 +119,8 @@ export const saveProduct = createServerFn({ method: "POST" })
         purchase_price: Number(data.purchase_price) || 0,
         selling_price: Number(data.selling_price) || 0,
         mrp: data.mrp !== undefined ? Number(data.mrp) : null,
-        min_selling_price: data.min_selling_price !== undefined ? Number(data.min_selling_price) : null,
+        min_selling_price:
+          data.min_selling_price !== undefined ? Number(data.min_selling_price) : null,
         tax_rate: Number(data.tax_rate) || 0,
         tax_inclusive: Boolean(data.tax_inclusive),
         low_stock_threshold: Number(data.low_stock_threshold) || 5,
@@ -140,7 +155,8 @@ export const saveProduct = createServerFn({ method: "POST" })
         purchase_price: Number(data.purchase_price) || 0,
         selling_price: Number(data.selling_price) || 0,
         mrp: data.mrp !== undefined ? Number(data.mrp) : null,
-        min_selling_price: data.min_selling_price !== undefined ? Number(data.min_selling_price) : null,
+        min_selling_price:
+          data.min_selling_price !== undefined ? Number(data.min_selling_price) : null,
         tax_rate: Number(data.tax_rate) || 0,
         tax_inclusive: Boolean(data.tax_inclusive),
         opening_stock: initialStock,
@@ -260,13 +276,15 @@ export const deleteCategory = createServerFn({ method: "POST" })
 
 export const recordStockAdjustment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: {
-    productId: string;
-    adjustmentType: "add" | "reduce" | "audit_correction" | "damage" | "loss" | "return";
-    quantity: number;
-    reason?: string | null;
-    referenceId?: string | null;
-  }) => input)
+  .validator(
+    (input: {
+      productId: string;
+      adjustmentType: "add" | "reduce" | "audit_correction" | "damage" | "loss" | "return";
+      quantity: number;
+      reason?: string | null;
+      referenceId?: string | null;
+    }) => input,
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     const { data: prod, error: prodErr } = await admin
@@ -286,7 +304,11 @@ export const recordStockAdjustment = createServerFn({ method: "POST" })
 
     if (data.adjustmentType === "add" || data.adjustmentType === "return") {
       newStock = currentStock + qty;
-    } else if (data.adjustmentType === "reduce" || data.adjustmentType === "damage" || data.adjustmentType === "loss") {
+    } else if (
+      data.adjustmentType === "reduce" ||
+      data.adjustmentType === "damage" ||
+      data.adjustmentType === "loss"
+    ) {
       newStock = Math.max(0, currentStock - qty);
     } else if (data.adjustmentType === "audit_correction") {
       newStock = Number(data.quantity) || 0;
@@ -323,20 +345,29 @@ export const recordStockAdjustment = createServerFn({ method: "POST" })
       throw new Error(`Failed to record stock adjustment: ${adjErr.message}`);
     }
 
-    return { product_id: data.productId, previous_stock: currentStock, new_stock: newStock, adjustment: adj };
+    return {
+      product_id: data.productId,
+      previous_stock: currentStock,
+      new_stock: newStock,
+      adjustment: adj,
+    };
   });
 
 export const listStockAdjustments = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { productId?: string | undefined; limit?: number | undefined }) => input ?? {})
+  .validator(
+    (input?: { productId?: string | undefined; limit?: number | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("stock_adjustments")
-      .select(`
+      .select(
+        `
         *,
         product:products(id, name, unit, item_code)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(data.limit ?? 100);

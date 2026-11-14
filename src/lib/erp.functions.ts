@@ -16,7 +16,6 @@ import { analyzeLeakageFor } from "@/lib/erp/ai-analysis.server";
 import { detectAndPersistLeaksForUser } from "@/lib/erp/leak-persistence.server";
 import { requireAdmin, type Ctx } from "@/lib/admin.functions";
 
-
 export const getErpStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => ({
@@ -77,7 +76,8 @@ export const getProviderConfigs = createServerFn({ method: "GET" })
 export const saveProviderConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator(
-    (input: { provider: string; clientId: string; clientSecret: string; dataCenter?: string }) => input,
+    (input: { provider: string; clientId: string; clientSecret: string; dataCenter?: string }) =>
+      input,
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context as unknown as Ctx);

@@ -1,6 +1,7 @@
 // Client-safe provider registry. No secrets here.
 
-export type ErpProviderId = "xero" | "quickbooks" | "zoho_books" | "netsuite" | "sap" | "oracle" | "custom_api";
+export type ErpProviderId =
+  "xero" | "quickbooks" | "zoho_books" | "netsuite" | "sap" | "oracle" | "custom_api";
 
 export interface ErpProviderMeta {
   id: ErpProviderId;

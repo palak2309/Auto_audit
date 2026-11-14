@@ -56,10 +56,7 @@ import {
   openRecoveryCase,
   generateRecoveryClaimNotice,
 } from "@/lib/leak.functions";
-import type {
-  DurableRecoveryCaseItem,
-  RecoveryStage,
-} from "@/lib/erp/leak-workflow.server";
+import type { DurableRecoveryCaseItem, RecoveryStage } from "@/lib/erp/leak-workflow.server";
 import { currency } from "@/lib/format";
 import { LeakActionDrawer } from "@/components/leaks/leak-action-drawer";
 import { useMockAuth } from "@/providers/mock-auth-provider";
@@ -76,8 +73,7 @@ export const Route = createFileRoute("/_shell/recovery")({
       { property: "og:title", content: "Recovery Center — AutoAudit" },
       {
         property: "og:description",
-        content:
-          "Operational recovery case management with stage progression and audit integrity.",
+        content: "Operational recovery case management with stage progression and audit integrity.",
       },
     ],
   }),
@@ -88,12 +84,42 @@ export const Route = createFileRoute("/_shell/recovery")({
   ),
 });
 
-const PIPELINE_COLUMNS: { id: RecoveryStage; label: string; tone: "info" | "warning" | "caution" | "accent" | "success"; description: string }[] = [
-  { id: "identified", label: "Identified", tone: "info", description: "Audit anomaly confirmed; claim initialized" },
-  { id: "vendor_contacted", label: "Vendor Contacted", tone: "warning", description: "Dispute notice dispatched to supplier" },
-  { id: "claim_filed", label: "Claim Filed", tone: "caution", description: "Formal recovery docket opened with AP/AR" },
-  { id: "credit_issued", label: "Credit Issued", tone: "accent", description: "Vendor credit note or remittance advice pending" },
-  { id: "recovered", label: "Recovered", tone: "success", description: "Cash refunded or credit applied in ledger" },
+const PIPELINE_COLUMNS: {
+  id: RecoveryStage;
+  label: string;
+  tone: "info" | "warning" | "caution" | "accent" | "success";
+  description: string;
+}[] = [
+  {
+    id: "identified",
+    label: "Identified",
+    tone: "info",
+    description: "Audit anomaly confirmed; claim initialized",
+  },
+  {
+    id: "vendor_contacted",
+    label: "Vendor Contacted",
+    tone: "warning",
+    description: "Dispute notice dispatched to supplier",
+  },
+  {
+    id: "claim_filed",
+    label: "Claim Filed",
+    tone: "caution",
+    description: "Formal recovery docket opened with AP/AR",
+  },
+  {
+    id: "credit_issued",
+    label: "Credit Issued",
+    tone: "accent",
+    description: "Vendor credit note or remittance advice pending",
+  },
+  {
+    id: "recovered",
+    label: "Recovered",
+    tone: "success",
+    description: "Cash refunded or credit applied in ledger",
+  },
 ];
 
 const STAGES: { id: RecoveryStage | "all"; label: string }[] = [
@@ -209,7 +235,11 @@ function RecoveryPage() {
   });
 
   // Fetch unclaimed leaks for the Intake tab
-  const { data: leaksData, isLoading: isLoadingLeaks, refetch: refetchLeaks } = useQuery({
+  const {
+    data: leaksData,
+    isLoading: isLoadingLeaks,
+    refetch: refetchLeaks,
+  } = useQuery({
     queryKey: ["unclaimed-leaks-for-recovery"],
     queryFn: () => fetchLeaks({ data: { limit: 100 } }),
   });
@@ -228,11 +258,19 @@ function RecoveryPage() {
   );
 
   // Key summaries
-  const totalTarget = cases.reduce((acc: number, c: DurableRecoveryCaseItem) => acc + c.targetAmount, 0);
-  const totalRecovered = cases.reduce((acc: number, c: DurableRecoveryCaseItem) => acc + c.recoveredAmount, 0);
+  const totalTarget = cases.reduce(
+    (acc: number, c: DurableRecoveryCaseItem) => acc + c.targetAmount,
+    0,
+  );
+  const totalRecovered = cases.reduce(
+    (acc: number, c: DurableRecoveryCaseItem) => acc + c.recoveredAmount,
+    0,
+  );
   const totalRemaining = Math.max(0, totalTarget - totalRecovered);
   const recoveryRate = totalTarget > 0 ? Math.round((totalRecovered / totalTarget) * 100) : 0;
-  const activeCasesCount = cases.filter((c: DurableRecoveryCaseItem) => c.stage !== "recovered").length;
+  const activeCasesCount = cases.filter(
+    (c: DurableRecoveryCaseItem) => c.stage !== "recovered",
+  ).length;
 
   // Handlers
   const handleOpenUpdateDialog = (recCase: DurableRecoveryCaseItem) => {
@@ -266,7 +304,9 @@ function RecoveryPage() {
       });
 
       if (targetStage === "recovered") {
-        toast.success("Recovery marked complete. Parent leak case has been automatically resolved.");
+        toast.success(
+          "Recovery marked complete. Parent leak case has been automatically resolved.",
+        );
       } else {
         toast.success(`Recovery case progressed to ${targetStage.replace(/_/g, " ")}.`);
       }
@@ -329,7 +369,10 @@ function RecoveryPage() {
   // Open Claim from Unclaimed Leak Handlers
   const handleOpenIntakeModal = (leak: any) => {
     setSelectedUnclaimedLeak(leak);
-    const sanitizedVendor = (leak.vendor_name || "VND").replace(/[^a-zA-Z0-9]/g, "").slice(0, 4).toUpperCase();
+    const sanitizedVendor = (leak.vendor_name || "VND")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 4)
+      .toUpperCase();
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     setClaimRefInput(`CLM-${sanitizedVendor}-${randomSuffix}`);
     setTargetClaimAmount(String(leak.amount || 0));
@@ -402,7 +445,10 @@ function RecoveryPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `autoaudit-recovery-claims-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute(
+      "download",
+      `autoaudit-recovery-claims-${new Date().toISOString().slice(0, 10)}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -436,7 +482,10 @@ function RecoveryPage() {
               }}
               disabled={isFetching || isLoadingLeaks}
             >
-              <RefreshCw className={`size-4 ${isFetching || isLoadingLeaks ? "animate-spin" : ""}`} /> Refresh
+              <RefreshCw
+                className={`size-4 ${isFetching || isLoadingLeaks ? "animate-spin" : ""}`}
+              />{" "}
+              Refresh
             </Button>
           </div>
         }
@@ -476,7 +525,9 @@ function RecoveryPage() {
           <p className="mt-2 text-2xl font-bold tabular-nums text-warning">
             {currency(totalRemaining)}
           </p>
-          <p className="mt-1 text-[11px] text-muted-foreground">Actively in negotiation / disputed</p>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Actively in negotiation / disputed
+          </p>
         </div>
 
         <div className="surface-card p-4 transition-all hover:border-accent/40">
@@ -488,7 +539,9 @@ function RecoveryPage() {
             {unclaimedLeaks.length}
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            {unclaimedLeaks.length > 0 ? "Leaks ready to open recovery" : "All leaks currently assigned"}
+            {unclaimedLeaks.length > 0
+              ? "Leaks ready to open recovery"
+              : "All leaks currently assigned"}
           </p>
         </div>
       </section>
@@ -618,7 +671,8 @@ function RecoveryPage() {
                   className="mt-2 gap-1.5 text-xs"
                   onClick={() => setActiveTab("unclaimed")}
                 >
-                  <Sparkles className="size-3.5" /> View {unclaimedLeaks.length} Unclaimed Leak Opportunities
+                  <Sparkles className="size-3.5" /> View {unclaimedLeaks.length} Unclaimed Leak
+                  Opportunities
                 </Button>
               )}
             </section>
@@ -627,7 +681,10 @@ function RecoveryPage() {
             <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-4 md:grid-cols-2 lg:grid-cols-5">
               {PIPELINE_COLUMNS.map((col) => {
                 const colCases = cases.filter((c: DurableRecoveryCaseItem) => c.stage === col.id);
-                const colTotal = colCases.reduce((sum: number, c: DurableRecoveryCaseItem) => sum + c.targetAmount, 0);
+                const colTotal = colCases.reduce(
+                  (sum: number, c: DurableRecoveryCaseItem) => sum + c.targetAmount,
+                  0,
+                );
 
                 return (
                   <div
@@ -671,22 +728,32 @@ function RecoveryPage() {
                                   <StatusBadge status={c.stage} />
                                 </div>
 
-                                <h5 className="mt-1 font-bold text-xs text-foreground truncate" title={c.vendorName}>
+                                <h5
+                                  className="mt-1 font-bold text-xs text-foreground truncate"
+                                  title={c.vendorName}
+                                >
                                   {c.vendorName}
                                 </h5>
-                                <p className="text-[11px] text-muted-foreground line-clamp-1 truncate" title={c.leakTitle}>
+                                <p
+                                  className="text-[11px] text-muted-foreground line-clamp-1 truncate"
+                                  title={c.leakTitle}
+                                >
                                   {c.leakTitle}
                                 </p>
 
                                 <div className="mt-2.5 flex items-baseline justify-between rounded-lg bg-muted/30 p-2 text-xs">
                                   <div>
-                                    <span className="block text-[9px] uppercase text-muted-foreground">Target</span>
+                                    <span className="block text-[9px] uppercase text-muted-foreground">
+                                      Target
+                                    </span>
                                     <span className="font-bold tabular-nums">
                                       {formatMoney(c.targetAmount, c.currency)}
                                     </span>
                                   </div>
                                   <div className="text-right">
-                                    <span className="block text-[9px] uppercase text-muted-foreground">Recovered</span>
+                                    <span className="block text-[9px] uppercase text-muted-foreground">
+                                      Recovered
+                                    </span>
                                     <span className="font-bold tabular-nums text-success">
                                       {formatMoney(c.recoveredAmount, c.currency)}
                                     </span>
@@ -865,7 +932,8 @@ function RecoveryPage() {
                 <Sparkles className="size-4 text-primary" /> Unclaimed Audit Opportunities
               </h4>
               <p className="text-xs text-muted-foreground">
-                These anomalous disbursements were identified by AutoAudit rule & AI scans, but do not yet have a recovery case opened.
+                These anomalous disbursements were identified by AutoAudit rule & AI scans, but do
+                not yet have a recovery case opened.
               </p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border text-primary">
@@ -882,7 +950,8 @@ function RecoveryPage() {
               <ShieldCheck className="size-10 text-success" />
               <h3 className="text-base font-semibold">All Leaks Are Active</h3>
               <p className="max-w-md text-xs text-muted-foreground">
-                Great work! Every detected anomaly in your financial ledger is already assigned to a recovery docket or resolved.
+                Great work! Every detected anomaly in your financial ledger is already assigned to a
+                recovery docket or resolved.
               </p>
             </section>
           ) : (
@@ -894,7 +963,15 @@ function RecoveryPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <ToneBadge tone={leak.severity === "critical" ? "danger" : leak.severity === "high" ? "warning" : "accent"}>
+                      <ToneBadge
+                        tone={
+                          leak.severity === "critical"
+                            ? "danger"
+                            : leak.severity === "high"
+                              ? "warning"
+                              : "accent"
+                        }
+                      >
                         {leak.severity.toUpperCase()}
                       </ToneBadge>
                       <span className="text-[11px] text-muted-foreground">
@@ -905,9 +982,7 @@ function RecoveryPage() {
                     <h4 className="mt-2.5 font-bold text-sm text-foreground truncate">
                       {leak.vendor_name || "Unknown Vendor"}
                     </h4>
-                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                      {leak.title}
-                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{leak.title}</p>
 
                     <div className="mt-3 rounded-lg bg-muted/30 p-2.5 flex items-baseline justify-between">
                       <span className="text-[11px] text-muted-foreground">Disputed Exposure:</span>
@@ -949,7 +1024,8 @@ function RecoveryPage() {
               <Sparkles className="size-4 text-primary" /> AI Vendor Recovery Notice
             </DialogTitle>
             <DialogDescription>
-              Draft an executive, evidence-backed demand letter for {noticeCase?.vendorName} powered by Google Gemini.
+              Draft an executive, evidence-backed demand letter for {noticeCase?.vendorName} powered
+              by Google Gemini.
             </DialogDescription>
           </DialogHeader>
 
@@ -962,16 +1038,23 @@ function RecoveryPage() {
                 onValueChange={(val) => {
                   const newTone = val as "formal" | "firm" | "collaborative";
                   setNoticeTone(newTone);
-                  if (noticeCase) void triggerGenerateNotice(noticeCase, newTone, noticeCustomNotes);
+                  if (noticeCase)
+                    void triggerGenerateNotice(noticeCase, newTone, noticeCustomNotes);
                 }}
               >
                 <SelectTrigger className="h-7 text-xs w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="collaborative" className="text-xs">Collaborative (Partner)</SelectItem>
-                  <SelectItem value="formal" className="text-xs">Formal (Audit Standard)</SelectItem>
-                  <SelectItem value="firm" className="text-xs">Firm / Legal (7-Day Term)</SelectItem>
+                  <SelectItem value="collaborative" className="text-xs">
+                    Collaborative (Partner)
+                  </SelectItem>
+                  <SelectItem value="formal" className="text-xs">
+                    Formal (Audit Standard)
+                  </SelectItem>
+                  <SelectItem value="firm" className="text-xs">
+                    Firm / Legal (7-Day Term)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -979,7 +1062,9 @@ function RecoveryPage() {
             {generatedNotice?.recipientEmail && (
               <div className="flex items-center gap-1 text-muted-foreground ml-auto">
                 <Mail className="size-3 text-primary" />
-                <span className="font-medium text-foreground">{generatedNotice.recipientEmail}</span>
+                <span className="font-medium text-foreground">
+                  {generatedNotice.recipientEmail}
+                </span>
               </div>
             )}
           </div>
@@ -1014,7 +1099,11 @@ function RecoveryPage() {
                         toast.success("Subject copied!");
                       }}
                     >
-                      {copiedSubject ? <Check className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
+                      {copiedSubject ? (
+                        <Check className="size-3.5 text-success" />
+                      ) : (
+                        <Copy className="size-3.5" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -1038,7 +1127,8 @@ function RecoveryPage() {
               size="sm"
               className="gap-1.5 text-xs mr-auto"
               onClick={() => {
-                if (noticeCase) void triggerGenerateNotice(noticeCase, noticeTone, noticeCustomNotes);
+                if (noticeCase)
+                  void triggerGenerateNotice(noticeCase, noticeTone, noticeCustomNotes);
               }}
               disabled={noticeLoading}
             >
@@ -1091,7 +1181,11 @@ function RecoveryPage() {
                     toast.success("Full notice copied to clipboard!");
                   }}
                 >
-                  {copiedLetter ? <Check className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
+                  {copiedLetter ? (
+                    <Check className="size-3.5 text-success" />
+                  ) : (
+                    <Copy className="size-3.5" />
+                  )}
                   Copy Full Letter
                 </Button>
               </>
@@ -1122,7 +1216,9 @@ function RecoveryPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">Target Claim Amount ({selectedUnclaimedLeak?.currency || "USD"})</Label>
+              <Label className="text-xs">
+                Target Claim Amount ({selectedUnclaimedLeak?.currency || "USD"})
+              </Label>
               <Input
                 type="number"
                 step="0.01"
@@ -1195,7 +1291,8 @@ function RecoveryPage() {
               </Select>
               {targetStage === "recovered" && (
                 <p className="text-[11px] text-success font-medium">
-                  ✓ Moving to "Recovered" will automatically mark the parent audit leak as fully resolved.
+                  ✓ Moving to "Recovered" will automatically mark the parent audit leak as fully
+                  resolved.
                 </p>
               )}
             </div>
@@ -1215,9 +1312,18 @@ function RecoveryPage() {
               />
               {selectedCase && recoveredAmountInput && (
                 <div className="flex justify-between text-[11px] text-muted-foreground pt-1">
-                  <span>Target: {formatMoney(selectedCase.targetAmount, selectedCase.currency)}</span>
+                  <span>
+                    Target: {formatMoney(selectedCase.targetAmount, selectedCase.currency)}
+                  </span>
                   <span className="font-semibold text-foreground">
-                    Remaining: {formatMoney(Math.max(0, selectedCase.targetAmount - (parseFloat(recoveredAmountInput) || 0)), selectedCase.currency)}
+                    Remaining:{" "}
+                    {formatMoney(
+                      Math.max(
+                        0,
+                        selectedCase.targetAmount - (parseFloat(recoveredAmountInput) || 0),
+                      ),
+                      selectedCase.currency,
+                    )}
                   </span>
                 </div>
               )}
@@ -1247,11 +1353,7 @@ function RecoveryPage() {
             >
               Cancel
             </Button>
-            <Button
-              size="sm"
-              onClick={handleProgressStage}
-              disabled={isUpdating || !targetStage}
-            >
+            <Button size="sm" onClick={handleProgressStage} disabled={isUpdating || !targetStage}>
               {isUpdating ? "Updating…" : "Confirm Progress"}
             </Button>
           </DialogFooter>

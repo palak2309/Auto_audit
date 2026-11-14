@@ -20,7 +20,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listPurchaseBills,
   getPurchaseBill,
@@ -32,11 +38,7 @@ import {
 import { listSuppliers } from "@/lib/billing/parties.functions";
 import { listProducts } from "@/lib/billing/products.functions";
 import { getBusinessProfile } from "@/lib/billing/business.functions";
-import {
-  calculateDocumentSummary,
-  STANDARD_GST_RATES,
-  INDIAN_STATES,
-} from "@/lib/gst/calculator";
+import { calculateDocumentSummary, STANDARD_GST_RATES, INDIAN_STATES } from "@/lib/gst/calculator";
 import { currencyIn, dateShort } from "@/lib/format";
 import { downloadCsv } from "@/lib/csv";
 
@@ -44,7 +46,11 @@ export const Route = createFileRoute("/_shell/purchases")({
   head: () => ({
     meta: [
       { title: "Purchases & Bills — Auto Audit" },
-      { name: "description", content: "Record vendor purchase bills, debit notes, track inventory replenishment and manage payables." },
+      {
+        name: "description",
+        content:
+          "Record vendor purchase bills, debit notes, track inventory replenishment and manage payables.",
+      },
     ],
   }),
   component: PurchasesPage,
@@ -276,7 +282,12 @@ function PurchasesPage() {
   };
 
   const handleCancelBill = async (id: string, no: string) => {
-    if (!confirm(`Are you sure you want to cancel purchase bill "${no}"? This will revert inventory additions.`)) return;
+    if (
+      !confirm(
+        `Are you sure you want to cancel purchase bill "${no}"? This will revert inventory additions.`,
+      )
+    )
+      return;
     try {
       await deleteBillFn({ data: { id } });
       queryClient.invalidateQueries({ queryKey: ["purchases"] });
@@ -312,7 +323,12 @@ function PurchasesPage() {
         description="Record vendor bills, debit notes, automatic inventory stock additions and track vendor payables."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={bills.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={bills.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -327,18 +343,30 @@ function PurchasesPage() {
       {/* Summary Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-card rounded-xl border">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Total Purchases</span>
-          <p className="text-2xl font-bold font-mono text-foreground mt-1">{currencyIn(totalPurchases, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Total Purchases
+          </span>
+          <p className="text-2xl font-bold font-mono text-foreground mt-1">
+            {currencyIn(totalPurchases, "INR")}
+          </p>
           <span className="text-xs text-muted-foreground">{bills.length} total bills</span>
         </div>
         <div className="p-4 bg-card rounded-xl border">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Paid to Suppliers</span>
-          <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">{currencyIn(totalPaid, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Paid to Suppliers
+          </span>
+          <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">
+            {currencyIn(totalPaid, "INR")}
+          </p>
           <span className="text-xs text-emerald-600">Settled purchases</span>
         </div>
         <div className="p-4 bg-card rounded-xl border">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Payables Outstanding</span>
-          <p className="text-2xl font-bold font-mono text-amber-600 mt-1">{currencyIn(totalDue, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Payables Outstanding
+          </span>
+          <p className="text-2xl font-bold font-mono text-amber-600 mt-1">
+            {currencyIn(totalDue, "INR")}
+          </p>
           <span className="text-xs text-amber-600">Owed to vendors</span>
         </div>
       </div>
@@ -419,7 +447,8 @@ function PurchasesPage() {
                     <ShoppingCart className="w-10 h-10 mx-auto text-muted-foreground/40 mb-3" />
                     <p className="font-medium text-base text-foreground">No purchase bills found</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Record purchase bills from suppliers to replenish inventory stock automatically.
+                      Record purchase bills from suppliers to replenish inventory stock
+                      automatically.
                     </p>
                     <Button size="sm" className="mt-4" onClick={() => handleOpenCreate(docType)}>
                       <Plus className="w-4 h-4 mr-1.5" />
@@ -433,7 +462,9 @@ function PurchasesPage() {
                     <td className="py-3 px-4">
                       <div className="font-mono font-bold text-foreground">{b.bill_number}</div>
                       {b.supplier_invoice_number && (
-                        <div className="text-xs text-muted-foreground">Supplier Ref: {b.supplier_invoice_number}</div>
+                        <div className="text-xs text-muted-foreground">
+                          Supplier Ref: {b.supplier_invoice_number}
+                        </div>
                       )}
                     </td>
                     <td className="py-3 px-3">
@@ -448,13 +479,21 @@ function PurchasesPage() {
                     </td>
                     <td className="py-3 px-3 text-xs text-muted-foreground">
                       <div>{dateShort(b.bill_date)}</div>
-                      {b.due_date && <div className="text-[11px]">Due: {dateShort(b.due_date)}</div>}
+                      {b.due_date && (
+                        <div className="text-[11px]">Due: {dateShort(b.due_date)}</div>
+                      )}
                     </td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
                       {currencyIn(b.grand_total, "INR")}
                     </td>
                     <td className="py-3 px-3 text-right font-mono font-medium">
-                      <span className={Number(b.balance_due) > 0 ? "text-amber-600 font-bold" : "text-emerald-600"}>
+                      <span
+                        className={
+                          Number(b.balance_due) > 0
+                            ? "text-amber-600 font-bold"
+                            : "text-emerald-600"
+                        }
+                      >
                         {currencyIn(b.balance_due, "INR")}
                       </span>
                     </td>
@@ -464,10 +503,10 @@ function PurchasesPage() {
                           b.status === "paid"
                             ? "bg-emerald-100 text-emerald-800"
                             : b.status === "partially_paid"
-                            ? "bg-amber-100 text-amber-800"
-                            : b.status === "cancelled"
-                            ? "bg-muted text-muted-foreground line-through"
-                            : "bg-rose-100 text-rose-800"
+                              ? "bg-amber-100 text-amber-800"
+                              : b.status === "cancelled"
+                                ? "bg-muted text-muted-foreground line-through"
+                                : "bg-rose-100 text-rose-800"
                         }`}
                       >
                         {b.status.replace("_", " ")}
@@ -510,7 +549,12 @@ function PurchasesPage() {
         <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Record {docType === "debit_note" ? "Debit Note" : docType === "purchase_order" ? "Purchase Order" : "Purchase Bill"}
+              Record{" "}
+              {docType === "debit_note"
+                ? "Debit Note"
+                : docType === "purchase_order"
+                  ? "Purchase Order"
+                  : "Purchase Bill"}
             </DialogTitle>
           </DialogHeader>
 
@@ -592,7 +636,9 @@ function PurchasesPage() {
             {/* Line Items */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Purchased Items</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Purchased Items
+                </span>
                 <Button type="button" variant="outline" size="sm" onClick={handleAddItemRow}>
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add Row
                 </Button>
@@ -760,26 +806,36 @@ function PurchasesPage() {
               <div className="space-y-1.5 text-xs text-right">
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-mono font-medium">{currencyIn(liveSummary.subtotal, "INR")}</span>
+                  <span className="font-mono font-medium">
+                    {currencyIn(liveSummary.subtotal, "INR")}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Taxable Value:</span>
-                  <span className="font-mono font-medium">{currencyIn(liveSummary.taxableAmount, "INR")}</span>
+                  <span className="font-mono font-medium">
+                    {currencyIn(liveSummary.taxableAmount, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-1 border-b">
                   <span className="text-muted-foreground">Input Tax (ITC):</span>
-                  <span className="font-mono font-medium">{currencyIn(liveSummary.totalTax, "INR")}</span>
+                  <span className="font-mono font-medium">
+                    {currencyIn(liveSummary.totalTax, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-2 border-t-2 border-foreground text-sm font-bold text-foreground">
                   <span>Grand Total:</span>
-                  <span className="font-mono text-base">{currencyIn(liveSummary.grandTotal, "INR")}</span>
+                  <span className="font-mono text-base">
+                    {currencyIn(liveSummary.grandTotal, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-1 text-muted-foreground">
                   <span>Paid:</span>
-                  <span className="font-mono text-emerald-600">{currencyIn(amountPaid, "INR")}</span>
+                  <span className="font-mono text-emerald-600">
+                    {currencyIn(amountPaid, "INR")}
+                  </span>
                 </div>
 
                 <div className="flex justify-between py-1 text-foreground font-bold bg-amber-500/10 px-2 rounded">
@@ -820,8 +876,12 @@ function PurchasesPage() {
                 </div>
                 <div className="text-right">
                   <span className="text-muted-foreground block">Bill Date:</span>
-                  <p className="font-medium text-foreground">{dateShort(selectedBill.bill.bill_date)}</p>
-                  <p className="text-muted-foreground">Supplier Ref: {selectedBill.bill.supplier_invoice_number || "-"}</p>
+                  <p className="font-medium text-foreground">
+                    {dateShort(selectedBill.bill.bill_date)}
+                  </p>
+                  <p className="text-muted-foreground">
+                    Supplier Ref: {selectedBill.bill.supplier_invoice_number || "-"}
+                  </p>
                 </div>
               </div>
 
@@ -843,7 +903,9 @@ function PurchasesPage() {
                         <td className="p-2 text-right font-mono">
                           {it.quantity} {it.unit}
                         </td>
-                        <td className="p-2 text-right font-mono">{currencyIn(it.unit_price, "INR")}</td>
+                        <td className="p-2 text-right font-mono">
+                          {currencyIn(it.unit_price, "INR")}
+                        </td>
                         <td className="p-2 text-right">{it.gst_rate}%</td>
                         <td className="p-2 text-right font-mono font-bold">
                           {currencyIn(it.total_amount, "INR")}
@@ -856,7 +918,9 @@ function PurchasesPage() {
 
               <div className="flex justify-between items-center p-3 bg-muted/40 rounded-lg text-sm font-bold">
                 <span>Grand Total:</span>
-                <span className="font-mono text-base">{currencyIn(selectedBill.bill.grand_total, "INR")}</span>
+                <span className="font-mono text-base">
+                  {currencyIn(selectedBill.bill.grand_total, "INR")}
+                </span>
               </div>
             </div>
           )}

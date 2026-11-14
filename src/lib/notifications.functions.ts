@@ -23,7 +23,9 @@ export const getLiveNotifications = createServerFn({ method: "GET" })
     // 1. Fetch recent real leaks (up to 20 most recent)
     const { data: leaks } = await supabaseAdmin
       .from("erp_leaks")
-      .select("id, title, vendor_name, amount, currency, severity, status, detected_at, created_at, type")
+      .select(
+        "id, title, vendor_name, amount, currency, severity, status, detected_at, created_at, type",
+      )
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -39,8 +41,8 @@ export const getLiveNotifications = createServerFn({ method: "GET" })
         title: isCritical
           ? `Critical Leak: ${leak.title}`
           : isHigh
-          ? `High Severity: ${leak.title}`
-          : leak.title,
+            ? `High Severity: ${leak.title}`
+            : leak.title,
         description: `${leak.vendor_name || "Unknown vendor"} · ${amountFmt} · Status: ${leak.status}`,
         severity: sev,
         category: "Leak Alert",
@@ -70,13 +72,17 @@ export const getLiveNotifications = createServerFn({ method: "GET" })
         cat = "Recovery";
       } else if (act.action === "status_changed") {
         title = `Status updated to ${meta["to_status"] || "new status"}`;
-        desc = meta["notes"] ? `Note: "${meta["notes"]}"` : `Transitioned from ${meta["from_status"] || "previous"}`;
+        desc = meta["notes"]
+          ? `Note: "${meta["notes"]}"`
+          : `Transitioned from ${meta["from_status"] || "previous"}`;
       } else if (act.action === "assigned") {
         title = `Leak assigned to ${meta["assignee_name"] || "team member"}`;
         desc = `Assigned on ${new Date(act.created_at).toLocaleDateString()}`;
       } else if (act.action === "investigation_note") {
         title = "Investigation note added";
-        desc = meta["note"] ? `"${String(meta["note"]).slice(0, 100)}..."` : "Note recorded on case";
+        desc = meta["note"]
+          ? `"${String(meta["note"]).slice(0, 100)}..."`
+          : "Note recorded on case";
       }
 
       items.push({
@@ -103,10 +109,10 @@ export const getLiveNotifications = createServerFn({ method: "GET" })
         conn.provider === "zoho_books"
           ? "Zoho Books"
           : conn.provider === "quickbooks"
-          ? "QuickBooks"
-          : conn.provider === "xero"
-          ? "Xero"
-          : conn.provider;
+            ? "QuickBooks"
+            : conn.provider === "xero"
+              ? "Xero"
+              : conn.provider;
       if (conn.last_error) {
         items.push({
           id: `conn-err-${conn.id}`,

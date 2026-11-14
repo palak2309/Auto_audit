@@ -71,8 +71,8 @@ export function ConnectWizard({
         <DialogHeader>
           <DialogTitle>Connect an ERP or accounting system</DialogTitle>
           <DialogDescription>
-            A guided three-step setup: pick the source system, review what AutoAudit reads, then authorise the
-            connection in the provider&apos;s own login screen.
+            A guided three-step setup: pick the source system, review what AutoAudit reads, then
+            authorise the connection in the provider&apos;s own login screen.
           </DialogDescription>
         </DialogHeader>
 
@@ -91,7 +91,11 @@ export function ConnectWizard({
               >
                 {i < step ? <Check className="size-3" /> : i + 1}
               </span>
-              <span className={cn("truncate", i === step ? "font-medium" : "text-muted-foreground")}>{label}</span>
+              <span
+                className={cn("truncate", i === step ? "font-medium" : "text-muted-foreground")}
+              >
+                {label}
+              </span>
               {i < STEPS.length - 1 && <span className="hidden h-px flex-1 bg-border sm:block" />}
             </li>
           ))}
@@ -116,13 +120,21 @@ export function ConnectWizard({
                     onClick={() => setSelected(p.id)}
                     className={cn(
                       "rounded-lg border p-3 text-left transition",
-                      selected === p.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50",
+                      selected === p.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:bg-muted/50",
                     )}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-semibold">{p.name}</p>
                       <ToneBadge tone={already ? "success" : isReady ? "brand" : "muted"} size="sm">
-                        {already ? "Connected" : isReady ? "Ready" : p.oauth ? "Setup needed" : "Enterprise"}
+                        {already
+                          ? "Connected"
+                          : isReady
+                            ? "Ready"
+                            : p.oauth
+                              ? "Setup needed"
+                              : "Enterprise"}
                       </ToneBadge>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">{p.blurb}</p>
@@ -172,8 +184,8 @@ export function ConnectWizard({
           {step === 2 && provider && (
             <div className="space-y-3 text-sm">
               <p>
-                You&apos;ll be redirected to {provider.name} to sign in and approve access. After approval we bring you
-                straight back and start the first import automatically.
+                You&apos;ll be redirected to {provider.name} to sign in and approve access. After
+                approval we bring you straight back and start the first import automatically.
               </p>
               <ol className="space-y-2 text-xs text-muted-foreground">
                 <li>1. Sign in with the account that owns your financial data.</li>
@@ -185,11 +197,20 @@ export function ConnectWizard({
         </motion.div>
 
         <div className="flex items-center justify-between gap-2 pt-2">
-          <Button variant="ghost" size="sm" disabled={step === 0 || busy} onClick={() => setStep((s) => s - 1)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={step === 0 || busy}
+            onClick={() => setStep((s) => s - 1)}
+          >
             <ArrowLeft className="size-4" /> Back
           </Button>
           {step < 2 ? (
-            <Button size="sm" disabled={!provider || (step === 1 && !ready)} onClick={() => setStep((s) => s + 1)}>
+            <Button
+              size="sm"
+              disabled={!provider || (step === 1 && !ready)}
+              onClick={() => setStep((s) => s + 1)}
+            >
               Continue <ArrowRight className="size-4" />
             </Button>
           ) : (

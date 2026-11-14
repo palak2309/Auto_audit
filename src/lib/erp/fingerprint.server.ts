@@ -5,7 +5,9 @@ export function sha256(input: string): string {
 }
 
 function normalizeStr(v: unknown): string {
-  return String(v ?? "").trim().toLowerCase();
+  return String(v ?? "")
+    .trim()
+    .toLowerCase();
 }
 
 function normalizeMoney(v: unknown): string {

@@ -6,9 +6,16 @@ export const Route = createFileRoute("/_shell/contracts")({
   head: () => ({
     meta: [
       { title: "Contracts — AutoAudit" },
-      { name: "description", content: "Contract terms and rate cards compared against what vendors actually bill, once a contract source is connected." },
+      {
+        name: "description",
+        content:
+          "Contract terms and rate cards compared against what vendors actually bill, once a contract source is connected.",
+      },
       { property: "og:title", content: "Contracts — AutoAudit" },
-      { property: "og:description", content: "Contract terms compared against what vendors actually bill." },
+      {
+        property: "og:description",
+        content: "Contract terms compared against what vendors actually bill.",
+      },
     ],
   }),
   component: ContractsPage,

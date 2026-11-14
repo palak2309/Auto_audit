@@ -20,7 +20,9 @@ async function getAdmin() {
 
 export const listCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { search?: string | undefined; hasBalanceOnly?: boolean | undefined }) => input ?? {})
+  .validator(
+    (input?: { search?: string | undefined; hasBalanceOnly?: boolean | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }): Promise<CustomerRow[]> => {
     const admin = await getAdmin();
     let query = admin
@@ -32,7 +34,9 @@ export const listCustomers = createServerFn({ method: "POST" })
 
     if (data.search?.trim()) {
       const term = `%${data.search.trim()}%`;
-      query = query.or(`name.ilike.${term},company_name.ilike.${term},phone.ilike.${term},email.ilike.${term},gstin.ilike.${term}`);
+      query = query.or(
+        `name.ilike.${term},company_name.ilike.${term},phone.ilike.${term},email.ilike.${term},gstin.ilike.${term}`,
+      );
     }
 
     const { data: list, error } = await query;
@@ -67,26 +71,28 @@ export const getCustomer = createServerFn({ method: "POST" })
 
 export const saveCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: {
-    id?: string;
-    name: string;
-    company_name?: string | null;
-    phone?: string | null;
-    email?: string | null;
-    gstin?: string | null;
-    pan?: string | null;
-    billing_address?: string | null;
-    billing_city?: string | null;
-    billing_state?: string | null;
-    billing_pincode?: string | null;
-    shipping_address?: string | null;
-    shipping_city?: string | null;
-    shipping_state?: string | null;
-    shipping_pincode?: string | null;
-    opening_balance?: number;
-    credit_limit?: number;
-    payment_terms_days?: number;
-  }) => input)
+  .validator(
+    (input: {
+      id?: string;
+      name: string;
+      company_name?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      gstin?: string | null;
+      pan?: string | null;
+      billing_address?: string | null;
+      billing_city?: string | null;
+      billing_state?: string | null;
+      billing_pincode?: string | null;
+      shipping_address?: string | null;
+      shipping_city?: string | null;
+      shipping_state?: string | null;
+      shipping_pincode?: string | null;
+      opening_balance?: number;
+      credit_limit?: number;
+      payment_terms_days?: number;
+    }) => input,
+  )
   .handler(async ({ data, context }): Promise<CustomerRow> => {
     const admin = await getAdmin();
     const openingBal = Number(data.opening_balance) || 0;
@@ -190,7 +196,10 @@ export interface LedgerEntry {
 
 export const getCustomerLedger = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: { customerId: string; fromDate?: string | undefined; toDate?: string | undefined }) => input)
+  .validator(
+    (input: { customerId: string; fromDate?: string | undefined; toDate?: string | undefined }) =>
+      input,
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
 
@@ -309,7 +318,9 @@ export const getCustomerLedger = createServerFn({ method: "POST" })
 
 export const listSuppliers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { search?: string | undefined; hasBalanceOnly?: boolean | undefined }) => input ?? {})
+  .validator(
+    (input?: { search?: string | undefined; hasBalanceOnly?: boolean | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }): Promise<SupplierRow[]> => {
     const admin = await getAdmin();
     let query = admin
@@ -321,7 +332,9 @@ export const listSuppliers = createServerFn({ method: "POST" })
 
     if (data.search?.trim()) {
       const term = `%${data.search.trim()}%`;
-      query = query.or(`name.ilike.${term},company_name.ilike.${term},phone.ilike.${term},email.ilike.${term},gstin.ilike.${term}`);
+      query = query.or(
+        `name.ilike.${term},company_name.ilike.${term},phone.ilike.${term},email.ilike.${term},gstin.ilike.${term}`,
+      );
     }
 
     const { data: list, error } = await query;
@@ -356,24 +369,26 @@ export const getSupplier = createServerFn({ method: "POST" })
 
 export const saveSupplier = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: {
-    id?: string;
-    name: string;
-    company_name?: string | null;
-    phone?: string | null;
-    email?: string | null;
-    gstin?: string | null;
-    pan?: string | null;
-    address?: string | null;
-    city?: string | null;
-    state?: string | null;
-    pincode?: string | null;
-    opening_balance?: number;
-    payment_terms_days?: number;
-    bank_name?: string | null;
-    account_number?: string | null;
-    ifsc_code?: string | null;
-  }) => input)
+  .validator(
+    (input: {
+      id?: string;
+      name: string;
+      company_name?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      gstin?: string | null;
+      pan?: string | null;
+      address?: string | null;
+      city?: string | null;
+      state?: string | null;
+      pincode?: string | null;
+      opening_balance?: number;
+      payment_terms_days?: number;
+      bank_name?: string | null;
+      account_number?: string | null;
+      ifsc_code?: string | null;
+    }) => input,
+  )
   .handler(async ({ data, context }): Promise<SupplierRow> => {
     const admin = await getAdmin();
     const openingBal = Number(data.opening_balance) || 0;
@@ -462,7 +477,10 @@ export const deleteSupplier = createServerFn({ method: "POST" })
 
 export const getSupplierLedger = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: { supplierId: string; fromDate?: string | undefined; toDate?: string | undefined }) => input)
+  .validator(
+    (input: { supplierId: string; fromDate?: string | undefined; toDate?: string | undefined }) =>
+      input,
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
 

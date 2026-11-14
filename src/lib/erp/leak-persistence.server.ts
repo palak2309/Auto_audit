@@ -222,7 +222,9 @@ export async function detectAndPersistLeaksForUser(
     db.from("erp_connections").select("id, provider").eq("user_id", userId),
   ]);
 
-  const providerById = new Map((connRes.data ?? []).map((c) => [c.id as string, c.provider as string]));
+  const providerById = new Map(
+    (connRes.data ?? []).map((c) => [c.id as string, c.provider as string]),
+  );
   const syncRuns: SyncRunOption[] = (runsRes.data ?? []).map((r) => ({
     id: r.id as string,
     connectionId: r.connection_id as string,

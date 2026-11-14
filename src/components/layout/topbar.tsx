@@ -109,16 +109,17 @@ export function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
                     Mark all read
                   </button>
                 )}
-                <Link to="/notifications" className="text-xs font-medium text-primary hover:underline">
+                <Link
+                  to="/notifications"
+                  className="text-xs font-medium text-primary hover:underline"
+                >
                   View all
                 </Link>
               </div>
             </div>
             <ul className="max-h-80 divide-y divide-border overflow-y-auto">
               {notifications.length === 0 ? (
-                <li className="p-6 text-center text-xs text-muted-foreground">
-                  No notifications
-                </li>
+                <li className="p-6 text-center text-xs text-muted-foreground">No notifications</li>
               ) : (
                 notifications.slice(0, 6).map((n) => (
                   <li
@@ -130,14 +131,14 @@ export function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        {!n.read && (
-                          <span className="size-1.5 shrink-0 rounded-full bg-primary" />
-                        )}
+                        {!n.read && <span className="size-1.5 shrink-0 rounded-full bg-primary" />}
                         <p className="truncate text-sm font-medium">{n.title}</p>
                       </div>
                       <SeverityBadge severity={n.severity as any} />
                     </div>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{n.description}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      {n.description}
+                    </p>
                     <p className="mt-1 text-[11px] text-muted-foreground">{n.timeFormatted}</p>
                   </li>
                 ))

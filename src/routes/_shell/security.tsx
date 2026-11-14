@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import {
   CheckCircle2,
   Globe,
@@ -12,12 +13,14 @@ import {
   ShieldAlert,
   ShieldCheck,
   Smartphone,
+  Trash2,
 } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusBadge, ToneBadge } from "@/components/common/tone-badge";
 import { Button } from "@/components/ui/button";
 import { useMockAuth } from "@/providers/mock-auth-provider";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteMyAccount } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/_shell/security")({
   head: () => ({
@@ -58,10 +61,14 @@ function getBrowserInfo(): { browser: string; os: string } {
 }
 
 function SecurityPage() {
+  const navigate = useNavigate();
   const { session, user, signOut } = useMockAuth();
   const [factors, setFactors] = useState<any[]>([]);
   const [loadingFactors, setLoadingFactors] = useState(true);
   const [revoking, setRevoking] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteAccountFn = useServerFn(deleteMyAccount);
 
   useEffect(() => {
     async function loadMfa() {
@@ -89,6 +96,24 @@ function SecurityPage() {
       toast.error(err instanceof Error ? err.message : "Failed to revoke sessions");
     } finally {
       setRevoking(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await deleteAccountFn();
+      toast.success("Your account and all associated tenant data have been permanently deleted.");
+      await signOut();
+      void navigate({ to: "/login" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete account");
+      setDeleting(false);
     }
   };
 
@@ -127,9 +152,7 @@ function SecurityPage() {
                 <p className="text-sm font-semibold text-foreground">
                   {browser} on {os}
                 </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Signed in: {lastSignIn}
-                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Signed in: {lastSignIn}</p>
               </div>
               <ToneBadge tone="brand" size="sm">
                 This Device
@@ -214,6 +237,81 @@ function SecurityPage() {
                 {user.role}
               </ToneBadge>
             </div>
+          </div>
+        </section>
+
+        {/* Danger Zone: Account Deletion (GDPR & App Store Compliant) */}
+        <section className="surface-card p-6 space-y-4 border-destructive/30 lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center gap-2">
+              <Trash2 className="size-5 text-destructive" />
+              <div>
+                <h2 className="text-sm font-semibold text-destructive">
+                  Danger Zone: Delete Account
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Permanently purge your account, ERP connections, invoices, bills and audit
+                  history.
+                </p>
+              </div>
+            </div>
+            <ToneBadge tone="danger" size="sm">
+              Irreversible
+            </ToneBadge>
+          </div>
+
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 space-y-3">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              In accordance with Apple App Store and data protection regulations, you can
+              permanently delete your Auto Audit account. All database records (sales invoices,
+              purchase bills, suppliers, customers, and financial leakage logs) belonging to your
+              tenant account will be erased via cascading foreign keys. This action cannot be
+              undone.
+            </p>
+
+            {confirmDelete ? (
+              <div className="space-y-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3.5">
+                <p className="text-xs font-semibold text-destructive">
+                  ⚠️ Are you absolutely certain you want to permanently delete your account and all
+                  financial records?
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={deleting}
+                    onClick={handleDeleteAccount}
+                    className="gap-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <RefreshCw className="size-3.5 animate-spin" />
+                        Deleting Account…
+                      </>
+                    ) : (
+                      "Yes, Delete My Account Permanently"
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={deleting}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => setConfirmDelete(true)}
+              >
+                Delete Account & Purge Data…
+              </Button>
+            )}
           </div>
         </section>
       </div>

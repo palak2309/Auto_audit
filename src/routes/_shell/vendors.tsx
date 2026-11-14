@@ -25,9 +25,16 @@ export const Route = createFileRoute("/_shell/vendors")({
   head: () => ({
     meta: [
       { title: "Vendors — AutoAudit" },
-      { name: "description", content: "Imported vendors and customers with their real spend, open balance and detected findings." },
+      {
+        name: "description",
+        content:
+          "Imported vendors and customers with their real spend, open balance and detected findings.",
+      },
       { property: "og:title", content: "Vendors — AutoAudit" },
-      { property: "og:description", content: "Imported vendors with real spend, balance and findings." },
+      {
+        property: "og:description",
+        content: "Imported vendors with real spend, balance and findings.",
+      },
     ],
   }),
   component: VendorsPage,
@@ -49,29 +56,47 @@ function VendorsPage() {
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{r.name}</p>
-            <p className="truncate text-xs text-muted-foreground">{r.email ?? r.phone ?? "No contact details"}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {r.email ?? r.phone ?? "No contact details"}
+            </p>
           </div>
         </div>
       ),
     },
-    { key: "invoices", header: "Documents", render: (r) => <span className="text-sm tabular-nums">{r.invoices}</span> },
+    {
+      key: "invoices",
+      header: "Documents",
+      render: (r) => <span className="text-sm tabular-nums">{r.invoices}</span>,
+    },
     {
       key: "leaks",
       header: "Findings",
-      render: (r) => <ToneBadge tone={r.leaks > 0 ? "danger" : "success"}>{r.leaks > 0 ? r.leaks : "None"}</ToneBadge>,
+      render: (r) => (
+        <ToneBadge tone={r.leaks > 0 ? "danger" : "success"}>
+          {r.leaks > 0 ? r.leaks : "None"}
+        </ToneBadge>
+      ),
     },
     {
       key: "outstanding",
       header: "Outstanding",
       align: "right",
-      render: (r) => <span className="text-sm tabular-nums">{currencyIn(r.outstanding, code)}</span>,
+      render: (r) => (
+        <span className="text-sm tabular-nums">{currencyIn(r.outstanding, code)}</span>
+      ),
     },
-    { key: "status", header: "Status", render: (r) => <StatusBadge status={String(r.status ?? "active").toLowerCase()} /> },
+    {
+      key: "status",
+      header: "Status",
+      render: (r) => <StatusBadge status={String(r.status ?? "active").toLowerCase()} />,
+    },
     {
       key: "spend",
       header: "Total billed",
       align: "right",
-      render: (r) => <span className="text-sm font-semibold tabular-nums">{currencyIn(r.spend, code)}</span>,
+      render: (r) => (
+        <span className="text-sm font-semibold tabular-nums">{currencyIn(r.spend, code)}</span>
+      ),
     },
   ];
 
@@ -82,7 +107,17 @@ function VendorsPage() {
         description={`${rows.length.toLocaleString()} contacts imported from your connected systems, ranked by billed value.`}
         crumbs={[{ label: "Vendors" }]}
         actions={
-          <Button variant="outline" className="gap-2" disabled={rows.length === 0} onClick={() => downloadCsv("vendors.csv", rows.map((r) => ({ ...r })))}>
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={rows.length === 0}
+            onClick={() =>
+              downloadCsv(
+                "vendors.csv",
+                rows.map((r) => ({ ...r })),
+              )
+            }
+          >
             <Download className="size-4" /> Export
           </Button>
         }

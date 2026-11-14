@@ -26,9 +26,17 @@ export const Route = createFileRoute("/_shell/integrations")({
   head: () => ({
     meta: [
       { title: "Integrations — AutoAudit" },
-      { name: "description", content: "Connect your real accounting and ERP accounts so AutoAudit can analyse live financial data." },
+      {
+        name: "description",
+        content:
+          "Connect your real accounting and ERP accounts so AutoAudit can analyse live financial data.",
+      },
       { property: "og:title", content: "Integrations — AutoAudit" },
-      { property: "og:description", content: "Connect your real accounting and ERP accounts so AutoAudit can analyse live financial data." },
+      {
+        property: "og:description",
+        content:
+          "Connect your real accounting and ERP accounts so AutoAudit can analyse live financial data.",
+      },
     ],
   }),
   validateSearch: (s: Record<string, unknown>) => ({
@@ -57,7 +65,10 @@ function IntegrationsPage() {
   const [customApiOpen, setCustomApiOpen] = useState(false);
   const [activeSync, setActiveSync] = useState<string | null>(null);
 
-  const { data, isLoading } = useQuery({ queryKey: ["erp-status"], queryFn: () => fetchStatus({}) });
+  const { data, isLoading } = useQuery({
+    queryKey: ["erp-status"],
+    queryFn: () => fetchStatus({}),
+  });
 
   const connections = (data?.connections ?? []) as ErpConnectionView[];
   const configured = data?.configured ?? [];
@@ -88,7 +99,9 @@ function IntegrationsPage() {
       return syncFn({ data: { connectionId } });
     },
     onSuccess: (r) => {
-      toast.success(`Imported ${r.invoices} invoices, ${r.payments} payments, ${r.vendors} vendors.`);
+      toast.success(
+        `Imported ${r.invoices} invoices, ${r.payments} payments, ${r.vendors} vendors.`,
+      );
     },
     onError: (e: Error) => toast.error(e.message),
     onSettled: () => {
@@ -153,7 +166,6 @@ function IntegrationsPage() {
           runs={activity.data?.runs ?? []}
         />
 
-
         <SyncTimeline
           runs={activity.data?.runs ?? []}
           connections={connections}
@@ -172,7 +184,11 @@ function IntegrationsPage() {
                     <p className="truncate text-sm font-semibold">{p.name}</p>
                     <p className="text-xs text-muted-foreground">{p.category}</p>
                   </div>
-                  <StatusBadge status={conn ? (conn.status === "error" ? "error" : "connected") : "disconnected"} />
+                  <StatusBadge
+                    status={
+                      conn ? (conn.status === "error" ? "error" : "connected") : "disconnected"
+                    }
+                  />
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">{p.blurb}</p>
 
@@ -183,7 +199,9 @@ function IntegrationsPage() {
                   </div>
                   <div className="flex justify-between gap-2">
                     <dt className="text-muted-foreground">Last sync</dt>
-                    <dd>{conn?.lastSyncAt ? new Date(conn.lastSyncAt).toLocaleString() : "Never"}</dd>
+                    <dd>
+                      {conn?.lastSyncAt ? new Date(conn.lastSyncAt).toLocaleString() : "Never"}
+                    </dd>
                   </div>
                 </dl>
 
@@ -197,7 +215,9 @@ function IntegrationsPage() {
                       disabled={activeSync === conn.id}
                       onClick={() => sync.mutate(conn.id)}
                     >
-                      <RefreshCw className={`size-3.5 ${activeSync === conn.id ? "animate-spin" : ""}`} />
+                      <RefreshCw
+                        className={`size-3.5 ${activeSync === conn.id ? "animate-spin" : ""}`}
+                      />
                       Retry failed sync
                     </Button>
                   </div>
@@ -216,7 +236,12 @@ function IntegrationsPage() {
                     <p className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
                       Add your {p.name} developer app credentials to enable one-click connection.
                     </p>
-                    <Button size="sm" variant="outline" className="w-full" onClick={() => openConfig(p.id)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => openConfig(p.id)}
+                    >
                       <Settings className="size-3.5" /> Configure {p.name}
                     </Button>
                   </div>
@@ -266,7 +291,12 @@ function IntegrationsPage() {
                       >
                         {activeSync === conn.id ? "Syncing…" : "Sync now"}
                       </Button>
-                      <Button size="sm" variant="outline" disabled={remove.isPending} onClick={() => remove.mutate(conn.id)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={remove.isPending}
+                        onClick={() => remove.mutate(conn.id)}
+                      >
                         Disconnect
                       </Button>
                     </>

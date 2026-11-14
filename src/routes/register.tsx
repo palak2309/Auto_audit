@@ -12,9 +12,15 @@ export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
       { title: "Create account — AutoAudit" },
-      { name: "description", content: "Create an AutoAudit workspace account for your finance and audit team." },
+      {
+        name: "description",
+        content: "Create an AutoAudit workspace account for your finance and audit team.",
+      },
       { property: "og:title", content: "Create account — AutoAudit" },
-      { property: "og:description", content: "Create an AutoAudit workspace account for your finance and audit team." },
+      {
+        property: "og:description",
+        content: "Create an AutoAudit workspace account for your finance and audit team.",
+      },
     ],
   }),
   component: RegisterPage,
@@ -91,16 +97,46 @@ function RegisterPage() {
     <AuthLayout
       title="Create your workspace account"
       subtitle="Tell us who you are and we will provision your audit workspace."
-      footer={<>Already onboarded? <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link></>}
+      footer={
+        <>
+          Already onboarded?{" "}
+          <Link to="/login" className="font-medium text-primary hover:underline">
+            Sign in
+          </Link>
+        </>
+      }
     >
       <form onSubmit={submit} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5"><Label htmlFor="first">First name</Label><Input id="first" value={form.first} onChange={set("first")} required /></div>
-          <div className="space-y-1.5"><Label htmlFor="last">Last name</Label><Input id="last" value={form.last} onChange={set("last")} required /></div>
+          <div className="space-y-1.5">
+            <Label htmlFor="first">First name</Label>
+            <Input id="first" value={form.first} onChange={set("first")} required />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="last">Last name</Label>
+            <Input id="last" value={form.last} onChange={set("last")} required />
+          </div>
         </div>
-        <div className="space-y-1.5"><Label htmlFor="cemail">Work email</Label><Input id="cemail" type="email" value={form.email} onChange={set("email")} required /></div>
-        <div className="space-y-1.5"><Label htmlFor="org">Organisation</Label><Input id="org" value={form.org} onChange={set("org")} required /></div>
-        <div className="space-y-1.5"><Label htmlFor="pw">Password</Label><Input id="pw" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={set("password")} required /></div>
+        <div className="space-y-1.5">
+          <Label htmlFor="cemail">Work email</Label>
+          <Input id="cemail" type="email" value={form.email} onChange={set("email")} required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="org">Organisation</Label>
+          <Input id="org" value={form.org} onChange={set("org")} required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="pw">Password</Label>
+          <Input
+            id="pw"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            value={form.password}
+            onChange={set("password")}
+            required
+          />
+        </div>
         <div className="flex items-start gap-2 pt-1">
           <input
             id="terms-consent"
@@ -108,7 +144,10 @@ function RegisterPage() {
             required
             className="mt-1 size-4 rounded border-border text-primary focus:ring-primary"
           />
-          <Label htmlFor="terms-consent" className="text-xs leading-normal font-normal text-muted-foreground">
+          <Label
+            htmlFor="terms-consent"
+            className="text-xs leading-normal font-normal text-muted-foreground"
+          >
             I agree to the{" "}
             <Link to="/terms-and-conditions" target="_blank" className="text-primary underline">
               Terms and Conditions
@@ -120,7 +159,9 @@ function RegisterPage() {
             under the DPDP Act, 2023.
           </Label>
         </div>
-        <Button type="submit" className="w-full" disabled={loading}>{loading ? "Creating…" : "Create account"}</Button>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Creating…" : "Create account"}
+        </Button>
       </form>
     </AuthLayout>
   );

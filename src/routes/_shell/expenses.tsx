@@ -17,7 +17,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listExpenses,
   createExpense,
@@ -32,7 +38,11 @@ export const Route = createFileRoute("/_shell/expenses")({
   head: () => ({
     meta: [
       { title: "Expenses Tracker — Auto Audit" },
-      { name: "description", content: "Track business expenses, overheads, operational costs by category and view spending summaries." },
+      {
+        name: "description",
+        content:
+          "Track business expenses, overheads, operational costs by category and view spending summaries.",
+      },
     ],
   }),
   component: ExpensesPage,
@@ -69,7 +79,8 @@ function ExpensesPage() {
 
   const { data: summary } = useQuery({
     queryKey: ["expenseSummary", fromDate, toDate],
-    queryFn: () => getSummaryFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getSummaryFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
   });
 
   // Form State
@@ -155,7 +166,12 @@ function ExpensesPage() {
         description="Track daily business expenses, utility bills, rent and staff salaries categorized for accounting."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={expenses.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={expenses.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -170,20 +186,33 @@ function ExpensesPage() {
       {/* Category Breakdown & Total Banner */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-4 bg-card rounded-xl border md:col-span-1">
-          <span className="text-xs font-semibold text-muted-foreground uppercase">Total Expenses</span>
-          <p className="text-2xl font-bold font-mono text-rose-600 mt-1">{currencyIn(totalExpenseAmount, "INR")}</p>
+          <span className="text-xs font-semibold text-muted-foreground uppercase">
+            Total Expenses
+          </span>
+          <p className="text-2xl font-bold font-mono text-rose-600 mt-1">
+            {currencyIn(totalExpenseAmount, "INR")}
+          </p>
           <span className="text-xs text-muted-foreground">{expenses.length} expense entries</span>
         </div>
 
         {/* Top 3 categories */}
         {(summary?.breakdown || []).slice(0, 3).map((cat, idx) => (
           <div key={idx} className="p-4 bg-card rounded-xl border">
-            <span className="text-xs font-semibold text-muted-foreground uppercase">{cat.category}</span>
-            <p className="text-xl font-bold font-mono text-foreground mt-1">{currencyIn(cat.amount, "INR")}</p>
+            <span className="text-xs font-semibold text-muted-foreground uppercase">
+              {cat.category}
+            </span>
+            <p className="text-xl font-bold font-mono text-foreground mt-1">
+              {currencyIn(cat.amount, "INR")}
+            </p>
             <div className="w-full bg-muted h-1.5 rounded-full mt-2 overflow-hidden">
-              <div className="bg-primary h-full rounded-full" style={{ width: `${cat.percentage}%` }} />
+              <div
+                className="bg-primary h-full rounded-full"
+                style={{ width: `${cat.percentage}%` }}
+              />
             </div>
-            <span className="text-[11px] text-muted-foreground mt-1 block">{cat.percentage}% of spending</span>
+            <span className="text-[11px] text-muted-foreground mt-1 block">
+              {cat.percentage}% of spending
+            </span>
           </div>
         ))}
       </div>
@@ -255,15 +284,21 @@ function ExpensesPage() {
               ) : (
                 expenses.map((exp) => (
                   <tr key={exp.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4 font-mono font-medium text-foreground">{exp.expense_number}</td>
+                    <td className="py-3 px-4 font-mono font-medium text-foreground">
+                      {exp.expense_number}
+                    </td>
                     <td className="py-3 px-3">
                       <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground">
                         {exp.category}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-xs text-muted-foreground">{dateShort(exp.expense_date)}</td>
+                    <td className="py-3 px-3 text-xs text-muted-foreground">
+                      {dateShort(exp.expense_date)}
+                    </td>
                     <td className="py-3 px-3 text-foreground">{exp.paid_to || "—"}</td>
-                    <td className="py-3 px-3 text-xs capitalize text-muted-foreground">{exp.payment_mode}</td>
+                    <td className="py-3 px-3 text-xs capitalize text-muted-foreground">
+                      {exp.payment_mode}
+                    </td>
                     <td className="py-3 px-3 text-right font-mono font-bold text-rose-600">
                       {currencyIn(exp.amount, "INR")}
                     </td>

@@ -14,10 +14,15 @@ export const Route = createFileRoute("/forgot-password")({
       { title: "Reset password — AutoAudit" },
       { name: "description", content: "Request a password reset link for your AutoAudit account." },
       { property: "og:title", content: "Reset password — AutoAudit" },
-      { property: "og:description", content: "Request a password reset link for your AutoAudit account." },
+      {
+        property: "og:description",
+        content: "Request a password reset link for your AutoAudit account.",
+      },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { email?: string | undefined; mode?: string | undefined } => {
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { email?: string | undefined; mode?: string | undefined } => {
     const res: { email?: string | undefined; mode?: string | undefined } = {};
     if (typeof s["email"] === "string" && s["email"]) res.email = s["email"];
     if (typeof s["mode"] === "string" && s["mode"]) res.mode = s["mode"];

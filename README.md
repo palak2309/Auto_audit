@@ -12,6 +12,7 @@
 ---
 
 ### 🌐 Live Production Application
+
 - 🚀 **Official Vercel Deployment**: [https://auto-audit-nu.vercel.app/](https://auto-audit-nu.vercel.app/)
 - 🔐 **Sign-in / Demo Portal**: [https://auto-audit-nu.vercel.app/login](https://auto-audit-nu.vercel.app/login)
 
@@ -19,7 +20,7 @@
 
 ## 1. Project Overview
 
-**Auto Audit** is a modern, enterprise-ready web platform engineered to detect, audit, and recover organizational financial leakages across accounting and Enterprise Resource Planning (ERP) systems. 
+**Auto Audit** is a modern, enterprise-ready web platform engineered to detect, audit, and recover organizational financial leakages across accounting and Enterprise Resource Planning (ERP) systems.
 
 Modern businesses process thousands of bills, invoices, and payment disbursements across decentralized departments. Without continuous auditing, organizations suffer substantial monetary losses caused by duplicate invoices, erroneous double payments, vendor overpayments, and unapplied credits.
 
@@ -39,24 +40,25 @@ Auto Audit automates the financial audit cycle by ingesting real financial ledge
 
 ## 3. Key Features
 
-| Feature | Description |
-| :--- | :--- |
-| **Unified Financial Control Center** | Live KPI dashboard presenting total invoiced spend, outstanding balances, at-risk leakage capital, and overall financial health score. |
-| **Deterministic Leakage Detection** | Built-in forensic rule engines for duplicate invoices, duplicate payment references, invoice overpayments, and overdue liabilities. |
-| **Durable Leaks Register** | Interactive register to triage findings with multi-criteria filtering (status, severity, type, assignee), full-text search, and CSV export. |
-| **Recovery Center & Kanban Pipeline** | Visual recovery lifecycle tracker to manage vendor claims, record credit notes, and log recovered cash. |
-| **ERP & Accounting Connectors** | OAuth 2.0 connectivity for Xero, QuickBooks Online, and Zoho Books, with automatic synchronization of vendors, invoices, and payments. |
-| **Direct REST Ledger Ingestion** | Secure endpoint (`/api/public/erp/ingest`) allowing legacy ERP and custom accounting software to push JSON ledgers directly. |
-| **Role-Based Access Control (RBAC)** | Fine-grained permission matrix supporting 7 distinct roles (`admin`, `cfo`, `finance_manager`, `accountant`, `procurement_manager`, `auditor`, `viewer`) and 10 operational permissions. |
-| **Team Member Administration** | Workspace member management allowing administrators to invite teammates, assign roles, suspend logins, and monitor activity. |
-| **AI Spend Analytics & Dispute Generation**| Server-side AI models (Google Gemini, Google Vertex AI, or OpenAI) to generate structured leakage assessments and draft formal vendor dispute notices. |
-| **Unified Ledger & Transaction Reports**| Consolidated transactions view combining bills, invoices, and disbursements, with live board-ready CSV report generation. |
+| Feature                                     | Description                                                                                                                                                                              |
+| :------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified Financial Control Center**        | Live KPI dashboard presenting total invoiced spend, outstanding balances, at-risk leakage capital, and overall financial health score.                                                   |
+| **Deterministic Leakage Detection**         | Built-in forensic rule engines for duplicate invoices, duplicate payment references, invoice overpayments, and overdue liabilities.                                                      |
+| **Durable Leaks Register**                  | Interactive register to triage findings with multi-criteria filtering (status, severity, type, assignee), full-text search, and CSV export.                                              |
+| **Recovery Center & Kanban Pipeline**       | Visual recovery lifecycle tracker to manage vendor claims, record credit notes, and log recovered cash.                                                                                  |
+| **ERP & Accounting Connectors**             | OAuth 2.0 connectivity for Xero, QuickBooks Online, and Zoho Books, with automatic synchronization of vendors, invoices, and payments.                                                   |
+| **Direct REST Ledger Ingestion**            | Secure endpoint (`/api/public/erp/ingest`) allowing legacy ERP and custom accounting software to push JSON ledgers directly.                                                             |
+| **Role-Based Access Control (RBAC)**        | Fine-grained permission matrix supporting 7 distinct roles (`admin`, `cfo`, `finance_manager`, `accountant`, `procurement_manager`, `auditor`, `viewer`) and 10 operational permissions. |
+| **Team Member Administration**              | Workspace member management allowing administrators to invite teammates, assign roles, suspend logins, and monitor activity.                                                             |
+| **AI Spend Analytics & Dispute Generation** | Server-side AI models (Google Gemini, Google Vertex AI, or OpenAI) to generate structured leakage assessments and draft formal vendor dispute notices.                                   |
+| **Unified Ledger & Transaction Reports**    | Consolidated transactions view combining bills, invoices, and disbursements, with live board-ready CSV report generation.                                                                |
 
 ---
 
 ## 4. Technologies Used
 
 ### Frontend & Client Framework
+
 - **React 19 (`react` v19.2.0, `react-dom` v19.2.0)**: Modern component architecture utilizing concurrent features and server function bridges.
 - **TypeScript (`typescript` v5.8.3)**: Strict static type safety throughout application routes, database schemas, and data ingestion pipelines.
 - **TanStack Router (`@tanstack/react-router` v1.170.18)**: Type-safe file-based client-side routing.
@@ -68,6 +70,7 @@ Auto Audit automates the financial audit cycle by ingesting real financial ledge
 - **Sonner (`sonner` v2.0.7)**: Notification toasts for user feedback.
 
 ### Backend, Server & Database
+
 - **TanStack Start (`@tanstack/react-start` v1.168.32)**: Full-stack server function runtime supporting type-safe remote procedure calls (`createServerFn`).
 - **Nitro (`nitro` v3.0.260603-beta)**: High-performance universal server engine compiling SSR handlers and API routes.
 - **Vite 8 (`vite` v8.2.1)**: Next-generation fast frontend bundler.
@@ -82,7 +85,7 @@ Auto Audit automates the financial audit cycle by ingesting real financial ledge
 ```mermaid
 flowchart TD
     User([User Browser])
-    
+
     subgraph Frontend["Frontend Layer (React 19 + TanStack Router)"]
         UI[Pages & Modular Components]
         TQ[TanStack Query State Cache]
@@ -127,10 +130,10 @@ flowchart TD
 The backend of Auto Audit is designed around **Server Functions (`createServerFn`)** and **Nitro Server Handlers**, providing distinct architectural benefits:
 
 1. **Zero Secret Leakage**: All database queries utilizing the Supabase Service Role key, external OAuth client secrets, and token decryption routines run exclusively on the server. No credentials ever reach the client bundle.
-2. **Deterministic Rules + AI Layering**: 
-   - *Phase 1*: Fast in-memory algorithmic scans on ingested invoices and payments detect explicit duplicate hashes and threshold overpayments.
-   - *Phase 2*: Findings are idempotently stored into `erp_leaks` using unique `(user_id, fingerprint)` constraints.
-   - *Phase 3*: Optional LLM inference generates executive risk summaries and vendor recovery claim letters.
+2. **Deterministic Rules + AI Layering**:
+   - _Phase 1_: Fast in-memory algorithmic scans on ingested invoices and payments detect explicit duplicate hashes and threshold overpayments.
+   - _Phase 2_: Findings are idempotently stored into `erp_leaks` using unique `(user_id, fingerprint)` constraints.
+   - _Phase 3_: Optional LLM inference generates executive risk summaries and vendor recovery claim letters.
 3. **Atomic Audit Logging**: Status transitions and assignee modifications record append-only rows in `erp_leak_activity` to preserve chain-of-custody for financial auditors.
 4. **Credential Cryptography**: OAuth refresh and access tokens for external accounting systems are encrypted at rest using `AES-256-GCM` before being written to `erp_connections`.
 
@@ -156,27 +159,28 @@ erDiagram
 
 ### Core Database Tables
 
-| Table Name | Description | RLS Policy |
-| :--- | :--- | :--- |
-| `public.profiles` | Stores user profiles (name, email, department, company, status). | Users manage own profile (`auth.uid() = id`); admins manage all. |
-| `public.user_roles` | Associates users with their functional platform role. | Users read own role; admins manage all. |
-| `public.role_permissions` | Defines allowed capabilities per role. | Readable by all authenticated users; edited by admins. |
-| `public.erp_connections` | Holds connected ERP provider details and encrypted credentials. | Strictly scoped to owning user (`auth.uid() = user_id`). |
-| `public.erp_provider_config` | Stores developer OAuth client credentials for Xero/QBO/Zoho. | Server-only (`false` for authenticated); managed via service role. |
-| `public.erp_oauth_states` | Short-lived cryptographic state tokens for OAuth CSRF protection. | Server-only (`false` for authenticated). |
-| `public.erp_vendors` | Ingested supplier directory records with contact info and spend stats. | User-scoped (`auth.uid() = user_id`). |
-| `public.erp_invoices` | Ingested vendor bills and invoices (dates, amounts, status). | User-scoped (`auth.uid() = user_id`). |
-| `public.erp_payments` | Ingested disbursements and payment allocations. | User-scoped (`auth.uid() = user_id`). |
-| `public.erp_sync_runs` | Sync execution history with record count telemetry. | User-scoped (`auth.uid() = user_id`). |
-| `public.erp_leaks` | Durable financial leakage findings with severity and lifecycle status. | User-scoped (`auth.uid() = user_id`). |
-| `public.erp_leak_activity` | Append-only audit log tracking changes, notes, and actions on leaks. | Readable by case owner (`auth.uid() = user_id`). |
-| `public.erp_recovery_cases` | Active recovery claims, stage tracking, and recovered amounts. | User-scoped (`auth.uid() = user_id`). |
+| Table Name                   | Description                                                            | RLS Policy                                                         |
+| :--------------------------- | :--------------------------------------------------------------------- | :----------------------------------------------------------------- |
+| `public.profiles`            | Stores user profiles (name, email, department, company, status).       | Users manage own profile (`auth.uid() = id`); admins manage all.   |
+| `public.user_roles`          | Associates users with their functional platform role.                  | Users read own role; admins manage all.                            |
+| `public.role_permissions`    | Defines allowed capabilities per role.                                 | Readable by all authenticated users; edited by admins.             |
+| `public.erp_connections`     | Holds connected ERP provider details and encrypted credentials.        | Strictly scoped to owning user (`auth.uid() = user_id`).           |
+| `public.erp_provider_config` | Stores developer OAuth client credentials for Xero/QBO/Zoho.           | Server-only (`false` for authenticated); managed via service role. |
+| `public.erp_oauth_states`    | Short-lived cryptographic state tokens for OAuth CSRF protection.      | Server-only (`false` for authenticated).                           |
+| `public.erp_vendors`         | Ingested supplier directory records with contact info and spend stats. | User-scoped (`auth.uid() = user_id`).                              |
+| `public.erp_invoices`        | Ingested vendor bills and invoices (dates, amounts, status).           | User-scoped (`auth.uid() = user_id`).                              |
+| `public.erp_payments`        | Ingested disbursements and payment allocations.                        | User-scoped (`auth.uid() = user_id`).                              |
+| `public.erp_sync_runs`       | Sync execution history with record count telemetry.                    | User-scoped (`auth.uid() = user_id`).                              |
+| `public.erp_leaks`           | Durable financial leakage findings with severity and lifecycle status. | User-scoped (`auth.uid() = user_id`).                              |
+| `public.erp_leak_activity`   | Append-only audit log tracking changes, notes, and actions on leaks.   | Readable by case owner (`auth.uid() = user_id`).                   |
+| `public.erp_recovery_cases`  | Active recovery claims, stage tracking, and recovered amounts.         | User-scoped (`auth.uid() = user_id`).                              |
 
 ---
 
 ## 8. Authentication and Authorization
 
 ### Authentication
+
 - Built on **Supabase Auth** (`@supabase/supabase-js`).
 - Supports email and password authentication with client-side trimming, email formatting validation, and error alert banners.
 - Password recovery flow with secure token exchange (`/forgot-password`).
@@ -184,7 +188,9 @@ erDiagram
 - Global session revocation (`/security`) allowing users to terminate active refresh tokens across all devices simultaneously.
 
 ### Role-Based Authorization
+
 Permissions are enforced at two levels:
+
 1. **Frontend Route & UI Gates**: The `<PermissionGate permission="...">` component conditionally renders controls based on the signed-in user's active permissions.
 2. **Server-Side Enforcement**: Server functions verify session JWTs and evaluate `requirePermission(context, permission)` or `requireAdmin(context)` before modifying any database table.
 
@@ -250,6 +256,7 @@ Auto_audit/
 ## 10. Installation and Setup Instructions
 
 ### Prerequisites
+
 - **Node.js**: `v20.x` or `v22.x` (LTS recommended)
 - **npm**: `v10.x` or higher
 - **Git**
@@ -257,12 +264,14 @@ Auto_audit/
 ### Step-by-Step Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/palak2309/Auto_audit.git
    cd Auto_audit
    ```
 
 2. **Install project dependencies**:
+
    ```bash
    npm install
    ```
@@ -280,19 +289,20 @@ Auto_audit/
 
 The table below describes all environment variables used by Auto Audit. **Never commit actual secret values or keys to source control.**
 
-| Variable Name | Environment | Required | Description | Example Format |
-| :--- | :--- | :---: | :--- | :--- |
-| `VITE_SUPABASE_URL` | Client (Browser) | **Yes** | Your Supabase Project HTTPS URL | `https://xyzproject.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | Client (Browser) | **Yes** | Your Supabase Public / Anon API Key | `eyJhbGciOi...` |
-| `SUPABASE_URL` | Server (Nitro) | **Yes** | Matches your Supabase Project URL | `https://xyzproject.supabase.co` |
-| `SUPABASE_ANON_KEY` | Server (Nitro) | **Yes** | Matches your Supabase Anon Key | `eyJhbGciOi...` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server (Nitro) | **Yes** | Secret Service Role Key (bypasses RLS for admin tasks) | `eyJhbGciOi...` |
-| `ERP_TOKEN_ENCRYPTION_KEY` | Server (Nitro) | **Yes** | 32-byte hex key for AES-256 token encryption | `64 character hex string` |
-| `GEMINI_API_KEY` | Server (Nitro) | Optional | Google Gemini API Key for AI Spend Analytics | `AIzaSy...` |
-| `OPENAI_API_KEY` | Server (Nitro) | Optional | Alternative OpenAI Key for AI Analysis | `sk-proj-...` |
+| Variable Name               | Environment      | Required | Description                                            | Example Format                   |
+| :-------------------------- | :--------------- | :------: | :----------------------------------------------------- | :------------------------------- |
+| `VITE_SUPABASE_URL`         | Client (Browser) | **Yes**  | Your Supabase Project HTTPS URL                        | `https://xyzproject.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY`    | Client (Browser) | **Yes**  | Your Supabase Public / Anon API Key                    | `eyJhbGciOi...`                  |
+| `SUPABASE_URL`              | Server (Nitro)   | **Yes**  | Matches your Supabase Project URL                      | `https://xyzproject.supabase.co` |
+| `SUPABASE_ANON_KEY`         | Server (Nitro)   | **Yes**  | Matches your Supabase Anon Key                         | `eyJhbGciOi...`                  |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server (Nitro)   | **Yes**  | Secret Service Role Key (bypasses RLS for admin tasks) | `eyJhbGciOi...`                  |
+| `ERP_TOKEN_ENCRYPTION_KEY`  | Server (Nitro)   | **Yes**  | 32-byte hex key for AES-256 token encryption           | `64 character hex string`        |
+| `GEMINI_API_KEY`            | Server (Nitro)   | Optional | Google Gemini API Key for AI Spend Analytics           | `AIzaSy...`                      |
+| `OPENAI_API_KEY`            | Server (Nitro)   | Optional | Alternative OpenAI Key for AI Analysis                 | `sk-proj-...`                    |
 
 > **Generating the Encryption Key**:
 > You can generate a random 32-byte hex key by running:
+>
 > ```bash
 > node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 > ```
@@ -308,6 +318,7 @@ npm run dev
 ```
 
 The application will start at:
+
 ```
 http://localhost:3000
 ```
@@ -317,6 +328,7 @@ http://localhost:3000
 ## 13. Build and Deployment Instructions
 
 ### Production Build
+
 To compile the client bundle and server functions for production:
 
 ```bash
@@ -324,10 +336,12 @@ npm run build
 ```
 
 This compiles:
+
 - The optimized client-side SPA assets into `.output/public/`
 - The Nitro server worker and SSR entry points into `.output/server/`
 
 ### Preview Production Build Locally
+
 To test the built artifacts locally before deploying:
 
 ```bash
@@ -335,6 +349,7 @@ npm run preview
 ```
 
 ### Vercel Deployment
+
 1. Import the repository into [Vercel](https://vercel.com).
 2. Set the Framework Preset to **Vite** (or Other).
 3. In **Project Settings &rarr; Environment Variables**, configure:
@@ -390,9 +405,9 @@ npm run preview
 
 ## 18. Contributors
 
-- **Palak Pathan** ([@palak2309](https://github.com/palak2309)) — *Lead Developer & Architect*
+- **Palak Pathan** ([@palak2309](https://github.com/palak2309)) — _Lead Developer & Architect_
 
-*(Additional academic contributors and project guides can be added here upon confirmation).*
+_(Additional academic contributors and project guides can be added here upon confirmation)._
 
 ---
 

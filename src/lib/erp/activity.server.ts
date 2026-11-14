@@ -39,7 +39,9 @@ export async function loadActivity(userId: string): Promise<ActivityPayload> {
   const [runsRes, connRes, inv, pay, ven, con] = await Promise.all([
     db
       .from("erp_sync_runs")
-      .select("id, connection_id, status, started_at, finished_at, invoices_synced, payments_synced, vendors_synced, contracts_synced, error")
+      .select(
+        "id, connection_id, status, started_at, finished_at, invoices_synced, payments_synced, vendors_synced, contracts_synced, error",
+      )
       .eq("user_id", userId)
       .order("started_at", { ascending: false })
       .limit(25),
@@ -50,7 +52,9 @@ export async function loadActivity(userId: string): Promise<ActivityPayload> {
     db.from("erp_contracts").select("connection_id").eq("user_id", userId).limit(5000),
   ]);
 
-  const providerById = new Map((connRes.data ?? []).map((c) => [c.id as string, c.provider as string]));
+  const providerById = new Map(
+    (connRes.data ?? []).map((c) => [c.id as string, c.provider as string]),
+  );
 
   const tally = (rows: Array<{ connection_id: string }> | null) => {
     const m = new Map<string, number>();

@@ -10,42 +10,42 @@ export interface IndianState {
 }
 
 export const INDIAN_STATES: IndianState[] = [
-  { code: 'AN', name: 'Andaman and Nicobar Islands', tin: '35' },
-  { code: 'AP', name: 'Andhra Pradesh', tin: '37' },
-  { code: 'AR', name: 'Arunachal Pradesh', tin: '12' },
-  { code: 'AS', name: 'Assam', tin: '18' },
-  { code: 'BR', name: 'Bihar', tin: '10' },
-  { code: 'CH', name: 'Chandigarh', tin: '04' },
-  { code: 'CT', name: 'Chhattisgarh', tin: '22' },
-  { code: 'DN', name: 'Dadra and Nagar Haveli and Daman and Diu', tin: '26' },
-  { code: 'DL', name: 'Delhi', tin: '07' },
-  { code: 'GA', name: 'Goa', tin: '30' },
-  { code: 'GJ', name: 'Gujarat', tin: '24' },
-  { code: 'HR', name: 'Haryana', tin: '06' },
-  { code: 'HP', name: 'Himachal Pradesh', tin: '02' },
-  { code: 'JK', name: 'Jammu and Kashmir', tin: '01' },
-  { code: 'JH', name: 'Jharkhand', tin: '20' },
-  { code: 'KA', name: 'Karnataka', tin: '29' },
-  { code: 'KL', name: 'Kerala', tin: '32' },
-  { code: 'LA', name: 'Ladakh', tin: '38' },
-  { code: 'LD', name: 'Lakshadweep', tin: '31' },
-  { code: 'MP', name: 'Madhya Pradesh', tin: '23' },
-  { code: 'MH', name: 'Maharashtra', tin: '27' },
-  { code: 'MN', name: 'Manipur', tin: '14' },
-  { code: 'ML', name: 'Meghalaya', tin: '17' },
-  { code: 'MZ', name: 'Mizoram', tin: '15' },
-  { code: 'NL', name: 'Nagaland', tin: '13' },
-  { code: 'OD', name: 'Odisha', tin: '21' },
-  { code: 'PY', name: 'Puducherry', tin: '34' },
-  { code: 'PB', name: 'Punjab', tin: '03' },
-  { code: 'RJ', name: 'Rajasthan', tin: '08' },
-  { code: 'SK', name: 'Sikkim', tin: '11' },
-  { code: 'TN', name: 'Tamil Nadu', tin: '33' },
-  { code: 'TS', name: 'Telangana', tin: '36' },
-  { code: 'TR', name: 'Tripura', tin: '16' },
-  { code: 'UP', name: 'Uttar Pradesh', tin: '09' },
-  { code: 'UK', name: 'Uttarakhand', tin: '05' },
-  { code: 'WB', name: 'West Bengal', tin: '19' },
+  { code: "AN", name: "Andaman and Nicobar Islands", tin: "35" },
+  { code: "AP", name: "Andhra Pradesh", tin: "37" },
+  { code: "AR", name: "Arunachal Pradesh", tin: "12" },
+  { code: "AS", name: "Assam", tin: "18" },
+  { code: "BR", name: "Bihar", tin: "10" },
+  { code: "CH", name: "Chandigarh", tin: "04" },
+  { code: "CT", name: "Chhattisgarh", tin: "22" },
+  { code: "DN", name: "Dadra and Nagar Haveli and Daman and Diu", tin: "26" },
+  { code: "DL", name: "Delhi", tin: "07" },
+  { code: "GA", name: "Goa", tin: "30" },
+  { code: "GJ", name: "Gujarat", tin: "24" },
+  { code: "HR", name: "Haryana", tin: "06" },
+  { code: "HP", name: "Himachal Pradesh", tin: "02" },
+  { code: "JK", name: "Jammu and Kashmir", tin: "01" },
+  { code: "JH", name: "Jharkhand", tin: "20" },
+  { code: "KA", name: "Karnataka", tin: "29" },
+  { code: "KL", name: "Kerala", tin: "32" },
+  { code: "LA", name: "Ladakh", tin: "38" },
+  { code: "LD", name: "Lakshadweep", tin: "31" },
+  { code: "MP", name: "Madhya Pradesh", tin: "23" },
+  { code: "MH", name: "Maharashtra", tin: "27" },
+  { code: "MN", name: "Manipur", tin: "14" },
+  { code: "ML", name: "Meghalaya", tin: "17" },
+  { code: "MZ", name: "Mizoram", tin: "15" },
+  { code: "NL", name: "Nagaland", tin: "13" },
+  { code: "OD", name: "Odisha", tin: "21" },
+  { code: "PY", name: "Puducherry", tin: "34" },
+  { code: "PB", name: "Punjab", tin: "03" },
+  { code: "RJ", name: "Rajasthan", tin: "08" },
+  { code: "SK", name: "Sikkim", tin: "11" },
+  { code: "TN", name: "Tamil Nadu", tin: "33" },
+  { code: "TS", name: "Telangana", tin: "36" },
+  { code: "TR", name: "Tripura", tin: "16" },
+  { code: "UP", name: "Uttar Pradesh", tin: "09" },
+  { code: "UK", name: "Uttarakhand", tin: "05" },
+  { code: "WB", name: "West Bengal", tin: "19" },
 ];
 
 export const STANDARD_GST_RATES = [0, 5, 12, 18, 28] as const;
@@ -82,7 +82,7 @@ export function isInterState(businessState: string, placeOfSupply: string): bool
 export function calculateLineItem(
   item: ItemCalculationInput,
   businessState: string,
-  placeOfSupply: string
+  placeOfSupply: string,
 ): ItemCalculationResult {
   const qty = Math.max(0, Number(item.quantity) || 0);
   const price = Math.max(0, Number(item.unitPrice) || 0);
@@ -141,7 +141,7 @@ export interface DocumentSummaryInput {
   items: Array<ItemCalculationInput>;
   businessState: string;
   placeOfSupply: string;
-  documentDiscountType?: 'percentage' | 'amount' | undefined;
+  documentDiscountType?: "percentage" | "amount" | undefined;
   documentDiscountValue?: number | undefined;
 }
 
@@ -163,7 +163,7 @@ export interface DocumentSummaryResult {
 
 export function calculateDocumentSummary(input: DocumentSummaryInput): DocumentSummaryResult {
   const lineResults = input.items.map((it) =>
-    calculateLineItem(it, input.businessState, input.placeOfSupply)
+    calculateLineItem(it, input.businessState, input.placeOfSupply),
   );
 
   let subtotal = 0;
@@ -187,7 +187,7 @@ export function calculateDocumentSummary(input: DocumentSummaryInput): DocumentS
   let docDiscount = 0;
   const docVal = Number(input.documentDiscountValue) || 0;
   if (docVal > 0) {
-    if (input.documentDiscountType === 'percentage') {
+    if (input.documentDiscountType === "percentage") {
       docDiscount = round2((taxable * Math.min(100, docVal)) / 100);
     } else {
       docDiscount = round2(Math.min(taxable, docVal));
@@ -233,17 +233,36 @@ export function round2(num: number): number {
  * e.g. 15420.50 -> "Rupees Fifteen Thousand Four Hundred Twenty and Fifty Paise Only"
  */
 export function numberToIndianWords(amount: number): string {
-  if (amount === 0) return 'Zero Rupees Only';
+  if (amount === 0) return "Zero Rupees Only";
 
-  const singleDigits = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+  const singleDigits = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
   const twoDigits = [
-    'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
-    'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
   ];
-  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
 
   function convertTwoDigits(n: number): string {
-    if (n === 0) return '';
+    if (n === 0) return "";
     if (n < 10) return singleDigits[n]!;
     if (n < 20) return twoDigits[n - 10]!;
     const t = tens[Math.floor(n / 10)]!;
@@ -254,7 +273,7 @@ export function numberToIndianWords(amount: number): string {
   function convertThreeDigits(n: number): string {
     const h = Math.floor(n / 100);
     const r = n % 100;
-    const hStr = h > 0 ? `${singleDigits[h]} Hundred` : '';
+    const hStr = h > 0 ? `${singleDigits[h]} Hundred` : "";
     const rStr = convertTwoDigits(r);
     if (hStr && rStr) return `${hStr} and ${rStr}`;
     return hStr || rStr;
@@ -289,7 +308,7 @@ export function numberToIndianWords(amount: number): string {
     parts.push(convertThreeDigits(remaining));
   }
 
-  let result = `Rupees ${parts.join(' ').trim()}`;
+  let result = `Rupees ${parts.join(" ").trim()}`;
   if (paise > 0) {
     result += ` and ${convertTwoDigits(paise)} Paise`;
   }

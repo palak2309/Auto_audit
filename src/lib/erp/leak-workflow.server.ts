@@ -7,11 +7,7 @@ type RecoveryCaseRow = Database["public"]["Tables"]["erp_recovery_cases"]["Row"]
 
 export type LeakStatus = "detected" | "investigating" | "recovering" | "recovered" | "dismissed";
 export type RecoveryStage =
-  | "identified"
-  | "vendor_contacted"
-  | "claim_filed"
-  | "credit_issued"
-  | "recovered";
+  "identified" | "vendor_contacted" | "claim_filed" | "credit_issued" | "recovered";
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -224,7 +220,11 @@ export async function updateLeakStatusForUser(
     .single();
 
   if (updateErr || !updatedLeak) {
-    const { data: checkLeak } = await db.from("erp_leaks").select("status").eq("id", leakId).maybeSingle();
+    const { data: checkLeak } = await db
+      .from("erp_leaks")
+      .select("status")
+      .eq("id", leakId)
+      .maybeSingle();
     if (checkLeak && checkLeak.status !== expStatus) {
       throw new Error(
         `Concurrency conflict: Leak status was modified from ${expStatus} to ${checkLeak.status} by another request`,
@@ -261,7 +261,9 @@ export async function updateLeakStatusForUser(
       })
       .eq("id", leakId);
 
-    throw new Error(`Failed to record audit trail: ${auditErr?.message ?? "unknown error"}. Mutation was rolled back.`);
+    throw new Error(
+      `Failed to record audit trail: ${auditErr?.message ?? "unknown error"}. Mutation was rolled back.`,
+    );
   }
 
   return { leak: updatedLeak, activityId: activity.id };
@@ -385,7 +387,9 @@ export async function assignLeakForUser(
       })
       .eq("id", leakId);
 
-    throw new Error(`Failed to record audit trail: ${auditErr?.message ?? "unknown error"}. Assignment was rolled back.`);
+    throw new Error(
+      `Failed to record audit trail: ${auditErr?.message ?? "unknown error"}. Assignment was rolled back.`,
+    );
   }
 
   return { leak: updatedLeak, activityId: activity.id };
@@ -584,7 +588,9 @@ export async function openRecoveryCaseForUser(
 
     if (leakErr || !lk) {
       await db.from("erp_recovery_cases").delete().eq("id", recoveryCase.id);
-      throw new Error(`Failed to transition leak to recovering: ${leakErr?.message ?? "unknown error"}`);
+      throw new Error(
+        `Failed to transition leak to recovering: ${leakErr?.message ?? "unknown error"}`,
+      );
     }
     updatedLeak = lk;
   }
@@ -610,7 +616,9 @@ export async function openRecoveryCaseForUser(
         .update({ status: currentStatus, updated_at: currentLeak.updated_at })
         .eq("id", leakId);
     }
-    throw new Error(`Failed to record audit trail: ${auditErr.message}. Recovery creation rolled back.`);
+    throw new Error(
+      `Failed to record audit trail: ${auditErr.message}. Recovery creation rolled back.`,
+    );
   }
 
   return { recoveryCase, leak: updatedLeak };
@@ -795,7 +803,9 @@ export async function updateRecoveryCaseForUser(
         .eq("id", currentCase.leak_id);
     }
 
-    throw new Error(`Failed to record audit trail: ${auditErr.message}. Recovery update rolled back.`);
+    throw new Error(
+      `Failed to record audit trail: ${auditErr.message}. Recovery update rolled back.`,
+    );
   }
 
   return { recoveryCase: updatedCase, leak: updatedLeak };
@@ -1129,15 +1139,10 @@ export async function listRecoveryCasesForUser(
 /**
  * Returns active workspace members available for assignment.
  */
-export async function listAssignableMembersForUser(
-  _userId: string,
-): Promise<LeakMemberInfo[]> {
+export async function listAssignableMembersForUser(_userId: string): Promise<LeakMemberInfo[]> {
   const db = await admin();
   const [{ data: profiles }, { data: roles }] = await Promise.all([
-    db
-      .from("profiles")
-      .select("id, full_name, email, status")
-      .neq("status", "suspended"),
+    db.from("profiles").select("id, full_name, email, status").neq("status", "suspended"),
     db.from("user_roles").select("user_id, role"),
   ]);
 
@@ -1275,20 +1280,33 @@ export async function generateVendorNoticeForRecoveryCase(
     .limit(1)
     .maybeSingle();
 
-  const claimReference = recoveryCase.claim_reference || `CLM-${recoveryCase.id.slice(0, 8).toUpperCase()}`;
+  const claimReference =
+    recoveryCase.claim_reference || `CLM-${recoveryCase.id.slice(0, 8).toUpperCase()}`;
   const targetAmount = Number(recoveryCase.target_amount) || Number(leak.amount) || 0;
   const currencyCode = recoveryCase.currency || leak.currency || "USD";
   const evidenceObj = (leak.evidence ?? {}) as Record<string, any>;
   const invoices = Array.isArray(evidenceObj["invoices"]) ? evidenceObj["invoices"] : [];
   const payments = Array.isArray(evidenceObj["payments"]) ? evidenceObj["payments"] : [];
 
-  const invoiceSummary = invoices.length > 0
-    ? invoices.map((inv: any) => `Invoice #${inv.invoice_number || inv.external_id || "N/A"} (${inv.issue_date || "date unknown"}, Amount: ${currencyCode} ${inv.amount ?? 0})`).join("; ")
-    : "Multiple cross-referenced transactions";
+  const invoiceSummary =
+    invoices.length > 0
+      ? invoices
+          .map(
+            (inv: any) =>
+              `Invoice #${inv.invoice_number || inv.external_id || "N/A"} (${inv.issue_date || "date unknown"}, Amount: ${currencyCode} ${inv.amount ?? 0})`,
+          )
+          .join("; ")
+      : "Multiple cross-referenced transactions";
 
-  const paymentSummary = payments.length > 0
-    ? payments.map((p: any) => `Payment Ref #${p.reference || p.external_id || "N/A"} (${p.paid_date || "date unknown"}, Amount: ${currencyCode} ${p.amount ?? 0})`).join("; ")
-    : "Disbursement ledger records";
+  const paymentSummary =
+    payments.length > 0
+      ? payments
+          .map(
+            (p: any) =>
+              `Payment Ref #${p.reference || p.external_id || "N/A"} (${p.paid_date || "date unknown"}, Amount: ${currencyCode} ${p.amount ?? 0})`,
+          )
+          .join("; ")
+      : "Disbursement ledger records";
 
   const promptDetails = `
 Vendor Name: ${leak.vendor_name}
@@ -1349,7 +1367,8 @@ AutoAudit Enterprise Platform`;
     const { generateText } = await import("ai");
     const aiResponse = await generateText({
       model: model as any,
-      system: "You are an executive Accounts Payable & Financial Recovery specialist. Draft a professional, highly specific, and legally sound vendor recovery claim notice / dispute letter regarding an overpayment or duplicate billing. Output only two sections clearly labeled SUBJECT: and LETTER:.",
+      system:
+        "You are an executive Accounts Payable & Financial Recovery specialist. Draft a professional, highly specific, and legally sound vendor recovery claim notice / dispute letter regarding an overpayment or duplicate billing. Output only two sections clearly labeled SUBJECT: and LETTER:.",
       prompt: `Draft a formal vendor dispute letter based on this forensic audit record:\n${promptDetails}`,
     });
 

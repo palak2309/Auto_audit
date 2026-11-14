@@ -160,12 +160,7 @@ function EvidenceTable({
   );
 }
 
-export function LeakActionDrawer({
-  leakId,
-  open,
-  onOpenChange,
-  onMutated,
-}: LeakActionDrawerProps) {
+export function LeakActionDrawer({ leakId, open, onOpenChange, onMutated }: LeakActionDrawerProps) {
   const queryClient = useQueryClient();
   const { can } = useMockAuth();
 
@@ -441,12 +436,10 @@ export function LeakActionDrawer({
                   <SeverityBadge severity={leak.severity} />
                   <StatusBadge status={leak.status} />
                 </div>
-                <SheetTitle className="mt-2 text-left text-xl font-bold">
-                  {leak.title}
-                </SheetTitle>
+                <SheetTitle className="mt-2 text-left text-xl font-bold">{leak.title}</SheetTitle>
                 <SheetDescription className="text-left text-xs text-muted-foreground">
-                  Vendor: <span className="font-semibold text-foreground">{leak.vendor_name}</span> ·
-                  Detected: {formatDate(leak.detected_at)}
+                  Vendor: <span className="font-semibold text-foreground">{leak.vendor_name}</span>{" "}
+                  · Detected: {formatDate(leak.detected_at)}
                   {leak.source ? ` · Source: ${leak.source}` : ""}
                 </SheetDescription>
 
@@ -492,9 +485,7 @@ export function LeakActionDrawer({
                     disabled={!recoveryCase && leak.status !== "recovering"}
                   >
                     <ShieldCheck className="size-3.5" /> Recovery
-                    {recoveryCase && (
-                      <span className="ml-1 size-1.5 rounded-full bg-primary" />
-                    )}
+                    {recoveryCase && <span className="ml-1 size-1.5 rounded-full bg-primary" />}
                   </TabsTrigger>
                   <TabsTrigger value="activity" className="gap-1.5 text-xs">
                     <History className="size-3.5" /> Audit History
@@ -514,10 +505,12 @@ export function LeakActionDrawer({
                           <StatusBadge status={leak.status} />
                           <span className="text-xs text-muted-foreground">
                             {leak.status === "detected" && "Awaiting triage and investigation."}
-                            {leak.status === "investigating" && "Under active investigation by team."}
+                            {leak.status === "investigating" &&
+                              "Under active investigation by team."}
                             {leak.status === "recovering" && "Recovery claim active with vendor."}
                             {leak.status === "recovered" && "Successfully recovered and resolved."}
-                            {leak.status === "dismissed" && "Dismissed as false positive or approved exception."}
+                            {leak.status === "dismissed" &&
+                              "Dismissed as false positive or approved exception."}
                           </span>
                         </div>
                       </div>
@@ -597,7 +590,9 @@ export function LeakActionDrawer({
                     {/* Resolution details for resolved leaks */}
                     {(leak.status === "recovered" || leak.status === "dismissed") && (
                       <div className="mt-4 rounded-lg bg-muted/40 p-3 text-xs">
-                        <span className="font-semibold text-muted-foreground">Resolution notes: </span>
+                        <span className="font-semibold text-muted-foreground">
+                          Resolution notes:{" "}
+                        </span>
                         <span>{leak.resolution_notes || "No notes recorded"}</span>
                         {leak.resolved_at && (
                           <p className="mt-1 text-[11px] text-muted-foreground">
@@ -693,7 +688,9 @@ export function LeakActionDrawer({
                       <TrendingDown className="size-4 text-primary" /> Detection Rationale
                     </h4>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                      {leak.evidence && typeof leak.evidence === "object" && "detail" in leak.evidence
+                      {leak.evidence &&
+                      typeof leak.evidence === "object" &&
+                      "detail" in leak.evidence
                         ? String((leak.evidence as any).detail)
                         : `Rule-based finding flagged by AutoAudit detection engine. Category: ${leak.type}.`}
                     </p>
@@ -777,8 +774,13 @@ export function LeakActionDrawer({
                           <div className="flex justify-between text-xs">
                             <span className="text-muted-foreground">Cash Recovered</span>
                             <span className="font-semibold tabular-nums">
-                              {formatMoney(Number(recoveryCase.recovered_amount) || 0, leak.currency)} of{" "}
-                              {formatMoney(Number(recoveryCase.target_amount) || 0, leak.currency)} (
+                              {formatMoney(
+                                Number(recoveryCase.recovered_amount) || 0,
+                                leak.currency,
+                              )}{" "}
+                              of{" "}
+                              {formatMoney(Number(recoveryCase.target_amount) || 0, leak.currency)}{" "}
+                              (
                               {Number(recoveryCase.target_amount) > 0
                                 ? Math.round(
                                     ((Number(recoveryCase.recovered_amount) || 0) /
@@ -815,7 +817,10 @@ export function LeakActionDrawer({
                           <div>
                             <span className="text-[11px] text-muted-foreground">Recovered</span>
                             <p className="text-base font-semibold tabular-nums text-success">
-                              {formatMoney(Number(recoveryCase.recovered_amount) || 0, leak.currency)}
+                              {formatMoney(
+                                Number(recoveryCase.recovered_amount) || 0,
+                                leak.currency,
+                              )}
                             </p>
                           </div>
                           <div>
@@ -887,7 +892,8 @@ export function LeakActionDrawer({
                       <ShieldCheck className="mx-auto size-8 text-muted-foreground" />
                       <h4 className="mt-2 text-sm font-semibold">No recovery claim opened yet</h4>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Move the leak to Investigation and click "Open Recovery Claim" to begin formal recovery.
+                        Move the leak to Investigation and click "Open Recovery Claim" to begin
+                        formal recovery.
                       </p>
                       {leak.status === "investigating" && can("recover") && (
                         <Button
@@ -912,7 +918,8 @@ export function LeakActionDrawer({
                       <History className="size-3.5" /> Immutable Audit Log
                     </h4>
                     <p className="text-[11px] text-muted-foreground">
-                      Append-only event log protected by database triggers. Cannot be edited or deleted.
+                      Append-only event log protected by database triggers. Cannot be edited or
+                      deleted.
                     </p>
                   </div>
 
@@ -948,7 +955,10 @@ export function LeakActionDrawer({
                                 {act.action === "status_changed" && (
                                   <>
                                     Changed status from{" "}
-                                    <span className="capitalize">{String(meta["from_status"] ?? "—")}</span> to{" "}
+                                    <span className="capitalize">
+                                      {String(meta["from_status"] ?? "—")}
+                                    </span>{" "}
+                                    to{" "}
                                     <span className="font-semibold capitalize text-primary">
                                       {String(meta["to_status"] ?? "—")}
                                     </span>
@@ -987,12 +997,14 @@ export function LeakActionDrawer({
                               )}
                               {Boolean(meta["target_amount"]) && (
                                 <p className="mt-1 text-[11px] text-muted-foreground">
-                                  Target claim: {formatMoney(Number(meta["target_amount"]), leak.currency)}
+                                  Target claim:{" "}
+                                  {formatMoney(Number(meta["target_amount"]), leak.currency)}
                                 </p>
                               )}
                               {Boolean(meta["recovered_amount"]) && (
                                 <p className="mt-1 text-[11px] text-success">
-                                  Recovered amount: {formatMoney(Number(meta["recovered_amount"]), leak.currency)}
+                                  Recovered amount:{" "}
+                                  {formatMoney(Number(meta["recovered_amount"]), leak.currency)}
                                 </p>
                               )}
                             </div>
@@ -1014,8 +1026,8 @@ export function LeakActionDrawer({
           <DialogHeader>
             <DialogTitle>Dismiss Leak Finding</DialogTitle>
             <DialogDescription>
-              Dismissing marks this leak finding as an approved business exception or false positive.
-              An immutable audit log entry will record your action.
+              Dismissing marks this leak finding as an approved business exception or false
+              positive. An immutable audit log entry will record your action.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
@@ -1060,7 +1072,8 @@ export function LeakActionDrawer({
               <ShieldCheck className="size-5 text-primary" /> Open Recovery Claim
             </DialogTitle>
             <DialogDescription>
-              Create a durable financial recovery case to track reclaiming overbilled cash or vendor credits.
+              Create a durable financial recovery case to track reclaiming overbilled cash or vendor
+              credits.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">

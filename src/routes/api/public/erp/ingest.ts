@@ -53,8 +53,9 @@ export const Route = createFileRoute("/api/public/erp/ingest")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const authHeader = request.headers.get("authorization") || request.headers.get("x-api-key") || "";
-          const apiKey = authHeader.replace(/^Bearer\s+/i, "").trim();
+          const authHeader =
+            request.headers.get("authorization") || request.headers.get("x-api-key") || "";
+          const headerKey = authHeader.replace(/^Bearer\s+/i, "").trim();
 
           const json = await request.json().catch(() => ({}));
           const parsed = IngestPayloadSchema.safeParse(json);
@@ -69,23 +70,40 @@ export const Route = createFileRoute("/api/public/erp/ingest")({
             );
           }
 
+          const apiKey = headerKey || (parsed.data.apiKey ? parsed.data.apiKey.trim() : "");
+          if (!apiKey) {
+            return new Response(
+              JSON.stringify({
+                error: "Unauthorized",
+                message:
+                  "A valid Bearer token or tenant API key is required to ingest ERP records.",
+              }),
+              { status: 401, headers: { "Content-Type": "application/json" } },
+            );
+          }
+
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-          // Resolve tenant user:
-          // 1. If an API key is provided, match against connection or profiles
-          // 2. Otherwise default to primary administrator
-          let targetUserId = "6da40485-c78c-458f-9f9d-7d76e9b3137d";
-
-          if (apiKey && apiKey.length > 20) {
-            // Check if it's a Supabase token
-            try {
-              const { data: authData } = await supabaseAdmin.auth.getUser(apiKey);
-              if (authData?.user?.id) {
-                targetUserId = authData.user.id;
-              }
-            } catch {
-              // Ignore token decode failure and use workspace default
+          // Cryptographically verify caller token against Supabase Auth:
+          let targetUserId: string | null = null;
+          try {
+            const { data: authData, error: authErr } = await supabaseAdmin.auth.getUser(apiKey);
+            if (!authErr && authData?.user?.id) {
+              targetUserId = authData.user.id;
             }
+          } catch {
+            // Token verification failed
+          }
+
+          // Strict fail-closed: Reject unauthorized requests immediately
+          if (!targetUserId) {
+            return new Response(
+              JSON.stringify({
+                error: "Unauthorized",
+                message: "Invalid or expired authentication credentials. Access denied.",
+              }),
+              { status: 401, headers: { "Content-Type": "application/json" } },
+            );
           }
 
           // Ensure an active ERP connection exists for "custom_api"
@@ -213,7 +231,8 @@ export const Route = createFileRoute("/api/public/erp/ingest")({
           }
 
           // Execute automated audit leak detection & persistence immediately
-          const { detectAndPersistLeaksForUser } = await import("@/lib/erp/leak-persistence.server");
+          const { detectAndPersistLeaksForUser } =
+            await import("@/lib/erp/leak-persistence.server");
           const auditResult = await detectAndPersistLeaksForUser(targetUserId);
 
           return new Response(

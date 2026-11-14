@@ -30,8 +30,8 @@ export function PermissionGate({
         </div>
         <h1 className="mt-4 text-lg font-semibold">You don't have access to this page</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your role ({role.replace(/_/g, " ")}) is missing the “{permission.replace(/_/g, " ")}” permission. Ask
-          an administrator of this workspace to grant it.
+          Your role ({role.replace(/_/g, " ")}) is missing the “{permission.replace(/_/g, " ")}”
+          permission. Ask an administrator of this workspace to grant it.
         </p>
         <Button asChild className="mt-5">
           <Link to="/">Back to dashboard</Link>

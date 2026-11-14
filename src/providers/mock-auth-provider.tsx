@@ -1,10 +1,17 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyAccess, type AppPermission, type AppRole } from "@/lib/admin.functions";
-import { currentUser } from "@/data/mock";
 import type { AppUser, RoleId } from "@/types";
 
 export interface WorkspaceInfo {
@@ -59,24 +66,28 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
       try {
         return await fetchAccess();
       } catch (err: any) {
-        console.warn("[Auth] Failed to load permissions from Supabase, using mock admin fallback:", err?.message);
+        console.error(
+          "[Auth] Failed to load permissions from server. Failing closed:",
+          err?.message,
+        );
         if (err?.message?.includes("Invalid API key") || err?.message?.includes("Unauthorized")) {
           void supabase.auth.signOut().catch(() => {});
         }
+        // FAIL CLOSED: Never grant admin or write permissions on error
         return {
-          userId: currentUser.id,
-          role: "admin" as AppRole,
-          permissions: [
-            "view", "create", "edit", "delete", "approve", "recover",
-            "manage_users", "manage_roles", "export", "configure"
-          ] as AppPermission[],
+          userId: session?.user?.id ?? "unauthenticated",
+          role: "viewer" as AppRole,
+          permissions: [] as AppPermission[],
           profile: {
-            full_name: currentUser.name,
+            full_name:
+              (session?.user?.user_metadata?.["full_name"] as string | undefined) ??
+              session?.user?.email?.split("@")[0] ??
+              "Viewer",
             company: "AutoAudit Workspace",
-            department: currentUser.department,
-            job_title: "Administrator",
+            department: "General",
+            job_title: "Viewer",
             status: "active",
-            email: currentUser.email,
+            email: session?.user?.email ?? "",
           },
         };
       }
@@ -98,9 +109,11 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(() => {
     const access = accessQuery.data;
     const meta = (session?.user.user_metadata ?? {}) as Record<string, string | undefined>;
-    const email = access?.profile?.email ?? session?.user.email ?? currentUser.email;
-    const name =
-      access?.profile?.full_name ?? meta["full_name"] ?? (session ? email.split("@")[0]! : currentUser.name);
+    const userEmail = access?.profile?.email ?? session?.user?.email ?? "";
+    const userName =
+      access?.profile?.full_name ??
+      meta["full_name"] ??
+      (userEmail ? userEmail.split("@")[0]! : "Guest");
     const role = (access?.role ?? "viewer") as AppRole;
     const permissions = (access?.permissions ?? []) as AppPermission[];
     const company = access?.profile?.company ?? meta["company"] ?? "AutoAudit Workspace";
@@ -113,18 +126,21 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
 
     return {
       user: {
-        ...currentUser,
-        id: access?.userId ?? currentUser.id,
+        id: access?.userId ?? session?.user?.id ?? "anonymous",
         role: role as RoleId,
-        name,
-        email,
-        department: access?.profile?.department ?? currentUser.department,
+        name: userName,
+        email: userEmail,
+        department: access?.profile?.department ?? "Finance",
         status: (access?.profile?.status ?? "active") as AppUser["status"],
-        initials: name
-          .split(/\s+/)
-          .slice(0, 2)
-          .map((p) => p[0]?.toUpperCase() ?? "")
-          .join(""),
+        initials:
+          userName
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((p) => p[0]?.toUpperCase() ?? "")
+            .join("") || "U",
+        phone: "+91 98765 43210",
+        location: "Mumbai, India",
+        lastActive: "Now",
       },
       role: role as RoleId,
       permissions,
@@ -140,7 +156,15 @@ export function MockAuthProvider({ children }: { children: ReactNode }) {
       loadingSession,
       signOut,
     };
-  }, [accessQuery.data, accessQuery.isLoading, refreshAccess, workspaceId, session, loadingSession, signOut]);
+  }, [
+    accessQuery.data,
+    accessQuery.isLoading,
+    refreshAccess,
+    workspaceId,
+    session,
+    loadingSession,
+    signOut,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

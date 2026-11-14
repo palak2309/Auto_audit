@@ -9,15 +9,23 @@ async function getAdmin() {
 
 export const getSalesReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined; customerId?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: {
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      customerId?: string | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("sales_invoices")
-      .select(`
+      .select(
+        `
         *,
         customer:customers(id, name, gstin)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .eq("document_type", "tax_invoice")
       .neq("status", "cancelled")
@@ -66,15 +74,23 @@ export const getSalesReport = createServerFn({ method: "POST" })
 
 export const getPurchaseReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined; supplierId?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: {
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      supplierId?: string | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("purchase_bills")
-      .select(`
+      .select(
+        `
         *,
         supplier:suppliers(id, name, gstin)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .eq("document_type", "bill")
       .neq("status", "cancelled")
@@ -123,15 +139,19 @@ export const getPurchaseReport = createServerFn({ method: "POST" })
 
 export const getGstr1Report = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("sales_invoices")
-      .select(`
+      .select(
+        `
         *,
         customer:customers(id, name, gstin, billing_state)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .eq("document_type", "tax_invoice")
       .neq("status", "cancelled");
@@ -143,9 +163,10 @@ export const getGstr1Report = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     const invoiceIds = (invoices ?? []).map((i) => i.id);
-    const { data: allItems } = invoiceIds.length > 0
-      ? await admin.from("sales_invoice_items").select("*").in("invoice_id", invoiceIds)
-      : { data: [] };
+    const { data: allItems } =
+      invoiceIds.length > 0
+        ? await admin.from("sales_invoice_items").select("*").in("invoice_id", invoiceIds)
+        : { data: [] };
 
     const itemsByInvoiceId: Record<string, any[]> = {};
     for (const it of allItems ?? []) {
@@ -155,8 +176,23 @@ export const getGstr1Report = createServerFn({ method: "POST" })
 
     const b2bInvoices: any[] = [];
     const b2cInvoices: any[] = [];
-    const hsnMap: Record<string, { hsn: string; description: string; qty: number; taxable: number; tax: number; cgst: number; sgst: number; igst: number }> = {};
-    const rateMap: Record<number, { rate: number; taxable: number; cgst: number; sgst: number; igst: number; totalTax: number }> = {};
+    const hsnMap: Record<
+      string,
+      {
+        hsn: string;
+        description: string;
+        qty: number;
+        taxable: number;
+        tax: number;
+        cgst: number;
+        sgst: number;
+        igst: number;
+      }
+    > = {};
+    const rateMap: Record<
+      number,
+      { rate: number; taxable: number; cgst: number; sgst: number; igst: number; totalTax: number }
+    > = {};
 
     for (const inv of invoices ?? []) {
       const gstin = (inv.customer as any)?.gstin?.trim();
@@ -216,7 +252,9 @@ export const getGstr1Report = createServerFn({ method: "POST" })
 
 export const getGstr3bSummary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
 
@@ -304,10 +342,12 @@ export const getStockValuationReport = createServerFn({ method: "GET" })
     const admin = await getAdmin();
     const { data: products, error } = await admin
       .from("products")
-      .select(`
+      .select(
+        `
         *,
         category:product_categories(name)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .eq("status", "active")
       .order("name", { ascending: true });
@@ -352,7 +392,9 @@ export const getStockValuationReport = createServerFn({ method: "GET" })
 
 export const getProfitAndLossReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
 
@@ -382,16 +424,16 @@ export const getProfitAndLossReport = createServerFn({ method: "POST" })
     if (data.toDate) purchaseQuery = purchaseQuery.lte("bill_date", data.toDate);
 
     const { data: purchases } = await purchaseQuery;
-    const totalCostOfGoods = (purchases ?? []).reduce((a, b) => a + (Number(b.taxable_amount) || 0), 0);
+    const totalCostOfGoods = (purchases ?? []).reduce(
+      (a, b) => a + (Number(b.taxable_amount) || 0),
+      0,
+    );
 
     // Gross Profit
     const grossProfit = totalRevenue - totalCostOfGoods;
 
     // 3. Operating Expenses
-    let expQuery = admin
-      .from("expenses")
-      .select("category, amount")
-      .eq("user_id", context.userId);
+    let expQuery = admin.from("expenses").select("category, amount").eq("user_id", context.userId);
 
     if (data.fromDate) expQuery = expQuery.gte("expense_date", data.fromDate);
     if (data.toDate) expQuery = expQuery.lte("expense_date", data.toDate);

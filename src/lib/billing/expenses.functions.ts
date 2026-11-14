@@ -27,13 +27,15 @@ export const EXPENSE_CATEGORIES = [
 
 export const listExpenses = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: {
-    category?: string | undefined;
-    fromDate?: string | undefined;
-    toDate?: string | undefined;
-    search?: string | undefined;
-    limit?: number | undefined;
-  }) => input ?? {})
+  .validator(
+    (input?: {
+      category?: string | undefined;
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      search?: string | undefined;
+      limit?: number | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }): Promise<ExpenseRow[]> => {
     const admin = await getAdmin();
     let query = admin
@@ -73,16 +75,18 @@ export const listExpenses = createServerFn({ method: "POST" })
 
 export const createExpense = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: {
-    expenseDate?: string;
-    category: string;
-    amount: number;
-    paymentMode?: string;
-    paidTo?: string | null;
-    referenceNumber?: string | null;
-    notes?: string | null;
-    receiptUrl?: string | null;
-  }) => input)
+  .validator(
+    (input: {
+      expenseDate?: string;
+      category: string;
+      amount: number;
+      paymentMode?: string;
+      paidTo?: string | null;
+      referenceNumber?: string | null;
+      notes?: string | null;
+      receiptUrl?: string | null;
+    }) => input,
+  )
   .handler(async ({ data, context }): Promise<ExpenseRow> => {
     const admin = await getAdmin();
     const amt = Number(data.amount) || 0;
@@ -137,13 +141,12 @@ export const deleteExpense = createServerFn({ method: "POST" })
 
 export const getExpenseSummary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {})
+  .validator(
+    (input?: { fromDate?: string | undefined; toDate?: string | undefined }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
-    let query = admin
-      .from("expenses")
-      .select("category, amount")
-      .eq("user_id", context.userId);
+    let query = admin.from("expenses").select("category, amount").eq("user_id", context.userId);
 
     if (data.fromDate) query = query.gte("expense_date", data.fromDate);
     if (data.toDate) query = query.lte("expense_date", data.toDate);
@@ -160,11 +163,13 @@ export const getExpenseSummary = createServerFn({ method: "POST" })
       total += amt;
     }
 
-    const breakdown = Object.entries(categoriesMap).map(([category, amount]) => ({
-      category,
-      amount,
-      percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
-    })).sort((a, b) => b.amount - a.amount);
+    const breakdown = Object.entries(categoriesMap)
+      .map(([category, amount]) => ({
+        category,
+        amount,
+        percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.amount - a.amount);
 
     return { total, breakdown };
   });

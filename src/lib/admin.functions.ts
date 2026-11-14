@@ -117,7 +117,9 @@ export const getMyAccess = createServerFn({ method: "GET" })
 export const getPermissionMatrix = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.from("role_permissions").select("role, permission");
+    const { data, error } = await context.supabase
+      .from("role_permissions")
+      .select("role, permission");
     if (error) throw new Error(error.message);
     return (data ?? []) as { role: AppRole; permission: AppPermission }[];
   });
@@ -132,7 +134,10 @@ export const setRolePermission = createServerFn({ method: "POST" })
     if (data.enabled) {
       const { error } = await supabaseAdmin
         .from("role_permissions")
-        .upsert({ role: data.role, permission: data.permission }, { onConflict: "role,permission" });
+        .upsert(
+          { role: data.role, permission: data.permission },
+          { onConflict: "role,permission" },
+        );
       if (error) throw new Error(error.message);
     } else {
       const { error } = await supabaseAdmin
@@ -152,15 +157,18 @@ export const listMembers = createServerFn({ method: "GET" })
     await requireAdmin(context as unknown as Ctx);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const [{ data: authUsers, error: authErr }, { data: profiles }, { data: roles }] = await Promise.all([
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-      supabaseAdmin.from("profiles").select("*"),
-      supabaseAdmin.from("user_roles").select("user_id, role"),
-    ]);
+    const [{ data: authUsers, error: authErr }, { data: profiles }, { data: roles }] =
+      await Promise.all([
+        supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+        supabaseAdmin.from("profiles").select("*"),
+        supabaseAdmin.from("user_roles").select("user_id, role"),
+      ]);
     if (authErr) throw new Error(authErr.message);
 
     const profileMap = new Map((profiles ?? []).map((p: any) => [p.id as string, p]));
-    const roleMap = new Map((roles ?? []).map((r: any) => [r.user_id as string, r.role as AppRole]));
+    const roleMap = new Map(
+      (roles ?? []).map((r: any) => [r.user_id as string, r.role as AppRole]),
+    );
 
     const members: Member[] = (authUsers?.users ?? []).map((u) => {
       const p: any = profileMap.get(u.id) ?? {};
@@ -193,11 +201,14 @@ export const setMemberRole = createServerFn({ method: "POST" })
         .from("user_roles")
         .select("id", { count: "exact", head: true })
         .eq("role", "admin");
-      if ((count ?? 0) <= 1) throw new Error("You are the last admin — promote someone else first.");
+      if ((count ?? 0) <= 1)
+        throw new Error("You are the last admin — promote someone else first.");
     }
 
     await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
-    const { error } = await supabaseAdmin.from("user_roles").insert({ user_id: data.userId, role: data.role });
+    const { error } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: data.userId, role: data.role });
     if (error) throw new Error(error.message);
     return { ok: true };
   });

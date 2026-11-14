@@ -27,7 +27,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   APP_ROLES,
   inviteMember,
@@ -98,7 +104,8 @@ function UsersPage() {
     onError: (e: Error) => toast.error(e.message),
   });
   const statusMutation = useMutation({
-    mutationFn: (vars: { userId: string; status: "active" | "suspended" }) => setStatusFn({ data: vars }),
+    mutationFn: (vars: { userId: string; status: "active" | "suspended" }) =>
+      setStatusFn({ data: vars }),
     onSuccess: () => {
       toast.success("Access updated");
       void invalidate();
@@ -113,7 +120,6 @@ function UsersPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
-
 
   const members = (membersQuery.data ?? []).filter((m) => {
     const q = query.trim().toLowerCase();
@@ -156,7 +162,9 @@ function UsersPage() {
           </p>
         )}
         {!membersQuery.isLoading && members.length === 0 && (
-          <p className="p-10 text-center text-sm text-muted-foreground">No members match that search.</p>
+          <p className="p-10 text-center text-sm text-muted-foreground">
+            No members match that search.
+          </p>
         )}
         {members.map((m) => (
           <div key={m.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
@@ -169,7 +177,9 @@ function UsersPage() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">
                   {m.fullName ?? m.email}
-                  {m.id === user.id && <span className="ml-2 text-xs text-muted-foreground">(you)</span>}
+                  {m.id === user.id && (
+                    <span className="ml-2 text-xs text-muted-foreground">(you)</span>
+                  )}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
                   {m.email}
@@ -180,7 +190,9 @@ function UsersPage() {
             <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
               <Select
                 value={m.role}
-                onValueChange={(role) => roleMutation.mutate({ userId: m.id, role: role as AppRole })}
+                onValueChange={(role) =>
+                  roleMutation.mutate({ userId: m.id, role: role as AppRole })
+                }
               >
                 <SelectTrigger className="h-8 w-[180px] text-xs">
                   <SelectValue />
@@ -256,7 +268,10 @@ function InviteDialog({
   const [department, setDepartment] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<AppRole>("viewer");
-  const [created, setCreated] = useState<{ email: string; temporaryPassword: string | null } | null>(null);
+  const [created, setCreated] = useState<{
+    email: string;
+    temporaryPassword: string | null;
+  } | null>(null);
 
   const inviteFn = useServerFn(inviteMember);
   const mutation = useMutation({
@@ -269,7 +284,6 @@ function InviteDialog({
     }) => inviteFn({ data: vars }),
 
     onSuccess: (res) => {
-
       setCreated({ email: res.email, temporaryPassword: res.temporaryPassword ?? null });
       setEmail("");
       setFullName("");
@@ -292,7 +306,8 @@ function InviteDialog({
         <DialogHeader>
           <DialogTitle>Add a user</DialogTitle>
           <DialogDescription>
-            Creates an account in this workspace with the role you choose. Share the sign-in details with them.
+            Creates an account in this workspace with the role you choose. Share the sign-in details
+            with them.
           </DialogDescription>
         </DialogHeader>
 
@@ -326,11 +341,19 @@ function InviteDialog({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="invite-name">Full name</Label>
-                <Input id="invite-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                <Input
+                  id="invite-name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="invite-dept">Department</Label>
-                <Input id="invite-dept" value={department} onChange={(e) => setDepartment(e.target.value)} />
+                <Input
+                  id="invite-dept"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                />
               </div>
             </div>
             <div className="space-y-1.5">

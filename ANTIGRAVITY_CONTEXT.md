@@ -2,11 +2,12 @@
 
 > **Status:** Audited & Cleaned  
 > **Source of Truth:** Workspace Source Code  
-> **Last Updated:** 2026-11-02  
+> **Last Updated:** 2026-11-02
 
 ---
 
 ## 1. Project Purpose
+
 **AutoAudit** is an AI-powered Financial Leakage Detection and Spend Analytics platform. It ingests accounting and ERP data (bills, invoices, payments, vendor master data) via OAuth or direct sync, runs deterministic rule engines (duplicate invoice, duplicate payment, overpayment, overdue liabilities), and layers authenticated AI reasoning (Google Gemini, Google Vertex AI, OpenAI, or local heuristics) to identify financial leakage, control breakages, and recovery opportunities.
 
 ---
@@ -116,15 +117,15 @@
 
 ## 4. ERP Integrations
 
-| Provider | Category | Auth Method | Fetcher Implementation | Status | Notes |
-| :--- | :--- | :--- | :--- | :---: | :--- |
-| **Xero** | Accounting | OAuth 2.0 | `pullXero()` in `sync.server.ts` | **Fully Functional** | Live API calls to `/Contacts`, `/Invoices`, `/Payments` |
-| **QuickBooks Online** | Accounting | OAuth 2.0 | `pullQuickBooks()` in `sync.server.ts` | **Fully Functional** | Live QBO queries on `Vendor`, `Bill`, `BillPayment` |
-| **Zoho Books** | Accounting | OAuth 2.0 | `pullZohoBooks()` in `sync.server.ts` | **Fully Functional** | Traversal for `contacts`, `bills`, `invoices`, `vendorpayments` |
-| **Custom REST API** | ERP / Accounting | REST API | `/api/public/erp/ingest` | **Fully Functional** | Direct HTTP POST for external ledger ingestion |
-| **NetSuite** | ERP | Manual / Token | `sync.server.ts` | **Placeholder** | Enterprise onboarding required |
-| **SAP S/4HANA** | ERP | BTP / Dest | `sync.server.ts` | **Placeholder** | Enterprise onboarding required |
-| **Oracle Fusion** | ERP | REST API | `sync.server.ts` | **Placeholder** | Enterprise onboarding required |
+| Provider              | Category         | Auth Method    | Fetcher Implementation                 |        Status        | Notes                                                           |
+| :-------------------- | :--------------- | :------------- | :------------------------------------- | :------------------: | :-------------------------------------------------------------- |
+| **Xero**              | Accounting       | OAuth 2.0      | `pullXero()` in `sync.server.ts`       | **Fully Functional** | Live API calls to `/Contacts`, `/Invoices`, `/Payments`         |
+| **QuickBooks Online** | Accounting       | OAuth 2.0      | `pullQuickBooks()` in `sync.server.ts` | **Fully Functional** | Live QBO queries on `Vendor`, `Bill`, `BillPayment`             |
+| **Zoho Books**        | Accounting       | OAuth 2.0      | `pullZohoBooks()` in `sync.server.ts`  | **Fully Functional** | Traversal for `contacts`, `bills`, `invoices`, `vendorpayments` |
+| **Custom REST API**   | ERP / Accounting | REST API       | `/api/public/erp/ingest`               | **Fully Functional** | Direct HTTP POST for external ledger ingestion                  |
+| **NetSuite**          | ERP              | Manual / Token | `sync.server.ts`                       |   **Placeholder**    | Enterprise onboarding required                                  |
+| **SAP S/4HANA**       | ERP              | BTP / Dest     | `sync.server.ts`                       |   **Placeholder**    | Enterprise onboarding required                                  |
+| **Oracle Fusion**     | ERP              | REST API       | `sync.server.ts`                       |   **Placeholder**    | Enterprise onboarding required                                  |
 
 ---
 

@@ -87,7 +87,6 @@ export const navGroups: NavGroup[] = [
   },
 ];
 
-
 export interface RoleDefinition {
   id: RoleId;
   label: string;
@@ -104,7 +103,18 @@ export const roles: RoleDefinition[] = [
     description: "Full platform control including users, roles, integrations and billing.",
     icon: ShieldCheck,
     tone: "brand",
-    permissions: ["View", "Create", "Edit", "Delete", "Approve", "Recover", "Manage Users", "Manage Roles", "Export", "Configure"],
+    permissions: [
+      "View",
+      "Create",
+      "Edit",
+      "Delete",
+      "Approve",
+      "Recover",
+      "Manage Users",
+      "Manage Roles",
+      "Export",
+      "Configure",
+    ],
   },
   {
     id: "cfo",
@@ -169,4 +179,7 @@ export const permissionColumns = [
   "Configure",
 ] as const;
 
-export const roleMap = Object.fromEntries(roles.map((r) => [r.id, r])) as Record<RoleId, RoleDefinition>;
+export const roleMap = Object.fromEntries(roles.map((r) => [r.id, r])) as Record<
+  RoleId,
+  RoleDefinition
+>;

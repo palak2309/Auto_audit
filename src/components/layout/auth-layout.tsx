@@ -24,13 +24,17 @@ export function AuthLayout({
             <img src="/logo.png" alt="AutoAudit" className="size-9 rounded-xl object-contain" />
             <span className="text-sm font-semibold">AutoAudit</span>
           </Link>
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <h2 className="max-w-md text-4xl leading-tight font-semibold tracking-tight">
               Find the money your ERP already lost.
             </h2>
             <p className="mt-4 max-w-md text-sm/relaxed opacity-90">
-              AutoAudit analyses every transaction, invoice and contract to surface duplicate payments,
-              overcharges, tax errors and fraud — with an explanation you can act on.
+              AutoAudit analyses every transaction, invoice and contract to surface duplicate
+              payments, overcharges, tax errors and fraud — with an explanation you can act on.
             </p>
             <dl className="mt-10 grid grid-cols-2 gap-6 max-w-md">
               <div>
@@ -44,8 +48,12 @@ export function AuthLayout({
             </dl>
           </motion.div>
           <div className="flex items-center gap-4 text-xs opacity-85">
-            <span className="inline-flex items-center gap-1.5"><Sparkles className="size-3.5" /> DPDP Act Aligned</span>
-            <span className="inline-flex items-center gap-1.5"><TrendingUp className="size-3.5" /> AES-256 Encryption</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkles className="size-3.5" /> DPDP Act Aligned
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <TrendingUp className="size-3.5" /> AES-256 Encryption
+            </span>
           </div>
         </div>
       </div>
@@ -67,11 +75,17 @@ export function AuthLayout({
           <div className="mt-7">{children}</div>
           {footer && <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>}
           <div className="mt-6 pt-4 border-t border-border/60 text-center text-xs text-muted-foreground space-x-3">
-            <Link to="/privacy-policy" className="hover:text-foreground underline">Privacy Policy</Link>
+            <Link to="/privacy-policy" className="hover:text-foreground underline">
+              Privacy Policy
+            </Link>
             <span>•</span>
-            <Link to="/terms-and-conditions" className="hover:text-foreground underline">Terms of Service</Link>
+            <Link to="/terms-and-conditions" className="hover:text-foreground underline">
+              Terms of Service
+            </Link>
             <span>•</span>
-            <Link to="/cookie-policy" className="hover:text-foreground underline">Cookie Policy</Link>
+            <Link to="/cookie-policy" className="hover:text-foreground underline">
+              Cookie Policy
+            </Link>
           </div>
         </motion.div>
       </div>

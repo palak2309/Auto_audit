@@ -61,7 +61,12 @@ export function ProviderConfigDialog({ open, onOpenChange, initialProvider, onSa
     if (!provider || !clientId.trim() || !clientSecret.trim()) return;
     setBusy(true);
     try {
-      const payload: { provider: string; clientId: string; clientSecret: string; dataCenter?: string } = {
+      const payload: {
+        provider: string;
+        clientId: string;
+        clientSecret: string;
+        dataCenter?: string;
+      } = {
         provider,
         clientId: clientId.trim(),
         clientSecret: clientSecret.trim(),
@@ -83,8 +88,8 @@ export function ProviderConfigDialog({ open, onOpenChange, initialProvider, onSa
         <DialogHeader>
           <DialogTitle>Configure provider credentials</DialogTitle>
           <DialogDescription>
-            Enter the OAuth app credentials you created at the provider's developer portal. They are encrypted
-            server-side and never exposed to the browser.
+            Enter the OAuth app credentials you created at the provider's developer portal. They are
+            encrypted server-side and never exposed to the browser.
           </DialogDescription>
         </DialogHeader>
 
@@ -161,8 +166,8 @@ export function ProviderConfigDialog({ open, onOpenChange, initialProvider, onSa
           <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-success" />
             <span>
-              Credentials are encrypted with AES-256-GCM before storage. Only server-side code reads them — no browser
-              or database user can see the secret.
+              Credentials are encrypted with AES-256-GCM before storage. Only server-side code reads
+              them — no browser or database user can see the secret.
             </span>
           </div>
 
@@ -170,7 +175,11 @@ export function ProviderConfigDialog({ open, onOpenChange, initialProvider, onSa
             <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} disabled={busy}>
               Cancel
             </Button>
-            <Button size="sm" onClick={save} disabled={busy || !provider || !clientId.trim() || !clientSecret.trim()}>
+            <Button
+              size="sm"
+              onClick={save}
+              disabled={busy || !provider || !clientId.trim() || !clientSecret.trim()}
+            >
               {busy && <Loader2 className="size-4 animate-spin" />}
               {busy ? "Saving…" : "Save credentials"}
             </Button>

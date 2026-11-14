@@ -34,7 +34,10 @@ import { SeverityBadge, ToneBadge } from "@/components/common/tone-badge";
 import { Button } from "@/components/ui/button";
 import { useErpOverview } from "@/hooks/use-erp";
 import { getDurableMetrics } from "@/lib/leak.functions";
-import { getBusinessDashboardMetrics, type DateFilterType } from "@/lib/billing/dashboard.functions";
+import {
+  getBusinessDashboardMetrics,
+  type DateFilterType,
+} from "@/lib/billing/dashboard.functions";
 import { currencyIn, dateShort, number } from "@/lib/format";
 
 export const Route = createFileRoute("/_shell/")({
@@ -43,7 +46,8 @@ export const Route = createFileRoute("/_shell/")({
       { title: "Business Dashboard — Auto Audit" },
       {
         name: "description",
-        content: "Overview of today's sales, purchases, profit, cash & bank balances, inventory levels, and financial leakage analysis.",
+        content:
+          "Overview of today's sales, purchases, profit, cash & bank balances, inventory levels, and financial leakage analysis.",
       },
       { property: "og:title", content: "Auto Audit Business Dashboard" },
       {
@@ -64,12 +68,20 @@ function DashboardPage() {
   const { data: erpOverview, isLoading: isErpLoading, refetch: refetchErp } = useErpOverview();
 
   // Queries
-  const { data: metrics, isLoading: isDashboardLoading, refetch: refetchDashboard } = useQuery({
+  const {
+    data: metrics,
+    isLoading: isDashboardLoading,
+    refetch: refetchDashboard,
+  } = useQuery({
     queryKey: ["businessDashboard", dateFilter],
     queryFn: () => fetchDashboardFn({ data: { dateFilter } }),
   });
 
-  const { data: durableMetrics, isLoading: isMetricsLoading, refetch: refetchDurable } = useQuery({
+  const {
+    data: durableMetrics,
+    isLoading: isMetricsLoading,
+    refetch: refetchDurable,
+  } = useQuery({
     queryKey: ["durableMetrics"],
     queryFn: () => fetchMetricsFn(),
   });
@@ -158,7 +170,9 @@ function DashboardPage() {
         {/* Today's Sales */}
         <div className="p-4 bg-card rounded-xl border relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Today's Sales</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Today's Sales
+            </span>
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600">
               <TrendingUp className="w-4 h-4" />
             </div>
@@ -172,7 +186,9 @@ function DashboardPage() {
         {/* Period Sales */}
         <div className="p-4 bg-card rounded-xl border relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Sales</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Total Sales
+            </span>
             <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
               <Receipt className="w-4 h-4" />
             </div>
@@ -186,7 +202,9 @@ function DashboardPage() {
         {/* Period Purchases */}
         <div className="p-4 bg-card rounded-xl border relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Purchases</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Total Purchases
+            </span>
             <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600">
               <ShoppingCart className="w-4 h-4" />
             </div>
@@ -200,7 +218,9 @@ function DashboardPage() {
         {/* Net Profit */}
         <div className="p-4 bg-card rounded-xl border relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Net Business Profit</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Net Business Profit
+            </span>
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600">
               <BadgeDollarSign className="w-4 h-4" />
             </div>
@@ -223,13 +243,20 @@ function DashboardPage() {
         {/* Receivables */}
         <div className="p-4 bg-card rounded-xl border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Receivables</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 font-medium">To Receive</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Total Receivables
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 font-medium">
+              To Receive
+            </span>
           </div>
           <p className="text-2xl font-bold font-mono text-rose-600 mt-2">
             {currencyIn(metrics?.totalReceivables ?? 0, "INR")}
           </p>
-          <Link to="/customers" className="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1">
+          <Link
+            to="/customers"
+            className="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1"
+          >
             View customer dues <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -237,13 +264,20 @@ function DashboardPage() {
         {/* Payables */}
         <div className="p-4 bg-card rounded-xl border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Payables</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium">To Pay</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Total Payables
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium">
+              To Pay
+            </span>
           </div>
           <p className="text-2xl font-bold font-mono text-amber-600 mt-2">
             {currencyIn(metrics?.totalPayables ?? 0, "INR")}
           </p>
-          <Link to="/suppliers" className="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1">
+          <Link
+            to="/suppliers"
+            className="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1"
+          >
             View vendor dues <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -251,7 +285,9 @@ function DashboardPage() {
         {/* Cash in Hand */}
         <div className="p-4 bg-card rounded-xl border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Cash in Hand</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Cash in Hand
+            </span>
             <Banknote className="w-4 h-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-bold font-mono text-emerald-600 mt-2">
@@ -263,7 +299,9 @@ function DashboardPage() {
         {/* Bank Balance */}
         <div className="p-4 bg-card rounded-xl border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bank Balance</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Bank Balance
+            </span>
             <CreditCard className="w-4 h-4 text-blue-600" />
           </div>
           <p className="text-2xl font-bold font-mono text-blue-600 mt-2">
@@ -284,19 +322,26 @@ function DashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-foreground">Auto Audit Discrepancy Detection Active</span>
+                <span className="font-bold text-sm text-foreground">
+                  Auto Audit Discrepancy Detection Active
+                </span>
                 <span className="px-2 py-0.5 text-xs rounded-full bg-rose-500 text-white font-bold">
                   {activeLeaksCount} Issues Found
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                The forensic engine flagged {currencyIn(activeExposure, "INR")} in duplicate purchase bills, duplicate payments, or overpayments.
+                The forensic engine flagged {currencyIn(activeExposure, "INR")} in duplicate
+                purchase bills, duplicate payments, or overpayments.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/leaks">
-              <Button size="sm" variant="outline" className="border-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950">
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950"
+              >
                 Review Findings <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </Link>
@@ -309,9 +354,14 @@ function DashboardPage() {
         <div className="p-3.5 bg-emerald-500/10 border border-emerald-200 dark:border-emerald-900 rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
             <CheckCircle2 className="w-4 h-4" />
-            <span className="text-xs font-semibold">Auto Audit Protection Active: No financial discrepancies detected in current ledger.</span>
+            <span className="text-xs font-semibold">
+              Auto Audit Protection Active: No financial discrepancies detected in current ledger.
+            </span>
           </div>
-          <Link to="/ai-insights" className="text-xs text-emerald-700 dark:text-emerald-400 underline font-medium">
+          <Link
+            to="/ai-insights"
+            className="text-xs text-emerald-700 dark:text-emerald-400 underline font-medium"
+          >
             View AI Insights
           </Link>
         </div>
@@ -324,7 +374,9 @@ function DashboardPage() {
           <div className="flex items-center justify-between border-b pb-3">
             <div>
               <h3 className="font-bold text-sm text-foreground">Monthly Sales & Purchase Trend</h3>
-              <p className="text-xs text-muted-foreground">Sales volume vs supplier purchase spend across past 6 months</p>
+              <p className="text-xs text-muted-foreground">
+                Sales volume vs supplier purchase spend across past 6 months
+              </p>
             </div>
             <Link to="/reports">
               <Button variant="ghost" size="sm" className="text-xs">
@@ -336,8 +388,8 @@ function DashboardPage() {
           <div className="space-y-4 pt-2">
             {(metrics?.monthlyTrend || []).map((m, idx) => {
               const maxVal = Math.max(
-                ...((metrics?.monthlyTrend || []).map((x) => Math.max(x.sales, x.purchases))),
-                1
+                ...(metrics?.monthlyTrend || []).map((x) => Math.max(x.sales, x.purchases)),
+                1,
               );
               const salesPct = Math.round((m.sales / maxVal) * 100);
               const purchasePct = Math.round((m.purchases / maxVal) * 100);
@@ -347,16 +399,30 @@ function DashboardPage() {
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-semibold text-foreground w-16">{m.month}</span>
                     <div className="flex items-center gap-4 text-muted-foreground font-mono">
-                      <span>Sales: <strong className="text-foreground">{currencyIn(m.sales, "INR")}</strong></span>
-                      <span>Buy: <strong className="text-muted-foreground">{currencyIn(m.purchases, "INR")}</strong></span>
+                      <span>
+                        Sales:{" "}
+                        <strong className="text-foreground">{currencyIn(m.sales, "INR")}</strong>
+                      </span>
+                      <span>
+                        Buy:{" "}
+                        <strong className="text-muted-foreground">
+                          {currencyIn(m.purchases, "INR")}
+                        </strong>
+                      </span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 h-2.5">
                     <div className="bg-muted rounded-full overflow-hidden">
-                      <div className="bg-primary h-full rounded-full transition-all" style={{ width: `${salesPct}%` }} />
+                      <div
+                        className="bg-primary h-full rounded-full transition-all"
+                        style={{ width: `${salesPct}%` }}
+                      />
                     </div>
                     <div className="bg-muted rounded-full overflow-hidden">
-                      <div className="bg-indigo-400 h-full rounded-full transition-all" style={{ width: `${purchasePct}%` }} />
+                      <div
+                        className="bg-indigo-400 h-full rounded-full transition-all"
+                        style={{ width: `${purchasePct}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -375,11 +441,15 @@ function DashboardPage() {
           <div className="space-y-4 my-auto">
             <div className="flex justify-between items-center p-3 bg-muted/40 rounded-lg">
               <span className="text-xs font-semibold text-foreground">Total Active Products:</span>
-              <span className="font-mono font-bold text-base text-foreground">{metrics?.totalProducts ?? 0}</span>
+              <span className="font-mono font-bold text-base text-foreground">
+                {metrics?.totalProducts ?? 0}
+              </span>
             </div>
 
             <div className="flex justify-between items-center p-3 bg-muted/40 rounded-lg">
-              <span className="text-xs font-semibold text-foreground">Inventory Valuation (Cost):</span>
+              <span className="text-xs font-semibold text-foreground">
+                Inventory Valuation (Cost):
+              </span>
               <span className="font-mono font-bold text-base text-foreground">
                 {currencyIn(metrics?.totalStockValuation ?? 0, "INR")}
               </span>
@@ -388,7 +458,9 @@ function DashboardPage() {
             <div className="flex justify-between items-center p-3 bg-rose-500/10 border border-rose-200 dark:border-rose-900 rounded-lg">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-rose-500" />
-                <span className="text-xs font-bold text-rose-700 dark:text-rose-400">Low Stock Items:</span>
+                <span className="text-xs font-bold text-rose-700 dark:text-rose-400">
+                  Low Stock Items:
+                </span>
               </div>
               <span className="font-mono font-bold text-base text-rose-600">
                 {metrics?.lowStockProducts ?? 0}
@@ -439,7 +511,9 @@ function DashboardPage() {
               ) : (
                 (metrics?.recentInvoices || []).map((inv) => (
                   <tr key={inv.id} className="hover:bg-muted/20">
-                    <td className="py-2.5 px-4 font-mono font-bold text-foreground">{inv.invoiceNumber}</td>
+                    <td className="py-2.5 px-4 font-mono font-bold text-foreground">
+                      {inv.invoiceNumber}
+                    </td>
                     <td className="py-2.5 px-3 font-medium text-foreground">{inv.customerName}</td>
                     <td className="py-2.5 px-3 text-muted-foreground">{dateShort(inv.date)}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">
@@ -451,8 +525,8 @@ function DashboardPage() {
                           inv.status === "paid"
                             ? "bg-emerald-100 text-emerald-800"
                             : inv.status === "partially_paid"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-rose-100 text-rose-800"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-rose-100 text-rose-800"
                         }`}
                       >
                         {inv.status.replace("_", " ")}

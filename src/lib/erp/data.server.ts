@@ -23,13 +23,17 @@ export async function loadFinancials(userId: string): Promise<FinancialsPayload>
   const [invoices, payments, vendors, bills, billingPayments, suppliers] = await Promise.all([
     db
       .from("erp_invoices")
-      .select("id, connection_id, created_at, external_id, invoice_number, vendor_name, issue_date, due_date, amount, tax_amount, amount_paid, currency, status, type")
+      .select(
+        "id, connection_id, created_at, external_id, invoice_number, vendor_name, issue_date, due_date, amount, tax_amount, amount_paid, currency, status, type",
+      )
       .eq("user_id", userId)
       .order("issue_date", { ascending: false })
       .limit(1000),
     db
       .from("erp_payments")
-      .select("id, connection_id, created_at, external_id, reference, invoice_external_id, vendor_name, paid_date, amount, currency, method, status")
+      .select(
+        "id, connection_id, created_at, external_id, reference, invoice_external_id, vendor_name, paid_date, amount, currency, method, status",
+      )
       .eq("user_id", userId)
       .order("paid_date", { ascending: false })
       .limit(1000),
@@ -41,13 +45,17 @@ export async function loadFinancials(userId: string): Promise<FinancialsPayload>
       .limit(1000),
     db
       .from("purchase_bills")
-      .select("id, created_at, bill_number, supplier_invoice_number, bill_date, due_date, grand_total, total_tax, amount_paid, status, document_type, supplier:suppliers(name)")
+      .select(
+        "id, created_at, bill_number, supplier_invoice_number, bill_date, due_date, grand_total, total_tax, amount_paid, status, document_type, supplier:suppliers(name)",
+      )
       .eq("user_id", userId)
       .neq("status", "cancelled")
       .limit(1000),
     db
       .from("payments")
-      .select("id, created_at, payment_number, reference_number, bill_id, payment_date, amount, payment_mode, supplier:suppliers(name)")
+      .select(
+        "id, created_at, payment_number, reference_number, bill_id, payment_date, amount, payment_mode, supplier:suppliers(name)",
+      )
       .eq("user_id", userId)
       .eq("party_type", "supplier")
       .limit(1000),
@@ -113,7 +121,6 @@ export async function loadFinancials(userId: string): Promise<FinancialsPayload>
     vendors: mergedVendors,
   };
 }
-
 
 export interface LeakEvidence {
   invoices: Row[];
@@ -190,8 +197,6 @@ export interface OverviewPayload {
   syncRuns: SyncRunOption[];
 }
 
-
-
 function money(v: unknown): number {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
@@ -209,7 +214,8 @@ export function detectLeaksFromFinancials(params: {
   for (const v of vendors) vendorByName.set(String(v["name"] ?? "").toLowerCase(), v);
 
   const attribute = (rows: Row[]) => {
-    const connectionId = (rows.find((r) => r["connection_id"])?.["connection_id"] as string) ?? null;
+    const connectionId =
+      (rows.find((r) => r["connection_id"])?.["connection_id"] as string) ?? null;
     let syncRunId: string | null = null;
     const created = rows
       .map((r) => String(r["created_at"] ?? ""))
@@ -288,7 +294,9 @@ export function detectLeaksFromFinancials(params: {
     if (!inv) continue;
     const total = money(inv["amount"]);
     if (total > 0 && paid - total > 0.5) {
-      const matchedPayments = payments.filter((p) => String(p["invoice_external_id"] ?? "") === ref);
+      const matchedPayments = payments.filter(
+        (p) => String(p["invoice_external_id"] ?? "") === ref,
+      );
       const evidence = evidenceFor([inv], matchedPayments);
       const { connectionId, syncRunId } = attribute([inv]);
       const amount = paid - total;
@@ -376,7 +384,9 @@ export function detectLeaksFromFinancials(params: {
     const due = String(i["due_date"] ?? "");
     const balance = money(i["amount"]) - money(i["amount_paid"]);
     if (due && due < today && balance > 0.5) {
-      const matchedPayments = payments.filter((p) => String(p["invoice_external_id"] ?? "") === String(i["external_id"] ?? ""));
+      const matchedPayments = payments.filter(
+        (p) => String(p["invoice_external_id"] ?? "") === String(i["external_id"] ?? ""),
+      );
       const evidence = evidenceFor([i], matchedPayments);
       const { connectionId, syncRunId } = attribute([i]);
       const vendor = String(i["vendor_name"] ?? "Unknown");
@@ -425,7 +435,9 @@ export async function loadOverview(userId: string): Promise<OverviewPayload> {
       .limit(50),
     db.from("erp_connections").select("id, provider").eq("user_id", userId),
   ]);
-  const providerById = new Map((connRes.data ?? []).map((c) => [c.id as string, c.provider as string]));
+  const providerById = new Map(
+    (connRes.data ?? []).map((c) => [c.id as string, c.provider as string]),
+  );
   const syncRuns: SyncRunOption[] = (runsRes.data ?? []).map((r) => ({
     id: r.id as string,
     connectionId: r.connection_id as string,
@@ -435,7 +447,10 @@ export async function loadOverview(userId: string): Promise<OverviewPayload> {
   }));
 
   const spend = invoices.reduce((s, i) => s + money(i["amount"]), 0);
-  const outstanding = invoices.reduce((s, i) => s + Math.max(money(i["amount"]) - money(i["amount_paid"]), 0), 0);
+  const outstanding = invoices.reduce(
+    (s, i) => s + Math.max(money(i["amount"]) - money(i["amount_paid"]), 0),
+    0,
+  );
 
   const byMonth = new Map<string, number>();
   for (const i of invoices) {
@@ -499,7 +514,11 @@ export async function loadOverview(userId: string): Promise<OverviewPayload> {
   }));
 
   const leaksPerVendor = new Map<string, number>();
-  for (const l of leaks) leaksPerVendor.set(l.vendor.toLowerCase(), (leaksPerVendor.get(l.vendor.toLowerCase()) ?? 0) + 1);
+  for (const l of leaks)
+    leaksPerVendor.set(
+      l.vendor.toLowerCase(),
+      (leaksPerVendor.get(l.vendor.toLowerCase()) ?? 0) + 1,
+    );
 
   const invStatsByVendor = new Map<string, { spend: number; count: number; outstanding: number }>();
   for (const i of invoices) {
@@ -538,7 +557,11 @@ export async function loadOverview(userId: string): Promise<OverviewPayload> {
       const vendorsHit = [...new Set(group.map((l) => l.vendor))];
       const top = vendorsHit.slice(0, 3).join(", ");
       const confidence =
-        type === "Duplicate invoice" || type === "Duplicate payment" ? 0.94 : type === "Overpayment" ? 0.88 : 0.76;
+        type === "Duplicate invoice" || type === "Duplicate payment"
+          ? 0.94
+          : type === "Overpayment"
+            ? 0.88
+            : 0.76;
       return {
         id: `insight-${type.toLowerCase().replace(/\s+/g, "-")}`,
         title: `${type} exposure across ${vendorsHit.length} ${vendorsHit.length === 1 ? "party" : "parties"}`,

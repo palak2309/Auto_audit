@@ -17,7 +17,7 @@ export interface StoredTokens {
   refresh_token?: string | undefined;
   expires_at: number;
   api_domain?: string | undefined;
-  auth_server?: string | undefined;  // e.g. "https://accounts.zoho.com" — used for token refresh
+  auth_server?: string | undefined; // e.g. "https://accounts.zoho.com" — used for token refresh
   realm_id?: string | undefined;
   tenant_id?: string | undefined;
   organization_id?: string | undefined;
@@ -162,7 +162,11 @@ export function redirectUri(origin: string): string {
   return `${origin}/api/public/erp/callback`;
 }
 
-export async function buildAuthorizeUrl(provider: string, state: string, origin: string): Promise<string> {
+export async function buildAuthorizeUrl(
+  provider: string,
+  state: string,
+  origin: string,
+): Promise<string> {
   const cfg = await oauthConfig(provider);
   if (!cfg) throw new Error(`${provider} is not configured`);
   const url = new URL(cfg.authorizeUrl);
@@ -175,7 +179,10 @@ export async function buildAuthorizeUrl(provider: string, state: string, origin:
   return url.toString();
 }
 
-async function postToken(cfg: OAuthConfig, body: URLSearchParams): Promise<Record<string, unknown>> {
+async function postToken(
+  cfg: OAuthConfig,
+  body: URLSearchParams,
+): Promise<Record<string, unknown>> {
   const res = await fetch(cfg.tokenUrl, {
     method: "POST",
     headers: {
@@ -215,7 +222,7 @@ function toStored(raw: Record<string, unknown>, previous?: StoredTokens): Stored
     refresh_token: (raw["refresh_token"] as string | undefined) ?? previous?.refresh_token,
     expires_at: Date.now() + (expiresIn - 60) * 1000,
     api_domain: apiDomain,
-    auth_server: previous?.auth_server,   // carry forward — set explicitly after exchange
+    auth_server: previous?.auth_server, // carry forward — set explicitly after exchange
     realm_id: previous?.realm_id,
     tenant_id: previous?.tenant_id,
     organization_id: previous?.organization_id,

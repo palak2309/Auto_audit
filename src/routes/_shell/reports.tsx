@@ -33,7 +33,11 @@ export const Route = createFileRoute("/_shell/reports")({
   head: () => ({
     meta: [
       { title: "Financial Reports & GST Returns — Auto Audit" },
-      { name: "description", content: "Comprehensive Sales Register, Purchase Register, GSTR-1, GSTR-3B, Stock Valuation and Profit & Loss reports." },
+      {
+        name: "description",
+        content:
+          "Comprehensive Sales Register, Purchase Register, GSTR-1, GSTR-3B, Stock Valuation and Profit & Loss reports.",
+      },
     ],
   }),
   component: ReportsPage,
@@ -57,31 +61,36 @@ function ReportsPage() {
   // Queries
   const { data: pnlData, isLoading: isPnlLoading } = useQuery({
     queryKey: ["pnlReport", fromDate, toDate],
-    queryFn: () => getPnlFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getPnlFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
     enabled: activeTab === "pnl",
   });
 
   const { data: salesData, isLoading: isSalesLoading } = useQuery({
     queryKey: ["salesReport", fromDate, toDate],
-    queryFn: () => getSalesFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getSalesFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
     enabled: activeTab === "sales",
   });
 
   const { data: purchasesData, isLoading: isPurchasesLoading } = useQuery({
     queryKey: ["purchasesReport", fromDate, toDate],
-    queryFn: () => getPurchasesFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getPurchasesFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
     enabled: activeTab === "purchases",
   });
 
   const { data: gstr1Data, isLoading: isGstr1Loading } = useQuery({
     queryKey: ["gstr1Report", fromDate, toDate],
-    queryFn: () => getGstr1Fn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getGstr1Fn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
     enabled: activeTab === "gstr1",
   });
 
   const { data: gstr3bData, isLoading: isGstr3bLoading } = useQuery({
     queryKey: ["gstr3bReport", fromDate, toDate],
-    queryFn: () => getGstr3bFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
+    queryFn: () =>
+      getGstr3bFn({ data: { fromDate: fromDate || undefined, toDate: toDate || undefined } }),
     enabled: activeTab === "gstr3b",
   });
 
@@ -141,7 +150,12 @@ function ReportsPage() {
         description="Board-ready financial statements, GST GSTR-1 and GSTR-3B filings, stock valuation and P&L analysis."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => window.print()} className="print:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.print()}
+              className="print:hidden"
+            >
               <Printer className="w-4 h-4 mr-1.5" />
               Print
             </Button>
@@ -223,26 +237,36 @@ function ReportsPage() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-card rounded-xl border">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Revenue (Sales)</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                    Revenue (Sales)
+                  </span>
                   <p className="text-2xl font-bold font-mono text-foreground mt-1">
                     {currencyIn(pnlData.revenue, "INR")}
                   </p>
                 </div>
                 <div className="p-4 bg-card rounded-xl border">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Cost of Goods (COGS)</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                    Cost of Goods (COGS)
+                  </span>
                   <p className="text-2xl font-bold font-mono text-muted-foreground mt-1">
                     {currencyIn(pnlData.costOfGoodsSold, "INR")}
                   </p>
                 </div>
                 <div className="p-4 bg-card rounded-xl border">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Gross Profit</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                    Gross Profit
+                  </span>
                   <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">
                     {currencyIn(pnlData.grossProfit, "INR")}
                   </p>
-                  <span className="text-xs text-muted-foreground">{pnlData.grossMarginPct}% Margin</span>
+                  <span className="text-xs text-muted-foreground">
+                    {pnlData.grossMarginPct}% Margin
+                  </span>
                 </div>
                 <div className="p-4 bg-card rounded-xl border">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Net Profit</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                    Net Profit
+                  </span>
                   <p
                     className={`text-2xl font-bold font-mono mt-1 ${
                       pnlData.netProfit >= 0 ? "text-emerald-600" : "text-rose-600"
@@ -250,13 +274,17 @@ function ReportsPage() {
                   >
                     {currencyIn(pnlData.netProfit, "INR")}
                   </p>
-                  <span className="text-xs text-muted-foreground">{pnlData.netMarginPct}% Net Margin</span>
+                  <span className="text-xs text-muted-foreground">
+                    {pnlData.netMarginPct}% Net Margin
+                  </span>
                 </div>
               </div>
 
               {/* Statement details */}
               <div className="bg-card rounded-xl border overflow-hidden p-6 max-w-2xl mx-auto space-y-4">
-                <h3 className="font-bold text-base text-foreground border-b pb-2">Profit & Loss Breakdown</h3>
+                <h3 className="font-bold text-base text-foreground border-b pb-2">
+                  Profit & Loss Breakdown
+                </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between py-1.5 border-b font-medium">
                     <span>1. Total Sales Revenue</span>
@@ -264,7 +292,9 @@ function ReportsPage() {
                   </div>
                   <div className="flex justify-between py-1.5 border-b text-muted-foreground">
                     <span>2. Less: Cost of Purchases (COGS)</span>
-                    <span className="font-mono">- {currencyIn(pnlData.costOfGoodsSold, "INR")}</span>
+                    <span className="font-mono">
+                      - {currencyIn(pnlData.costOfGoodsSold, "INR")}
+                    </span>
                   </div>
                   <div className="flex justify-between py-2 border-b font-bold text-emerald-600">
                     <span>3. Gross Profit (1 - 2)</span>
@@ -272,13 +302,20 @@ function ReportsPage() {
                   </div>
 
                   <div className="pt-2">
-                    <span className="font-semibold text-xs uppercase text-muted-foreground">Operating Expenses:</span>
+                    <span className="font-semibold text-xs uppercase text-muted-foreground">
+                      Operating Expenses:
+                    </span>
                     <div className="divide-y mt-2">
                       {pnlData.expenseBreakdown.length === 0 ? (
-                        <div className="py-2 text-xs text-muted-foreground">No operating expenses recorded</div>
+                        <div className="py-2 text-xs text-muted-foreground">
+                          No operating expenses recorded
+                        </div>
                       ) : (
                         pnlData.expenseBreakdown.map((exp, idx) => (
-                          <div key={idx} className="flex justify-between py-1 text-xs text-muted-foreground">
+                          <div
+                            key={idx}
+                            className="flex justify-between py-1 text-xs text-muted-foreground"
+                          >
                             <span>{exp.category}</span>
                             <span className="font-mono">{currencyIn(exp.amount, "INR")}</span>
                           </div>
@@ -317,11 +354,15 @@ function ReportsPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Taxable Value</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(salesData.summary.totalTaxable, "INR")}</p>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(salesData.summary.totalTaxable, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">GST Collected</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(salesData.summary.totalTax, "INR")}</p>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(salesData.summary.totalTax, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Total Billed</span>
@@ -351,13 +392,25 @@ function ReportsPage() {
                     {salesData.invoices.map((i) => (
                       <tr key={i.id} className="hover:bg-muted/10">
                         <td className="py-2 px-3 font-mono font-bold">{i.invoice_number}</td>
-                        <td className="py-2 px-2 text-muted-foreground">{dateShort(i.invoice_date)}</td>
+                        <td className="py-2 px-2 text-muted-foreground">
+                          {dateShort(i.invoice_date)}
+                        </td>
                         <td className="py-2 px-3">{(i.customer as any)?.name || "Cash"}</td>
-                        <td className="py-2 px-2 font-mono text-muted-foreground">{(i.customer as any)?.gstin || "-"}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(i.taxable_amount, "INR")}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(i.cgst_amount, "INR")}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(i.sgst_amount, "INR")}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(i.igst_amount, "INR")}</td>
+                        <td className="py-2 px-2 font-mono text-muted-foreground">
+                          {(i.customer as any)?.gstin || "-"}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(i.taxable_amount, "INR")}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(i.cgst_amount, "INR")}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(i.sgst_amount, "INR")}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(i.igst_amount, "INR")}
+                        </td>
                         <td className="py-2 px-3 text-right font-mono font-bold">
                           {currencyIn(i.grand_total, "INR")}
                         </td>
@@ -380,7 +433,9 @@ function ReportsPage() {
       {activeTab === "purchases" && (
         <div className="space-y-4">
           {isPurchasesLoading ? (
-            <div className="py-12 text-center text-muted-foreground">Loading purchase register...</div>
+            <div className="py-12 text-center text-muted-foreground">
+              Loading purchase register...
+            </div>
           ) : purchasesData ? (
             <div className="space-y-4">
               <div className="grid grid-cols-4 gap-4 p-4 bg-muted/40 rounded-xl border text-center">
@@ -390,11 +445,15 @@ function ReportsPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Taxable Value</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(purchasesData.summary.totalTaxable, "INR")}</p>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(purchasesData.summary.totalTaxable, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Input Tax (ITC)</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(purchasesData.summary.totalTax, "INR")}</p>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(purchasesData.summary.totalTax, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Total Purchases</span>
@@ -421,10 +480,16 @@ function ReportsPage() {
                     {purchasesData.bills.map((b) => (
                       <tr key={b.id} className="hover:bg-muted/10">
                         <td className="py-2 px-3 font-mono font-bold">{b.bill_number}</td>
-                        <td className="py-2 px-2 text-muted-foreground">{dateShort(b.bill_date)}</td>
+                        <td className="py-2 px-2 text-muted-foreground">
+                          {dateShort(b.bill_date)}
+                        </td>
                         <td className="py-2 px-3">{(b.supplier as any)?.name || "Vendor"}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(b.taxable_amount, "INR")}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(b.total_tax, "INR")}</td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(b.taxable_amount, "INR")}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(b.total_tax, "INR")}
+                        </td>
                         <td className="py-2 px-3 text-right font-mono font-bold">
                           {currencyIn(b.grand_total, "INR")}
                         </td>
@@ -447,7 +512,9 @@ function ReportsPage() {
       {activeTab === "gstr1" && (
         <div className="space-y-6">
           {isGstr1Loading ? (
-            <div className="py-12 text-center text-muted-foreground">Preparing GSTR-1 summary...</div>
+            <div className="py-12 text-center text-muted-foreground">
+              Preparing GSTR-1 summary...
+            </div>
           ) : gstr1Data ? (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -458,7 +525,9 @@ function ReportsPage() {
                   <p className="text-2xl font-bold font-mono text-foreground mt-1">
                     {currencyIn(gstr1Data.b2bTotal, "INR")}
                   </p>
-                  <span className="text-xs text-muted-foreground">{gstr1Data.b2bCount} invoices</span>
+                  <span className="text-xs text-muted-foreground">
+                    {gstr1Data.b2bCount} invoices
+                  </span>
                 </div>
                 <div className="p-4 bg-card rounded-xl border">
                   <span className="text-xs font-semibold text-muted-foreground uppercase">
@@ -467,13 +536,17 @@ function ReportsPage() {
                   <p className="text-2xl font-bold font-mono text-foreground mt-1">
                     {currencyIn(gstr1Data.b2cTotal, "INR")}
                   </p>
-                  <span className="text-xs text-muted-foreground">{gstr1Data.b2cCount} invoices</span>
+                  <span className="text-xs text-muted-foreground">
+                    {gstr1Data.b2cCount} invoices
+                  </span>
                 </div>
               </div>
 
               {/* HSN Summary Table */}
               <div className="bg-card rounded-xl border overflow-hidden">
-                <div className="p-3 bg-muted/40 border-b font-semibold text-xs">HSN / SAC Wise Summary</div>
+                <div className="p-3 bg-muted/40 border-b font-semibold text-xs">
+                  HSN / SAC Wise Summary
+                </div>
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b bg-muted/60 text-muted-foreground font-semibold">
@@ -500,11 +573,21 @@ function ReportsPage() {
                           <td className="py-2 px-3 font-mono font-bold">{h.hsn}</td>
                           <td className="py-2 px-3">{h.description}</td>
                           <td className="py-2 px-2 text-right font-mono">{h.qty}</td>
-                          <td className="py-2 px-2 text-right font-mono">{currencyIn(h.taxable, "INR")}</td>
-                          <td className="py-2 px-2 text-right font-mono">{currencyIn(h.cgst, "INR")}</td>
-                          <td className="py-2 px-2 text-right font-mono">{currencyIn(h.sgst, "INR")}</td>
-                          <td className="py-2 px-2 text-right font-mono">{currencyIn(h.igst, "INR")}</td>
-                          <td className="py-2 px-3 text-right font-mono font-bold">{currencyIn(h.tax, "INR")}</td>
+                          <td className="py-2 px-2 text-right font-mono">
+                            {currencyIn(h.taxable, "INR")}
+                          </td>
+                          <td className="py-2 px-2 text-right font-mono">
+                            {currencyIn(h.cgst, "INR")}
+                          </td>
+                          <td className="py-2 px-2 text-right font-mono">
+                            {currencyIn(h.sgst, "INR")}
+                          </td>
+                          <td className="py-2 px-2 text-right font-mono">
+                            {currencyIn(h.igst, "INR")}
+                          </td>
+                          <td className="py-2 px-3 text-right font-mono font-bold">
+                            {currencyIn(h.tax, "INR")}
+                          </td>
                         </tr>
                       ))
                     )}
@@ -520,7 +603,9 @@ function ReportsPage() {
       {activeTab === "gstr3b" && (
         <div className="space-y-6">
           {isGstr3bLoading ? (
-            <div className="py-12 text-center text-muted-foreground">Calculating GSTR-3B summary...</div>
+            <div className="py-12 text-center text-muted-foreground">
+              Calculating GSTR-3B summary...
+            </div>
           ) : gstr3bData ? (
             <div className="space-y-6 max-w-3xl mx-auto">
               <div className="bg-card rounded-xl border overflow-hidden p-6 space-y-4">
@@ -638,7 +723,9 @@ function ReportsPage() {
       {activeTab === "stock" && (
         <div className="space-y-4">
           {isStockLoading ? (
-            <div className="py-12 text-center text-muted-foreground">Calculating inventory valuation...</div>
+            <div className="py-12 text-center text-muted-foreground">
+              Calculating inventory valuation...
+            </div>
           ) : stockData ? (
             <div className="space-y-4">
               <div className="grid grid-cols-4 gap-4 p-4 bg-muted/40 rounded-xl border text-center">
@@ -647,12 +734,18 @@ function ReportsPage() {
                   <p className="font-mono font-bold text-lg">{stockData.totalItems}</p>
                 </div>
                 <div>
-                  <span className="text-xs text-muted-foreground uppercase">Stock Valuation (Cost)</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(stockData.totalPurchaseValuation, "INR")}</p>
+                  <span className="text-xs text-muted-foreground uppercase">
+                    Stock Valuation (Cost)
+                  </span>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(stockData.totalPurchaseValuation, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Retail Valuation</span>
-                  <p className="font-mono font-bold text-lg">{currencyIn(stockData.totalSalesValuation, "INR")}</p>
+                  <p className="font-mono font-bold text-lg">
+                    {currencyIn(stockData.totalSalesValuation, "INR")}
+                  </p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground uppercase">Potential Profit</span>
@@ -679,12 +772,18 @@ function ReportsPage() {
                     {stockData.products.map((p) => (
                       <tr key={p.id} className="hover:bg-muted/10">
                         <td className="py-2 px-3 font-semibold">{p.name}</td>
-                        <td className="py-2 px-3 text-muted-foreground">{(p.category as any)?.name || "-"}</td>
+                        <td className="py-2 px-3 text-muted-foreground">
+                          {(p.category as any)?.name || "-"}
+                        </td>
                         <td className="py-2 px-2 text-right font-mono font-bold">
                           {p.current_stock} {p.unit}
                         </td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(p.purchase_price, "INR")}</td>
-                        <td className="py-2 px-2 text-right font-mono">{currencyIn(p.selling_price, "INR")}</td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(p.purchase_price, "INR")}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {currencyIn(p.selling_price, "INR")}
+                        </td>
                         <td className="py-2 px-3 text-right font-mono font-medium">
                           {currencyIn(p.purchaseValuation, "INR")}
                         </td>

@@ -7,9 +7,14 @@ async function getAdmin() {
   return supabaseAdmin;
 }
 
-export type DateFilterType = "today" | "yesterday" | "this_week" | "this_month" | "last_month" | "custom" | "all";
+export type DateFilterType =
+  "today" | "yesterday" | "this_week" | "this_month" | "last_month" | "custom" | "all";
 
-function getDateRange(filter: DateFilterType, customFrom?: string, customTo?: string): { from: string; to: string } {
+function getDateRange(
+  filter: DateFilterType,
+  customFrom?: string,
+  customTo?: string,
+): { from: string; to: string } {
   const now = new Date();
   const format = (d: Date) => d.toISOString().substring(0, 10);
 
@@ -56,7 +61,10 @@ function getDateRange(filter: DateFilterType, customFrom?: string, customTo?: st
 
 export const getBusinessDashboardMetrics = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: { dateFilter?: DateFilterType; customFrom?: string; customTo?: string }) => input ?? {})
+  .validator(
+    (input?: { dateFilter?: DateFilterType; customFrom?: string; customTo?: string }) =>
+      input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     const filter = data.dateFilter || "this_month";
@@ -66,7 +74,9 @@ export const getBusinessDashboardMetrics = createServerFn({ method: "POST" })
     // 1. Sales query
     const { data: allSales } = await admin
       .from("sales_invoices")
-      .select("id, invoice_number, invoice_date, grand_total, amount_paid, balance_due, status, customer_id, created_at, customer:customers(name)")
+      .select(
+        "id, invoice_number, invoice_date, grand_total, amount_paid, balance_due, status, customer_id, created_at, customer:customers(name)",
+      )
       .eq("user_id", context.userId)
       .eq("document_type", "tax_invoice")
       .neq("status", "cancelled");
@@ -74,7 +84,9 @@ export const getBusinessDashboardMetrics = createServerFn({ method: "POST" })
     // 2. Purchases query
     const { data: allPurchases } = await admin
       .from("purchase_bills")
-      .select("id, bill_number, bill_date, grand_total, amount_paid, balance_due, status, supplier_id, created_at, supplier:suppliers(name)")
+      .select(
+        "id, bill_number, bill_date, grand_total, amount_paid, balance_due, status, supplier_id, created_at, supplier:suppliers(name)",
+      )
       .eq("user_id", context.userId)
       .eq("document_type", "bill")
       .neq("status", "cancelled");
@@ -195,9 +207,27 @@ export const getBusinessDashboardMetrics = createServerFn({ method: "POST" })
     }
 
     // Monthly Graph data for past 6 months
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     const now = new Date();
-    const monthlyTrend: Array<{ month: string; sales: number; purchases: number; expenses: number }> = [];
+    const monthlyTrend: Array<{
+      month: string;
+      sales: number;
+      purchases: number;
+      expenses: number;
+    }> = [];
 
     for (let i = 5; i >= 0; i--) {
       const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -252,9 +282,7 @@ export const getBusinessDashboardMetrics = createServerFn({ method: "POST" })
       }));
 
     // Recent transactions (merged payments, latest 6)
-    const recentTransactions = (payments ?? [])
-      .slice(-6)
-      .reverse();
+    const recentTransactions = (payments ?? []).slice(-6).reverse();
 
     return {
       todaySales: Math.round(todaySalesTotal),

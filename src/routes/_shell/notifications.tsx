@@ -55,9 +55,15 @@ function NotificationsPage() {
     return notifications.filter((item) => {
       // Tab filter
       if (activeTab === "unread" && item.read) return false;
-      if (activeTab === "critical" && item.severity !== "critical" && item.severity !== "high") return false;
+      if (activeTab === "critical" && item.severity !== "critical" && item.severity !== "high")
+        return false;
       if (activeTab === "leaks" && item.category !== "Leak Alert") return false;
-      if (activeTab === "workflow" && item.category !== "Recovery" && item.category !== "Investigation") return false;
+      if (
+        activeTab === "workflow" &&
+        item.category !== "Recovery" &&
+        item.category !== "Investigation"
+      )
+        return false;
 
       // Text search
       if (searchTerm.trim()) {
@@ -171,7 +177,11 @@ function NotificationsPage() {
         ) : filtered.length === 0 ? (
           <div className="surface-card p-12 text-center">
             <div className="mx-auto grid size-12 place-items-center rounded-full bg-muted text-muted-foreground mb-3">
-              {searchTerm ? <Search className="size-5" /> : <CheckCircle2 className="size-6 text-primary" />}
+              {searchTerm ? (
+                <Search className="size-5" />
+              ) : (
+                <CheckCircle2 className="size-6 text-primary" />
+              )}
             </div>
             <p className="text-base font-semibold">
               {searchTerm ? "No matching alerts" : "All caught up"}
@@ -180,11 +190,16 @@ function NotificationsPage() {
               {searchTerm
                 ? `No notifications found matching "${searchTerm}". Try adjusting your search query.`
                 : activeTab === "unread"
-                ? "You have marked all notifications as read."
-                : "No active alerts in this category."}
+                  ? "You have marked all notifications as read."
+                  : "No active alerts in this category."}
             </p>
             {searchTerm && (
-              <Button variant="outline" size="sm" className="mt-4" onClick={() => setSearchTerm("")}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => setSearchTerm("")}
+              >
                 Clear filter
               </Button>
             )}
@@ -223,8 +238,8 @@ function NotificationsPage() {
                         {item.category === "Leak Alert"
                           ? "Inspect finding in Leaks drawer"
                           : item.category === "Recovery"
-                          ? "Track recovery case"
-                          : "View integration details"}
+                            ? "Track recovery case"
+                            : "View integration details"}
                         <ExternalLink className="size-3" />
                       </Link>
                     </div>

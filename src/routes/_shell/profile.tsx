@@ -114,7 +114,12 @@ function ProfilePage() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="em">Work email</Label>
-                <Input id="em" value={user.email} disabled className="bg-muted text-muted-foreground" />
+                <Input
+                  id="em"
+                  value={user.email}
+                  disabled
+                  className="bg-muted text-muted-foreground"
+                />
                 <span className="text-[11px] text-muted-foreground">Managed by Supabase Auth</span>
               </div>
               <div className="space-y-1.5">

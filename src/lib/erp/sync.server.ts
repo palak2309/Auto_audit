@@ -75,10 +75,10 @@ async function getJson(url: string, headers: Record<string, string>, step?: stri
     const codePart = providerCode !== undefined ? ` (code ${providerCode})` : "";
     throw new Error(`${detail}${codePart} — ${label}, GET ${endpoint} → HTTP ${res.status}`);
   }
-  if (!parsed) throw new Error(`Unreadable response — ${label}, GET ${endpoint} → HTTP ${res.status}`);
+  if (!parsed)
+    throw new Error(`Unreadable response — ${label}, GET ${endpoint} → HTTP ${res.status}`);
   return parsed;
 }
-
 
 function num(v: unknown): number | null {
   const n = Number(v);
@@ -167,9 +167,11 @@ async function pullQuickBooks(tokens: StoredTokens): Promise<PulledData> {
     `https://quickbooks.api.intuit.com/v3/company/${realmId}/companyinfo/${realmId}?minorversion=70`,
     { Authorization: `Bearer ${t}` },
   );
-  const vendors = (await qboQuery(realmId, t, "select * from Vendor maxresults 200"))["Vendor"] ?? [];
+  const vendors =
+    (await qboQuery(realmId, t, "select * from Vendor maxresults 200"))["Vendor"] ?? [];
   const bills = (await qboQuery(realmId, t, "select * from Bill maxresults 200"))["Bill"] ?? [];
-  const payments = (await qboQuery(realmId, t, "select * from BillPayment maxresults 200"))["BillPayment"] ?? [];
+  const payments =
+    (await qboQuery(realmId, t, "select * from BillPayment maxresults 200"))["BillPayment"] ?? [];
 
   return {
     accountName: info["CompanyInfo"]?.CompanyName ?? "QuickBooks company",
@@ -191,7 +193,10 @@ async function pullQuickBooks(tokens: StoredTokens): Promise<PulledData> {
       due_date: dateOnly(b.DueDate),
       amount: num(b.TotalAmt),
       tax_amount: num(b.TxnTaxDetail?.TotalTax),
-      amount_paid: num(b.TotalAmt) !== null && num(b.Balance) !== null ? num(b.TotalAmt)! - num(b.Balance)! : null,
+      amount_paid:
+        num(b.TotalAmt) !== null && num(b.Balance) !== null
+          ? num(b.TotalAmt)! - num(b.Balance)!
+          : null,
       currency: b.CurrencyRef?.value ?? null,
       status: num(b.Balance) === 0 ? "PAID" : "OPEN",
       type: "bill",
@@ -289,7 +294,10 @@ async function pullZohoBooks(tokens: StoredTokens): Promise<PulledData> {
   const zohoAll = async (resource: string, key: string, step: string) => {
     const out: any[] = [];
     for (let page = 1; page <= 20; page++) {
-      const json = await zoho(`${resource}?organization_id=${orgId}&per_page=200&page=${page}`, step);
+      const json = await zoho(
+        `${resource}?organization_id=${orgId}&per_page=200&page=${page}`,
+        step,
+      );
       const rows = json[key] ?? [];
       out.push(...rows);
       const more = json["page_context"]?.has_more_page;
@@ -303,9 +311,11 @@ async function pullZohoBooks(tokens: StoredTokens): Promise<PulledData> {
   // Customer invoices are a separate resource from vendor bills — pull both.
   const salesInvoices = await zohoAll("invoices", "invoices", "invoices");
   const vendorPayments = await zohoAll("vendorpayments", "vendorpayments", "vendorpayments");
-  const customerPayments = await zohoAll("customerpayments", "customerpayments", "customerpayments");
-
-
+  const customerPayments = await zohoAll(
+    "customerpayments",
+    "customerpayments",
+    "customerpayments",
+  );
 
   const defaultCurrency = org.currency_code || "INR";
 
@@ -345,7 +355,8 @@ async function pullZohoBooks(tokens: StoredTokens): Promise<PulledData> {
         due_date: dateOnly(i.due_date),
         amount: num(i.total),
         tax_amount: num(i.tax_total),
-        amount_paid: num(i.total) !== null && num(i.balance) !== null ? num(i.total)! - num(i.balance)! : null,
+        amount_paid:
+          num(i.total) !== null && num(i.balance) !== null ? num(i.total)! - num(i.balance)! : null,
         currency: i.currency_code ?? defaultCurrency,
         status: i.status ?? "OPEN",
         type: "invoice",
@@ -369,7 +380,9 @@ async function pullZohoBooks(tokens: StoredTokens): Promise<PulledData> {
       ...customerPayments.map((p: any) => ({
         external_id: `customerpayment:${p.payment_id}`,
         reference: p.reference_number ?? null,
-        invoice_external_id: p.invoices?.[0]?.invoice_id ? `invoice:${p.invoices[0].invoice_id}` : null,
+        invoice_external_id: p.invoices?.[0]?.invoice_id
+          ? `invoice:${p.invoices[0].invoice_id}`
+          : null,
         vendor_name: p.customer_name ?? null,
         paid_date: dateOnly(p.date),
         amount: num(p.amount),
@@ -380,7 +393,6 @@ async function pullZohoBooks(tokens: StoredTokens): Promise<PulledData> {
         raw: p,
       })),
     ],
-
   };
 }
 

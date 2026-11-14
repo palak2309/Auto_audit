@@ -2,12 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  AlertCircle,
-  CheckCircle2,
-  MailWarning,
-  ShieldAlert,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, MailWarning, ShieldAlert } from "lucide-react";
 
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -24,8 +19,7 @@ export const Route = createFileRoute("/login")({
       { title: "Sign in — AutoAudit" },
       {
         name: "description",
-        content:
-          "Sign in to AutoAudit to review detected financial leakage and recovery progress.",
+        content: "Sign in to AutoAudit to review detected financial leakage and recovery progress.",
       },
       {
         property: "og:title",
@@ -33,8 +27,7 @@ export const Route = createFileRoute("/login")({
       },
       {
         property: "og:description",
-        content:
-          "Sign in to AutoAudit to review detected financial leakage and recovery progress.",
+        content: "Sign in to AutoAudit to review detected financial leakage and recovery progress.",
       },
     ],
   }),
@@ -54,22 +47,19 @@ const BANNERS: Record<
     tone: "bg-warning/10 text-warning",
     icon: MailWarning,
     title: "Your email is not confirmed yet.",
-    next:
-      "Open the confirmation link we emailed you, or send a new one from the verification screen.",
+    next: "Open the confirmation link we emailed you, or send a new one from the verification screen.",
   },
   confirmed: {
     tone: "bg-primary/10 text-primary",
     icon: CheckCircle2,
     title: "This account is confirmed and ready to sign in.",
-    next:
-      "Enter your password to continue. Use “Forgot?” if you no longer have it.",
+    next: "Enter your password to continue. Use “Forgot?” if you no longer have it.",
   },
   blocked: {
     tone: "bg-destructive/10 text-destructive",
     icon: ShieldAlert,
     title: "This account is blocked.",
-    next:
-      "An administrator has suspended access. Ask them to restore your account.",
+    next: "An administrator has suspended access. Ask them to restore your account.",
   },
 };
 
@@ -200,10 +190,7 @@ function LoginPage() {
       footer={
         <>
           No account?{" "}
-          <Link
-            to="/register"
-            className="font-medium text-primary hover:underline"
-          >
+          <Link to="/register" className="font-medium text-primary hover:underline">
             Create one
           </Link>
         </>
@@ -227,11 +214,7 @@ function LoginPage() {
                   <p className="opacity-90">{b.next}</p>
 
                   {status === "unconfirmed" ? (
-                    <Link
-                      to="/verify-email"
-                      search={{ email }}
-                      className="font-medium underline"
-                    >
+                    <Link to="/verify-email" search={{ email }} className="font-medium underline">
                       Resend verification email
                     </Link>
                   ) : null}
@@ -293,50 +276,17 @@ function LoginPage() {
         <div className="flex items-center gap-2">
           <Checkbox id="remember" defaultChecked />
 
-          <Label
-            htmlFor="remember"
-            className="text-sm font-normal text-muted-foreground"
-          >
+          <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground">
             Keep me signed in for 30 days
           </Label>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={loading}
-        >
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing in…" : "Sign in"}
         </Button>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={google}
-        >
+        <Button type="button" variant="outline" className="w-full" onClick={google}>
           Continue with Google
-        </Button>
-
-        <div className="relative my-2">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">or test locally</span>
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="secondary"
-          className="w-full font-medium"
-          onClick={() => {
-            toast.success("Signed in with Demo Admin Workspace.");
-            void navigate({ to: "/" });
-          }}
-        >
-          Sign in with Demo Workspace
         </Button>
       </form>
     </AuthLayout>

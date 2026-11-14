@@ -26,7 +26,14 @@ export interface CreateInvoiceItemInput {
 
 export interface CreateSalesInvoiceInput {
   customerId?: string | null | undefined;
-  documentType?: "tax_invoice" | "quotation" | "proforma" | "sales_order" | "credit_note" | "delivery_challan" | undefined;
+  documentType?:
+    | "tax_invoice"
+    | "quotation"
+    | "proforma"
+    | "sales_order"
+    | "credit_note"
+    | "delivery_challan"
+    | undefined;
   invoiceNumber?: string | undefined;
   referenceNumber?: string | null | undefined;
   invoiceDate?: string | undefined;
@@ -43,23 +50,27 @@ export interface CreateSalesInvoiceInput {
 
 export const listSalesInvoices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: {
-    documentType?: string | undefined;
-    status?: string | undefined;
-    customerId?: string | undefined;
-    search?: string | undefined;
-    fromDate?: string | undefined;
-    toDate?: string | undefined;
-    limit?: number | undefined;
-  }) => input ?? {})
+  .validator(
+    (input?: {
+      documentType?: string | undefined;
+      status?: string | undefined;
+      customerId?: string | undefined;
+      search?: string | undefined;
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      limit?: number | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("sales_invoices")
-      .select(`
+      .select(
+        `
         *,
         customer:customers(id, name, company_name, phone, gstin)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .order("invoice_date", { ascending: false })
       .order("created_at", { ascending: false });
@@ -111,10 +122,12 @@ export const getSalesInvoice = createServerFn({ method: "POST" })
 
     const { data: invoice, error: invErr } = await admin
       .from("sales_invoices")
-      .select(`
+      .select(
+        `
         *,
         customer:customers(*)
-      `)
+      `,
+      )
       .eq("id", data.id)
       .eq("user_id", context.userId)
       .single();
@@ -325,9 +338,7 @@ export const createSalesInvoice = createServerFn({ method: "POST" })
       };
     });
 
-    const { error: itemsErr } = await admin
-      .from("sales_invoice_items")
-      .insert(itemInserts);
+    const { error: itemsErr } = await admin.from("sales_invoice_items").insert(itemInserts);
 
     if (itemsErr) {
       console.error("Error inserting invoice items:", itemsErr);

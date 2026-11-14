@@ -16,9 +16,16 @@ export const Route = createFileRoute("/_shell/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics — AutoAudit" },
-      { name: "description", content: "Spend, exposure and vendor concentration computed from the records imported from your accounting systems." },
+      {
+        name: "description",
+        content:
+          "Spend, exposure and vendor concentration computed from the records imported from your accounting systems.",
+      },
       { property: "og:title", content: "Analytics — AutoAudit" },
-      { property: "og:description", content: "Spend and exposure analytics from your imported records." },
+      {
+        property: "og:description",
+        content: "Spend and exposure analytics from your imported records.",
+      },
     ],
   }),
   component: AnalyticsPage,
@@ -39,7 +46,11 @@ function AnalyticsPage() {
   if (!isLoading && !data?.connected) {
     return (
       <>
-        <PageHeader title="Analytics" description="Spend, exposure and vendor concentration from your imported records." crumbs={[{ label: "Analytics" }]} />
+        <PageHeader
+          title="Analytics"
+          description="Spend, exposure and vendor concentration from your imported records."
+          crumbs={[{ label: "Analytics" }]}
+        />
         <NoImportedData />
       </>
     );
@@ -56,11 +67,18 @@ function AnalyticsPage() {
         <ChartCard
           title="Invoiced vs. detected exposure"
           description="Last 12 months of imported activity"
-          action={<ToneBadge tone="brand">{compactCurrencyIn(data?.totals.spend ?? 0, code)} invoiced</ToneBadge>}
+          action={
+            <ToneBadge tone="brand">
+              {compactCurrencyIn(data?.totals.spend ?? 0, code)} invoiced
+            </ToneBadge>
+          }
         >
           <SavingsTrendChart data={trend} />
         </ChartCard>
-        <ChartCard title="Findings by severity" description="Open findings from the latest analysis">
+        <ChartCard
+          title="Findings by severity"
+          description="Open findings from the latest analysis"
+        >
           <AnomalyBarChart data={severity} />
         </ChartCard>
         <ChartCard title="Spend concentration" description="Share of billed value by top party">

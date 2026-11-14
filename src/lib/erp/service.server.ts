@@ -20,16 +20,24 @@ async function admin() {
 
 export async function configuredProviders(): Promise<string[]> {
   const dbIds = await dbConfiguredProviderIds();
-  const envIds = ERP_PROVIDERS.filter((p) => p.oauth && envProviderConfigured(p.id)).map((p) => p.id);
+  const envIds = ERP_PROVIDERS.filter((p) => p.oauth && envProviderConfigured(p.id)).map(
+    (p) => p.id,
+  );
   return [...new Set([...dbIds, ...envIds])];
 }
 
-export async function providerConfigStatus(): Promise<Array<{ provider: string; configured: boolean; source: "database" | "env" | "none" }>> {
+export async function providerConfigStatus(): Promise<
+  Array<{ provider: string; configured: boolean; source: "database" | "env" | "none" }>
+> {
   const dbIds = new Set(await dbConfiguredProviderIds());
   return ERP_PROVIDERS.filter((p) => p.oauth).map((p) => ({
     provider: p.id,
     configured: dbIds.has(p.id) || envProviderConfigured(p.id),
-    source: dbIds.has(p.id) ? ("database" as const) : envProviderConfigured(p.id) ? ("env" as const) : ("none" as const),
+    source: dbIds.has(p.id)
+      ? ("database" as const)
+      : envProviderConfigured(p.id)
+        ? ("env" as const)
+        : ("none" as const),
   }));
 }
 
@@ -59,7 +67,10 @@ export async function beginOAuth(userId: string, provider: string, origin: strin
   }
   const state = randomBytes(24).toString("hex");
   const db = await admin();
-  const safeOrigin = origin && origin !== "null" && origin !== "undefined" ? origin : "https://auto-audit-nu.vercel.app";
+  const safeOrigin =
+    origin && origin !== "null" && origin !== "undefined"
+      ? origin
+      : "https://auto-audit-nu.vercel.app";
   const { error } = await db.from("erp_oauth_states").insert({
     state,
     user_id: userId,
@@ -89,9 +100,15 @@ export async function completeOAuth(params: {
 
   const provider = stateRow.provider as string;
   const userId = stateRow.user_id as string;
-  const effectiveOrigin = params.origin || (stateRow.origin as string) || "https://auto-audit-nu.vercel.app";
+  const effectiveOrigin =
+    params.origin || (stateRow.origin as string) || "https://auto-audit-nu.vercel.app";
   const { exchangeCode } = await import("./oauth.server");
-  let tokens: StoredTokens = await exchangeCode(provider, params.code, effectiveOrigin, params.accountsServer);
+  let tokens: StoredTokens = await exchangeCode(
+    provider,
+    params.code,
+    effectiveOrigin,
+    params.accountsServer,
+  );
   if (params.realmId) tokens = { ...tokens, realm_id: params.realmId };
   if (params.accountsServer) tokens = { ...tokens, auth_server: params.accountsServer };
 
@@ -109,7 +126,9 @@ export async function completeOAuth(params: {
       ca: "https://www.zohoapis.ca",
     };
     if (!tokens.api_domain) {
-      const locationDomain = params.location ? LOCATION_TO_DOMAIN[params.location.toLowerCase()] : undefined;
+      const locationDomain = params.location
+        ? LOCATION_TO_DOMAIN[params.location.toLowerCase()]
+        : undefined;
       if (locationDomain) {
         tokens = { ...tokens, api_domain: locationDomain };
       } else {
@@ -167,7 +186,11 @@ export async function completeOAuth(params: {
 
 export async function disconnectFor(userId: string, connectionId: string) {
   const db = await admin();
-  const { error } = await db.from("erp_connections").delete().eq("id", connectionId).eq("user_id", userId);
+  const { error } = await db
+    .from("erp_connections")
+    .delete()
+    .eq("id", connectionId)
+    .eq("user_id", userId);
   if (error) throw new Error(error.message);
   return { ok: true };
 }
@@ -182,7 +205,8 @@ export async function syncConnectionFor(userId: string, connectionId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!conn) throw new Error("Connection not found");
-  if (!conn.credentials_ciphertext) throw new Error("This connection has no stored credentials — reconnect it.");
+  if (!conn.credentials_ciphertext)
+    throw new Error("This connection has no stored credentials — reconnect it.");
 
   const { data: run } = await db
     .from("erp_sync_runs")
@@ -243,15 +267,21 @@ export async function syncConnectionFor(userId: string, connectionId: string) {
     }));
 
     if (vendorRows.length) {
-      const { error: e } = await db.from("erp_vendors").upsert(vendorRows, { onConflict: "connection_id,external_id" });
+      const { error: e } = await db
+        .from("erp_vendors")
+        .upsert(vendorRows, { onConflict: "connection_id,external_id" });
       if (e) throw new Error(e.message);
     }
     if (invoiceRows.length) {
-      const { error: e } = await db.from("erp_invoices").upsert(invoiceRows as any, { onConflict: "connection_id,external_id" });
+      const { error: e } = await db
+        .from("erp_invoices")
+        .upsert(invoiceRows as any, { onConflict: "connection_id,external_id" });
       if (e) throw new Error(e.message);
     }
     if (paymentRows.length) {
-      const { error: e } = await db.from("erp_payments").upsert(paymentRows as any, { onConflict: "connection_id,external_id" });
+      const { error: e } = await db
+        .from("erp_payments")
+        .upsert(paymentRows as any, { onConflict: "connection_id,external_id" });
       if (e) throw new Error(e.message);
     }
 
@@ -291,7 +321,11 @@ export async function syncConnectionFor(userId: string, connectionId: string) {
       };
     } catch (persistErr) {
       const message = persistErr instanceof Error ? persistErr.message : String(persistErr);
-      console.error("[AutoAudit Persistence] Failed to persist detected leaks for user:", userId, message);
+      console.error(
+        "[AutoAudit Persistence] Failed to persist detected leaks for user:",
+        userId,
+        message,
+      );
       persistenceResult.error = message;
     }
 
@@ -306,7 +340,10 @@ export async function syncConnectionFor(userId: string, connectionId: string) {
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    await db.from("erp_connections").update({ status: "error", last_error: message }).eq("id", connectionId);
+    await db
+      .from("erp_connections")
+      .update({ status: "error", last_error: message })
+      .eq("id", connectionId);
     if (run) {
       await db
         .from("erp_sync_runs")

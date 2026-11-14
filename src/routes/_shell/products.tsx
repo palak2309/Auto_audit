@@ -19,7 +19,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listProducts,
   saveProduct,
@@ -37,7 +43,10 @@ export const Route = createFileRoute("/_shell/products")({
   head: () => ({
     meta: [
       { title: "Products & Inventory — Auto Audit" },
-      { name: "description", content: "Manage product catalog, prices, GST tax rates and real-time stock levels." },
+      {
+        name: "description",
+        content: "Manage product catalog, prices, GST tax rates and real-time stock levels.",
+      },
     ],
   }),
   component: ProductsPage,
@@ -280,7 +289,12 @@ function ProductsPage() {
               <Tag className="w-4 h-4 mr-1.5" />
               Categories
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={products.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={products.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -376,7 +390,9 @@ function ProductsPage() {
                       <td className="py-3 px-4">
                         <div className="font-semibold text-foreground">{p.name}</div>
                         {p.batch_number && (
-                          <div className="text-xs text-muted-foreground">Batch: {p.batch_number}</div>
+                          <div className="text-xs text-muted-foreground">
+                            Batch: {p.batch_number}
+                          </div>
                         )}
                       </td>
                       <td className="py-3 px-3 text-xs font-mono text-muted-foreground">
@@ -527,25 +543,33 @@ function ProductsPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground">Selling Price (Rs.) *</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Selling Price (Rs.) *
+                </label>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
                   required
                   value={formData.sellingPrice}
-                  onChange={(e) => setFormData({ ...formData, sellingPrice: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sellingPrice: parseFloat(e.target.value) || 0 })
+                  }
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground">Purchase Price (Rs.)</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Purchase Price (Rs.)
+                </label>
                 <Input
                   type="number"
                   step="0.01"
                   min="0"
                   value={formData.purchasePrice}
-                  onChange={(e) => setFormData({ ...formData, purchasePrice: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, purchasePrice: parseFloat(e.target.value) || 0 })
+                  }
                 />
               </div>
 
@@ -553,7 +577,9 @@ function ProductsPage() {
                 <label className="text-xs font-semibold text-foreground">GST Tax Rate (%)</label>
                 <select
                   value={formData.taxRate}
-                  onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })
+                  }
                   className="w-full h-9 px-3 rounded-md border text-sm bg-background mt-1"
                 >
                   {STANDARD_GST_RATES.map((r) => (
@@ -572,35 +598,48 @@ function ProductsPage() {
                   onChange={(e) => setFormData({ ...formData, taxInclusive: e.target.checked })}
                   className="rounded border"
                 />
-                <label htmlFor="taxInclusive" className="text-xs font-medium text-foreground cursor-pointer">
+                <label
+                  htmlFor="taxInclusive"
+                  className="text-xs font-medium text-foreground cursor-pointer"
+                >
                   Selling Price includes GST
                 </label>
               </div>
 
               {!editingProduct && (
                 <div>
-                  <label className="text-xs font-semibold text-foreground">Opening Stock Quantity</label>
+                  <label className="text-xs font-semibold text-foreground">
+                    Opening Stock Quantity
+                  </label>
                   <Input
                     type="number"
                     min="0"
                     value={formData.openingStock}
-                    onChange={(e) => setFormData({ ...formData, openingStock: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, openingStock: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-foreground">Low Stock Alert Threshold</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Low Stock Alert Threshold
+                </label>
                 <Input
                   type="number"
                   min="0"
                   value={formData.lowStockThreshold}
-                  onChange={(e) => setFormData({ ...formData, lowStockThreshold: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lowStockThreshold: parseFloat(e.target.value) || 0 })
+                  }
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground">Batch Number (Optional)</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Batch Number (Optional)
+                </label>
                 <Input
                   placeholder="e.g. B2409"
                   value={formData.batchNumber}
@@ -609,7 +648,9 @@ function ProductsPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground">Expiry Date (Optional)</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Expiry Date (Optional)
+                </label>
                 <Input
                   type="date"
                   value={formData.expiryDate}
@@ -667,7 +708,9 @@ function ProductsPage() {
                 step="any"
                 required
                 value={adjustData.quantity}
-                onChange={(e) => setAdjustData({ ...adjustData, quantity: parseFloat(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setAdjustData({ ...adjustData, quantity: parseFloat(e.target.value) || 0 })
+                }
               />
             </div>
 
@@ -708,7 +751,9 @@ function ProductsPage() {
 
             <div className="divide-y max-h-60 overflow-y-auto border rounded-lg">
               {categories.length === 0 ? (
-                <div className="p-4 text-center text-xs text-muted-foreground">No categories added yet</div>
+                <div className="p-4 text-center text-xs text-muted-foreground">
+                  No categories added yet
+                </div>
               ) : (
                 categories.map((c) => (
                   <div key={c.id} className="p-2.5 flex justify-between items-center text-sm">

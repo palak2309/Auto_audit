@@ -30,7 +30,8 @@ export const Route = createFileRoute("/_shell/settings")({
       { title: "Business Settings & Profile — Auto Audit" },
       {
         name: "description",
-        content: "Configure business details, GSTIN, bank accounts, UPI ID, invoice templates and workspace preferences.",
+        content:
+          "Configure business details, GSTIN, bank accounts, UPI ID, invoice templates and workspace preferences.",
       },
       { property: "og:title", content: "Settings — Auto Audit" },
       {
@@ -299,7 +300,9 @@ function SettingsPage() {
 
             {/* Bank & UPI Section */}
             <div className="md:col-span-3 border-t pt-4 mt-2">
-              <h3 className="text-sm font-semibold text-foreground mb-1">Bank & UPI Settlement Accounts</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-1">
+                Bank & UPI Settlement Accounts
+              </h3>
               <p className="text-xs text-muted-foreground">
                 Printed on invoices so your customers can transfer money directly to your account.
               </p>
@@ -396,13 +399,21 @@ function SettingsPage() {
 
         {/* Detection & Audit Guardrails */}
         <section className="surface-card p-6 space-y-4">
-          <h2 className="text-sm font-semibold border-b border-border pb-3">Automated Leakage Detection Rules</h2>
+          <h2 className="text-sm font-semibold border-b border-border pb-3">
+            Automated Leakage Detection Rules
+          </h2>
           <div className="space-y-4">
             {[
-              ["Duplicate purchase bill guardrail", "Flags identical bill numbers and amounts across vendors"],
+              [
+                "Duplicate purchase bill guardrail",
+                "Flags identical bill numbers and amounts across vendors",
+              ],
               ["Duplicate payment detector", "Holds duplicate transactions before bank settlement"],
               ["Overpayment alerts", "Warns when bill payment exceeds total invoice liability"],
-              ["Dormant vendor alert", "Alerts when invoices arrive from vendors inactive > 180 days"],
+              [
+                "Dormant vendor alert",
+                "Alerts when invoices arrive from vendors inactive > 180 days",
+              ],
             ].map(([t, d]) => (
               <div key={t} className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
@@ -418,31 +429,53 @@ function SettingsPage() {
         {/* Appearance & Theme */}
         <section className="surface-card p-6 space-y-3">
           <h2 className="text-sm font-semibold">Appearance & UI Theme</h2>
-          <p className="text-xs text-muted-foreground">Switch between light and dark presentation.</p>
+          <p className="text-xs text-muted-foreground">
+            Switch between light and dark presentation.
+          </p>
           <Button variant="outline" size="sm" className="mt-2" onClick={toggleTheme}>
             Switch to {theme === "dark" ? "light" : "dark"} mode
           </Button>
 
           <div className="pt-4 border-t border-border mt-4">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2">Connected Accounting Systems</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+              Connected Accounting Systems
+            </h3>
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium">Auto Audit Rule Engine</span>
-              <ToneBadge tone="success" size="sm">Active (Real-time)</ToneBadge>
+              <ToneBadge tone="success" size="sm">
+                Active (Real-time)
+              </ToneBadge>
             </div>
           </div>
         </section>
 
         {/* Legal & Statutory Information */}
         <section className="surface-card p-6 space-y-3 lg:col-span-2">
-          <h2 className="text-sm font-semibold border-b border-border pb-3">Legal & Statutory Information</h2>
+          <h2 className="text-sm font-semibold border-b border-border pb-3">
+            Legal & Statutory Information
+          </h2>
           <div className="text-xs text-muted-foreground space-y-2">
-            <p><strong className="text-foreground">Operating Platform:</strong> Auto Audit Business & Financial Management</p>
-            <p><strong className="text-foreground">Compliance:</strong> Indian GST (CGST/SGST/IGST), DPDP Act & Statutory Accounting Standards</p>
+            <p>
+              <strong className="text-foreground">Operating Platform:</strong> Auto Audit Business &
+              Financial Management
+            </p>
+            <p>
+              <strong className="text-foreground">Compliance:</strong> Indian GST (CGST/SGST/IGST),
+              DPDP Act & Statutory Accounting Standards
+            </p>
             <div className="pt-2 flex flex-wrap gap-3 font-medium">
-              <a href="/privacy-policy" className="text-primary underline">Privacy Policy</a>
-              <a href="/terms-and-conditions" className="text-primary underline">Terms & Conditions</a>
-              <a href="/cookie-policy" className="text-primary underline">Cookie Policy</a>
-              <a href="/refund-policy" className="text-primary underline">Refund Policy</a>
+              <a href="/privacy-policy" className="text-primary underline">
+                Privacy Policy
+              </a>
+              <a href="/terms-and-conditions" className="text-primary underline">
+                Terms & Conditions
+              </a>
+              <a href="/cookie-policy" className="text-primary underline">
+                Cookie Policy
+              </a>
+              <a href="/refund-policy" className="text-primary underline">
+                Refund Policy
+              </a>
             </div>
           </div>
         </section>

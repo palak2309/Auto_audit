@@ -20,7 +20,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listPayments,
   recordPayment,
@@ -39,7 +45,11 @@ export const Route = createFileRoute("/_shell/payments")({
   head: () => ({
     meta: [
       { title: "Payments & Cashbook — Auto Audit" },
-      { name: "description", content: "Track payment-in collections, payment-out expenses, cash in hand and bank account balances." },
+      {
+        name: "description",
+        content:
+          "Track payment-in collections, payment-out expenses, cash in hand and bank account balances.",
+      },
     ],
   }),
   component: PaymentsPage,
@@ -251,7 +261,12 @@ function PaymentsPage() {
         description="Manage cash collections, bank payouts, settle invoices and monitor real-time liquidity."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={payments.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={payments.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -264,7 +279,11 @@ function PaymentsPage() {
               <ArrowUpRight className="w-4 h-4 mr-1.5" />
               Payment-Out
             </Button>
-            <Button size="sm" onClick={handleOpenPaymentIn} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              size="sm"
+              onClick={handleOpenPaymentIn}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               <ArrowDownLeft className="w-4 h-4 mr-1.5" />
               Payment-In
             </Button>
@@ -276,7 +295,9 @@ function PaymentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-4 bg-card rounded-xl border flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase">Cash in Hand</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase">
+              Cash in Hand
+            </span>
             <p className="text-2xl font-bold font-mono text-emerald-600 mt-1">
               {currencyIn(balances?.cashInHand ?? 0, "INR")}
             </p>
@@ -289,7 +310,9 @@ function PaymentsPage() {
 
         <div className="p-4 bg-card rounded-xl border flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase">Bank Balance</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase">
+              Bank Balance
+            </span>
             <p className="text-2xl font-bold font-mono text-blue-600 mt-1">
               {currencyIn(balances?.bankBalance ?? 0, "INR")}
             </p>
@@ -302,7 +325,9 @@ function PaymentsPage() {
 
         <div className="p-4 bg-card rounded-xl border flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold text-muted-foreground uppercase">Total Liquidity</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase">
+              Total Liquidity
+            </span>
             <p className="text-2xl font-bold font-mono text-foreground mt-1">
               {currencyIn(balances?.totalLiquidity ?? 0, "INR")}
             </p>
@@ -369,10 +394,16 @@ function PaymentsPage() {
                 ) : (
                   (erpData?.payments ?? []).map((r: any, idx: number) => (
                     <tr key={r.id || idx} className="hover:bg-muted/30">
-                      <td className="py-3 px-4 font-mono font-medium">{r.reference || r.external_id}</td>
+                      <td className="py-3 px-4 font-mono font-medium">
+                        {r.reference || r.external_id}
+                      </td>
                       <td className="py-3 px-3">{r.vendor_name || "—"}</td>
-                      <td className="py-3 px-3 capitalize text-xs text-muted-foreground">{r.method || "Cash"}</td>
-                      <td className="py-3 px-3 text-xs text-muted-foreground">{dateShort(r.paid_date)}</td>
+                      <td className="py-3 px-3 capitalize text-xs text-muted-foreground">
+                        {r.method || "Cash"}
+                      </td>
+                      <td className="py-3 px-3 text-xs text-muted-foreground">
+                        {dateShort(r.paid_date)}
+                      </td>
                       <td className="py-3 px-3 text-right font-mono font-bold text-foreground">
                         {currencyIn(r.amount, "INR")}
                       </td>
@@ -414,7 +445,11 @@ function PaymentsPage() {
                         Record your cash and bank payments to keep balances synchronized.
                       </p>
                       <div className="flex justify-center gap-2 mt-4">
-                        <Button size="sm" onClick={handleOpenPaymentIn} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                        <Button
+                          size="sm"
+                          onClick={handleOpenPaymentIn}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
                           <ArrowDownLeft className="w-4 h-4 mr-1.5" />
                           Payment-In
                         </Button>
@@ -430,23 +465,35 @@ function PaymentsPage() {
                     const isIn = p.payment_type === "payment_in";
                     return (
                       <tr key={p.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="py-3 px-4 font-mono font-medium text-foreground">{p.payment_number}</td>
+                        <td className="py-3 px-4 font-mono font-medium text-foreground">
+                          {p.payment_number}
+                        </td>
                         <td className="py-3 px-3">
                           <span
                             className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold ${
-                              isIn ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                              isIn
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-amber-100 text-amber-800"
                             }`}
                           >
-                            {isIn ? <ArrowDownLeft className="w-3 h-3" /> : <ArrowUpRight className="w-3 h-3" />}
+                            {isIn ? (
+                              <ArrowDownLeft className="w-3 h-3" />
+                            ) : (
+                              <ArrowUpRight className="w-3 h-3" />
+                            )}
                             {isIn ? "Received" : "Paid Out"}
                           </span>
                         </td>
                         <td className="py-3 px-3">
                           <div className="font-medium text-foreground">
-                            {(p.customer as any)?.name || (p.supplier as any)?.name || "Direct Party"}
+                            {(p.customer as any)?.name ||
+                              (p.supplier as any)?.name ||
+                              "Direct Party"}
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-xs text-muted-foreground">{dateShort(p.payment_date)}</td>
+                        <td className="py-3 px-3 text-xs text-muted-foreground">
+                          {dateShort(p.payment_date)}
+                        </td>
                         <td className="py-3 px-3 text-xs capitalize text-muted-foreground">
                           {p.payment_mode.replace("_", " ")}
                         </td>
@@ -456,7 +503,9 @@ function PaymentsPage() {
                           </span>
                         </td>
                         <td className="py-3 px-3 text-xs font-mono text-muted-foreground">
-                          {(p.invoice as any)?.invoice_number || (p.bill as any)?.bill_number || "-"}
+                          {(p.invoice as any)?.invoice_number ||
+                            (p.bill as any)?.bill_number ||
+                            "-"}
                         </td>
                       </tr>
                     );

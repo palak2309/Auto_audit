@@ -35,7 +35,8 @@ function ShellLayout() {
           </div>
           <h1 className="mt-4 text-lg font-semibold">Your access has been suspended</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            An administrator of this workspace has paused your account. Contact them to restore access.
+            An administrator of this workspace has paused your account. Contact them to restore
+            access.
           </p>
           <Button className="mt-5" onClick={() => void signOut()}>
             Sign out
@@ -51,4 +52,3 @@ function ShellLayout() {
     </AppShell>
   );
 }
-

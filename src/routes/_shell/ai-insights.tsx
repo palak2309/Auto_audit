@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { AlertTriangle, Brain, CheckCircle2, RefreshCw, Sparkles, WandSparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  Brain,
+  CheckCircle2,
+  RefreshCw,
+  Sparkles,
+  WandSparkles,
+} from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { ToneBadge } from "@/components/common/tone-badge";
 import { NoImportedData } from "@/components/common/no-data";
@@ -18,10 +25,14 @@ export const Route = createFileRoute("/_shell/ai-insights")({
       { title: "AI Insights — AutoAudit" },
       {
         name: "description",
-        content: "Plain-language explanations and prioritised actions generated from the findings in your imported financial records.",
+        content:
+          "Plain-language explanations and prioritised actions generated from the findings in your imported financial records.",
       },
       { property: "og:title", content: "AI Insights — AutoAudit" },
-      { property: "og:description", content: "Explainable findings across your imported financial records." },
+      {
+        property: "og:description",
+        content: "Explainable findings across your imported financial records.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -43,7 +54,11 @@ function AiInsightsPage() {
   if (!isLoading && !data?.connected) {
     return (
       <>
-        <PageHeader title="AI insights" description="Explanations generated from your imported records." crumbs={[{ label: "AI Insights" }]} />
+        <PageHeader
+          title="AI insights"
+          description="Explanations generated from your imported records."
+          crumbs={[{ label: "AI Insights" }]}
+        />
         <NoImportedData />
       </>
     );
@@ -57,7 +72,12 @@ function AiInsightsPage() {
         crumbs={[{ label: "AI Insights" }]}
         actions={
           <>
-            <Button variant="outline" className="gap-2" disabled={aiAnalysis.isFetching || !data?.connected} onClick={runAiAnalysis}>
+            <Button
+              variant="outline"
+              className="gap-2"
+              disabled={aiAnalysis.isFetching || !data?.connected}
+              onClick={runAiAnalysis}
+            >
               <WandSparkles className={`size-4 ${aiAnalysis.isFetching ? "animate-pulse" : ""}`} />
               {aiAnalysis.isFetching ? "AI scan running" : "Run AI scan"}
             </Button>
@@ -82,34 +102,64 @@ function AiInsightsPage() {
             <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <ToneBadge tone="violet" dot>AI control review</ToneBadge>
-                  <ToneBadge tone={aiAnalysis.data.riskLevel === "critical" || aiAnalysis.data.riskLevel === "high" ? "danger" : aiAnalysis.data.riskLevel === "moderate" ? "warning" : "success"}>
+                  <ToneBadge tone="violet" dot>
+                    AI control review
+                  </ToneBadge>
+                  <ToneBadge
+                    tone={
+                      aiAnalysis.data.riskLevel === "critical" ||
+                      aiAnalysis.data.riskLevel === "high"
+                        ? "danger"
+                        : aiAnalysis.data.riskLevel === "moderate"
+                          ? "warning"
+                          : "success"
+                    }
+                  >
                     {aiAnalysis.data.riskLevel} risk
                   </ToneBadge>
                 </div>
                 <h2 className="mt-3 text-lg font-semibold">AI leakage assessment</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted-foreground">{aiAnalysis.data.summary}</p>
+                <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                  {aiAnalysis.data.summary}
+                </p>
               </div>
               <div className="rounded-xl border border-primary/15 bg-primary/5 px-5 py-4 lg:min-w-48">
                 <p className="text-xs text-muted-foreground">Estimated exposure</p>
-                <p className="mt-1 text-2xl font-semibold tabular-nums">{currencyIn(aiAnalysis.data.estimatedExposure, aiAnalysis.data.currency)}</p>
+                <p className="mt-1 text-2xl font-semibold tabular-nums">
+                  {currencyIn(aiAnalysis.data.estimatedExposure, aiAnalysis.data.currency)}
+                </p>
               </div>
             </div>
-            {(aiAnalysis.data.recommendations.length > 0 || aiAnalysis.data.limitations.length > 0) && (
+            {(aiAnalysis.data.recommendations.length > 0 ||
+              aiAnalysis.data.limitations.length > 0) && (
               <div className="grid gap-4 border-t border-border/70 bg-muted/25 p-5 lg:grid-cols-2">
                 {aiAnalysis.data.recommendations.length > 0 && (
                   <div>
-                    <h3 className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4 text-success" /> Recommended controls</h3>
+                    <h3 className="flex items-center gap-2 text-sm font-semibold">
+                      <CheckCircle2 className="size-4 text-success" /> Recommended controls
+                    </h3>
                     <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                      {aiAnalysis.data.recommendations.map((item) => <li key={item} className="flex gap-2"><span className="text-success">•</span><span>{item}</span></li>)}
+                      {aiAnalysis.data.recommendations.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="text-success">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
                 {aiAnalysis.data.limitations.length > 0 && (
                   <div>
-                    <h3 className="flex items-center gap-2 text-sm font-semibold"><AlertTriangle className="size-4 text-warning" /> Review notes</h3>
+                    <h3 className="flex items-center gap-2 text-sm font-semibold">
+                      <AlertTriangle className="size-4 text-warning" /> Review notes
+                    </h3>
                     <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                      {aiAnalysis.data.limitations.map((item) => <li key={item} className="flex gap-2"><span className="text-warning">•</span><span>{item}</span></li>)}
+                      {aiAnalysis.data.limitations.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="text-warning">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
@@ -120,17 +170,49 @@ function AiInsightsPage() {
           {aiAnalysis.data.findings.length > 0 && (
             <div className="grid gap-4 lg:grid-cols-2">
               {aiAnalysis.data.findings.map((finding, i) => (
-                <motion.article key={finding.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="surface-card p-5">
+                <motion.article
+                  key={finding.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="surface-card p-5"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2"><ToneBadge tone="muted" size="sm">{finding.category}</ToneBadge><ToneBadge tone={finding.severity === "critical" || finding.severity === "high" ? "danger" : finding.severity === "medium" ? "warning" : "muted"} size="sm">{finding.severity}</ToneBadge></div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <ToneBadge tone="muted" size="sm">
+                          {finding.category}
+                        </ToneBadge>
+                        <ToneBadge
+                          tone={
+                            finding.severity === "critical" || finding.severity === "high"
+                              ? "danger"
+                              : finding.severity === "medium"
+                                ? "warning"
+                                : "muted"
+                          }
+                          size="sm"
+                        >
+                          {finding.severity}
+                        </ToneBadge>
+                      </div>
                       <h3 className="mt-3 text-sm font-semibold">{finding.title}</h3>
                     </div>
-                    <span className="shrink-0 text-sm font-semibold tabular-nums">{currencyIn(finding.amount, finding.currency)}</span>
+                    <span className="shrink-0 text-sm font-semibold tabular-nums">
+                      {currencyIn(finding.amount, finding.currency)}
+                    </span>
                   </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{finding.evidence}</p>
-                  <div className="mt-4 border-t border-border/70 pt-3 text-sm"><span className="font-medium">Next control: </span><span className="text-muted-foreground">{finding.recommendation}</span></div>
-                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground"><span>AI confidence</span><span>{percent(finding.confidence)}</span></div>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {finding.evidence}
+                  </p>
+                  <div className="mt-4 border-t border-border/70 pt-3 text-sm">
+                    <span className="font-medium">Next control: </span>
+                    <span className="text-muted-foreground">{finding.recommendation}</span>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                    <span>AI confidence</span>
+                    <span>{percent(finding.confidence)}</span>
+                  </div>
                   <Progress value={finding.confidence * 100} className="mt-1.5 h-1.5" />
                 </motion.article>
               ))}
@@ -171,13 +253,16 @@ function AiInsightsPage() {
                     <div className="min-w-0">
                       <h3 className="text-sm font-semibold">{insight.title}</h3>
                       <p className="text-xs text-muted-foreground">
-                        {insight.category} · {insight.count} {insight.count === 1 ? "finding" : "findings"}
+                        {insight.category} · {insight.count}{" "}
+                        {insight.count === 1 ? "finding" : "findings"}
                       </p>
                     </div>
                   </div>
                   <ToneBadge tone="success">{currencyIn(insight.impact, code)}</ToneBadge>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{insight.summary}</p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {insight.summary}
+                </p>
                 <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
                   <span>Detection confidence</span>
                   <span>{percent(insight.confidence)}</span>
@@ -189,7 +274,10 @@ function AiInsightsPage() {
         </div>
 
         <div className="space-y-4">
-          <ChartCard title="Exposure over time" description="Invoiced vs detected exposure by month">
+          <ChartCard
+            title="Exposure over time"
+            description="Invoiced vs detected exposure by month"
+          >
             <RecoveryLineChart data={data?.detectedByMonth ?? []} />
           </ChartCard>
           <div className="surface-card p-5">
@@ -224,7 +312,9 @@ function AiInsightsPage() {
                   </ToneBadge>
                 </li>
               ))}
-              {leaks.length === 0 && <li className="text-sm text-muted-foreground">Nothing flagged.</li>}
+              {leaks.length === 0 && (
+                <li className="text-sm text-muted-foreground">Nothing flagged.</li>
+              )}
             </ul>
           </div>
         </div>

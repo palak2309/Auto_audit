@@ -13,7 +13,11 @@ export interface AccountStatus {
  * tell the user exactly what to do next.
  */
 export const getAccountStatus = createServerFn({ method: "POST" })
-  .validator((input: { email: string }) => ({ email: String(input.email ?? "").trim().toLowerCase() }))
+  .validator((input: { email: string }) => ({
+    email: String(input.email ?? "")
+      .trim()
+      .toLowerCase(),
+  }))
   .handler(async ({ data }): Promise<AccountStatus> => {
     if (!data.email || !data.email.includes("@")) return { state: "unknown", email: data.email };
     if (!process.env["SUPABASE_SERVICE_ROLE_KEY"] && !process.env["SUPABASE_SECRET_KEY"]) {
@@ -37,7 +41,8 @@ export const getAccountStatus = createServerFn({ method: "POST" })
         .select("status")
         .eq("id", user.id)
         .maybeSingle();
-      if (profile?.status && profile.status !== "active") return { state: "blocked", email: data.email };
+      if (profile?.status && profile.status !== "active")
+        return { state: "blocked", email: data.email };
 
       return { state: user.email_confirmed_at ? "confirmed" : "unconfirmed", email: data.email };
     } catch (error) {
@@ -79,3 +84,28 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Permanently deletes the authenticated user's account and all associated tenant data.
+ * Complies with Apple App Store Account Deletion guidelines & GDPR/DPDP Right to Erasure.
+ */
+export const deleteMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = context.userId;
+
+    if (!userId) {
+      throw new Error("Unauthorized: Invalid user session");
+    }
+
+    // Explicitly delete user record from Supabase Auth admin API.
+    // Foreign key constraints on all 27 tables have ON DELETE CASCADE,
+    // which automatically purges all invoices, bills, payments, customers, leaks, and profiles.
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (error) {
+      console.error("[Account Deletion Error]:", error);
+      throw new Error(`Failed to delete account: ${error.message}`);
+    }
+
+    return { success: true };
+  });

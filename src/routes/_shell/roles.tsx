@@ -23,12 +23,14 @@ export const Route = createFileRoute("/_shell/roles")({
       { title: "Roles & Permissions — AutoAudit" },
       {
         name: "description",
-        content: "Live role definitions and an editable permission matrix enforced across AutoAudit.",
+        content:
+          "Live role definitions and an editable permission matrix enforced across AutoAudit.",
       },
       { property: "og:title", content: "Roles & Permissions — AutoAudit" },
       {
         property: "og:description",
-        content: "Live role definitions and an editable permission matrix enforced across AutoAudit.",
+        content:
+          "Live role definitions and an editable permission matrix enforced across AutoAudit.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -65,7 +67,8 @@ function RolesPage() {
   const matrix = matrixQuery.data ?? [];
   const has = (role: AppRole, permission: AppPermission) =>
     matrix.some((m) => m.role === role && m.permission === permission);
-  const permsFor = (role: AppRole) => matrix.filter((m) => m.role === role).map((m) => m.permission);
+  const permsFor = (role: AppRole) =>
+    matrix.filter((m) => m.role === role).map((m) => m.permission);
 
   return (
     <>
@@ -152,7 +155,10 @@ function RolesPage() {
             </thead>
             <tbody>
               {roles.map((role) => (
-                <tr key={role.id} className="border-b border-border/70 last:border-0 hover:bg-muted/40">
+                <tr
+                  key={role.id}
+                  className="border-b border-border/70 last:border-0 hover:bg-muted/40"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <role.icon className="size-4 text-muted-foreground" />

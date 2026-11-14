@@ -29,10 +29,14 @@ export const Route = createFileRoute("/_shell/transactions")({
       { title: "Transactions — AutoAudit" },
       {
         name: "description",
-        content: "One combined ledger of every invoice, bill and payment imported from your connected accounting systems.",
+        content:
+          "One combined ledger of every invoice, bill and payment imported from your connected accounting systems.",
       },
       { property: "og:title", content: "Transactions — AutoAudit" },
-      { property: "og:description", content: "Combined ledger of imported invoices, bills and payments." },
+      {
+        property: "og:description",
+        content: "Combined ledger of imported invoices, bills and payments.",
+      },
     ],
   }),
   component: TransactionsPage,
@@ -70,7 +74,9 @@ function TransactionsPage() {
       currency: (p["currency"] as string | null) ?? null,
       status: "settled",
     }));
-    return [...invoices, ...payments].sort((a, b) => String(b.date ?? "").localeCompare(String(a.date ?? "")));
+    return [...invoices, ...payments].sort((a, b) =>
+      String(b.date ?? "").localeCompare(String(a.date ?? "")),
+    );
   }, [data]);
 
   const rows = filter === "all" ? all : all.filter((t) => t.kind === filter);
@@ -86,13 +92,20 @@ function TransactionsPage() {
         </div>
       ),
     },
-    { key: "date", header: "Date", render: (r) => <span className="text-sm">{dateShort(r.date)}</span> },
+    {
+      key: "date",
+      header: "Date",
+      render: (r) => <span className="text-sm">{dateShort(r.date)}</span>,
+    },
     { key: "party", header: "Party", render: (r) => <span className="text-sm">{r.party}</span> },
     {
       key: "kind",
       header: "Type",
       render: (r) => (
-        <ToneBadge tone={r.kind === "payment" ? "accent" : r.kind === "bill" ? "warning" : "brand"} size="sm">
+        <ToneBadge
+          tone={r.kind === "payment" ? "accent" : r.kind === "bill" ? "warning" : "brand"}
+          size="sm"
+        >
           {r.kind}
         </ToneBadge>
       ),
@@ -102,7 +115,11 @@ function TransactionsPage() {
       key: "amount",
       header: "Amount",
       align: "right",
-      render: (r) => <span className="text-sm font-semibold tabular-nums">{currencyIn(r.amount, r.currency)}</span>,
+      render: (r) => (
+        <span className="text-sm font-semibold tabular-nums">
+          {currencyIn(r.amount, r.currency)}
+        </span>
+      ),
     },
   ];
 
@@ -113,7 +130,17 @@ function TransactionsPage() {
         description={`${all.length.toLocaleString()} records imported from your connected accounting systems.`}
         crumbs={[{ label: "Transactions" }]}
         actions={
-          <Button variant="outline" className="gap-2" disabled={rows.length === 0} onClick={() => downloadCsv("transactions.csv", rows.map((r) => ({ ...r })))}>
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={rows.length === 0}
+            onClick={() =>
+              downloadCsv(
+                "transactions.csv",
+                rows.map((r) => ({ ...r })),
+              )
+            }
+          >
             <Download className="size-4" /> Export CSV
           </Button>
         }

@@ -13,11 +13,14 @@ export const Route = createFileRoute("/api/public/erp/callback")({
         const back = (params: Record<string, string>) =>
           new Response(null, {
             status: 302,
-            headers: { Location: `${origin}/integrations?${new URLSearchParams(params).toString()}` },
+            headers: {
+              Location: `${origin}/integrations?${new URLSearchParams(params).toString()}`,
+            },
           });
 
         if (error) return back({ connect: "error", message: error });
-        if (!state || !code) return back({ connect: "error", message: "Missing authorization response" });
+        if (!state || !code)
+          return back({ connect: "error", message: "Missing authorization response" });
 
         try {
           const { completeOAuth } = await import("@/lib/erp/service.server");

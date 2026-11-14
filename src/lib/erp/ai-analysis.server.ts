@@ -17,7 +17,9 @@ const leakageAnalysisSchema = z.object({
         amount: z.coerce.number().finite().nonnegative().catch(0),
         currency: z.string().default("INR"),
         evidence: z.string().default("Discrepancy identified during ERP transaction audit."),
-        recommendation: z.string().default("Review transaction with vendor and verify invoice lineage."),
+        recommendation: z
+          .string()
+          .default("Review transaction with vendor and verify invoice lineage."),
         confidence: z.coerce
           .number()
           .transform((v) => (v > 1 ? v / 100 : v))
@@ -42,12 +44,38 @@ function buildPrompt(
   const context = {
     currency: overview.currencyCode,
     totals: overview.totals,
-    invoices: financials.invoices.slice(0, 80).map((row) =>
-      compactRow(row, ["external_id", "invoice_number", "vendor_name", "issue_date", "due_date", "amount", "tax_amount", "amount_paid", "currency", "status", "type"]),
-    ),
-    payments: financials.payments.slice(0, 80).map((row) =>
-      compactRow(row, ["external_id", "reference", "invoice_external_id", "vendor_name", "paid_date", "amount", "currency", "method", "status"]),
-    ),
+    invoices: financials.invoices
+      .slice(0, 80)
+      .map((row) =>
+        compactRow(row, [
+          "external_id",
+          "invoice_number",
+          "vendor_name",
+          "issue_date",
+          "due_date",
+          "amount",
+          "tax_amount",
+          "amount_paid",
+          "currency",
+          "status",
+          "type",
+        ]),
+      ),
+    payments: financials.payments
+      .slice(0, 80)
+      .map((row) =>
+        compactRow(row, [
+          "external_id",
+          "reference",
+          "invoice_external_id",
+          "vendor_name",
+          "paid_date",
+          "amount",
+          "currency",
+          "method",
+          "status",
+        ]),
+      ),
     vendors: overview.vendorSummary.slice(0, 40).map((vendor) => ({
       name: vendor.name,
       status: vendor.status,
@@ -89,7 +117,8 @@ function gatewayRetryAfter(error: unknown) {
 function userSafeGatewayError(error: unknown) {
   const status = gatewayStatus(error);
   const message = error instanceof Error ? error.message : "AI analysis could not be completed.";
-  if (status === 401) return "AI analysis is not configured yet. Please contact your workspace administrator.";
+  if (status === 401)
+    return "AI analysis is not configured yet. Please contact your workspace administrator.";
   if (status === 402 || status === 403 || status === 404) return message;
   if (status && status >= 500) return "AI analysis is temporarily unavailable. Please try again.";
   return message;
@@ -113,16 +142,18 @@ function generateHeuristicAiAnalysis(
     id: `finding-${idx + 1}-${leak.id.slice(0, 8)}`,
     title: leak.title,
     category: leak.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-    severity: (leak.severity === "medium" ? "medium" : leak.severity) as "critical" | "high" | "medium" | "low",
+    severity: (leak.severity === "medium" ? "medium" : leak.severity) as
+      "critical" | "high" | "medium" | "low",
     amount: Math.round(leak.amount * 100) / 100,
     currency: leak.currency || currency,
-    evidence: leak.detail || `Anomalous pattern identified in transactions linked to ${leak.vendor}.`,
+    evidence:
+      leak.detail || `Anomalous pattern identified in transactions linked to ${leak.vendor}.`,
     recommendation:
       leak.type === "duplicate_invoice"
         ? "Pause pending disbursements, verify supplier remit-to details, and request immediate credit note."
         : leak.type === "overpayment"
-        ? "Initiate vendor balance adjustment and clawback reconciliation for excess disbursed funds."
-        : "Conduct secondary approval audit before release of next scheduled payment run.",
+          ? "Initiate vendor balance adjustment and clawback reconciliation for excess disbursed funds."
+          : "Conduct secondary approval audit before release of next scheduled payment run.",
     confidence: leak.type === "duplicate_invoice" ? 0.98 : 0.91,
   }));
 
@@ -137,7 +168,8 @@ function generateHeuristicAiAnalysis(
         amount: Math.round(topVendor.spend * 100) / 100,
         currency,
         evidence: `${topVendor.name} accounts for a substantial portion of imported disbursements across ${topVendor.invoices} records.`,
-        recommendation: "Benchmark supplier pricing terms and review dual-sourcing options to reduce vendor lock-in.",
+        recommendation:
+          "Benchmark supplier pricing terms and review dual-sourcing options to reduce vendor lock-in.",
         confidence: 0.88,
       });
     }
@@ -158,7 +190,10 @@ function generateHeuristicAiAnalysis(
 
   const summary =
     findings.length > 0
-      ? `AutoAudit completed an automated forensic audit of ${financials.invoices.length} invoices and ${financials.payments.length} payment records totaling ${currency} ${totalSpend.toLocaleString()}. A cumulative potential leakage exposure of ${currency} ${totalLeakage.toLocaleString()} was identified across ${findings.length} prioritized findings. The primary risks stem from ${findings.map((f) => f.category).slice(0, 3).join(", ")}.`
+      ? `AutoAudit completed an automated forensic audit of ${financials.invoices.length} invoices and ${financials.payments.length} payment records totaling ${currency} ${totalSpend.toLocaleString()}. A cumulative potential leakage exposure of ${currency} ${totalLeakage.toLocaleString()} was identified across ${findings.length} prioritized findings. The primary risks stem from ${findings
+          .map((f) => f.category)
+          .slice(0, 3)
+          .join(", ")}.`
       : `AutoAudit audited ${financials.invoices.length} invoices and ${financials.payments.length} payment records. No high-risk leakage or duplicate payment patterns were detected in the imported batch. Controls appear healthy across active suppliers.`;
 
   return {
@@ -183,7 +218,8 @@ export async function resolveAiModel(request?: Request) {
   }
 
   // 2. Google Gemini / Vertex AI via API Key
-  const geminiKey = process.env["GEMINI_API_KEY"] || process.env["GOOGLE_API_KEY"] || process.env["VERTEX_API_KEY"];
+  const geminiKey =
+    process.env["GEMINI_API_KEY"] || process.env["GOOGLE_API_KEY"] || process.env["VERTEX_API_KEY"];
   if (geminiKey) {
     const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
     const google = createGoogleGenerativeAI({ apiKey: geminiKey });
@@ -247,16 +283,21 @@ async function callGateway(
       if (attempt >= 1) {
         return generateHeuristicAiAnalysis(financials, overview);
       }
-      const waitMs = gatewayRetryAfter(error) ?? 400 * 2 ** attempt + Math.floor(Math.random() * 200);
+      const waitMs =
+        gatewayRetryAfter(error) ?? 400 * 2 ** attempt + Math.floor(Math.random() * 200);
       await new Promise((resolve) => setTimeout(resolve, waitMs));
     }
   }
   return generateHeuristicAiAnalysis(financials, overview);
 }
 
-export async function analyzeLeakageFor(userId: string, request: Request): Promise<AiLeakageAnalysis> {
+export async function analyzeLeakageFor(
+  userId: string,
+  request: Request,
+): Promise<AiLeakageAnalysis> {
   const [financials, overview] = await Promise.all([loadFinancials(userId), loadOverview(userId)]);
-  if (!financials.connected) throw new Error("Import financial records before running an AI leakage analysis.");
+  if (!financials.connected)
+    throw new Error("Import financial records before running an AI leakage analysis.");
 
   return callGateway(request, buildPrompt(financials, overview), financials, overview);
 }

@@ -214,7 +214,8 @@ console.log("AutoAudit Response:", result);
             <Code2 className="size-5 text-primary" /> Custom ERP / Accounting Ingest API
           </DialogTitle>
           <DialogDescription>
-            Push transaction records directly from your custom software into AutoAudit via standard REST HTTP POST.
+            Push transaction records directly from your custom software into AutoAudit via standard
+            REST HTTP POST.
           </DialogDescription>
         </DialogHeader>
 
@@ -230,11 +231,7 @@ console.log("AutoAudit Response:", result);
               </span>
             </div>
             <div className="flex gap-2">
-              <Input
-                readOnly
-                value={endpointUrl}
-                className="font-mono text-xs bg-background"
-              />
+              <Input readOnly value={endpointUrl} className="font-mono text-xs bg-background" />
               <Button
                 variant="outline"
                 size="sm"
@@ -246,7 +243,11 @@ console.log("AutoAudit Response:", result);
                   toast.success("Endpoint URL copied!");
                 }}
               >
-                {copiedUrl ? <Check className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
+                {copiedUrl ? (
+                  <Check className="size-3.5 text-success" />
+                ) : (
+                  <Copy className="size-3.5" />
+                )}
                 Copy URL
               </Button>
             </div>
@@ -259,7 +260,8 @@ console.log("AutoAudit Response:", result);
                 <Sparkles className="size-3.5 text-primary" /> Try Ingestion Right Now
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Sends a synthetic sample batch (with a simulated duplicate bill) to verify real-time ingestion and audit.
+                Sends a synthetic sample batch (with a simulated duplicate bill) to verify real-time
+                ingestion and audit.
               </p>
             </div>
             <Button
@@ -277,9 +279,15 @@ console.log("AutoAudit Response:", result);
           <Tabs defaultValue="python" className="w-full">
             <div className="flex items-center justify-between pb-1">
               <TabsList className="h-8">
-                <TabsTrigger value="python" className="text-xs h-7">Python</TabsTrigger>
-                <TabsTrigger value="node" className="text-xs h-7">Node.js / TS</TabsTrigger>
-                <TabsTrigger value="curl" className="text-xs h-7">cURL</TabsTrigger>
+                <TabsTrigger value="python" className="text-xs h-7">
+                  Python
+                </TabsTrigger>
+                <TabsTrigger value="node" className="text-xs h-7">
+                  Node.js / TS
+                </TabsTrigger>
+                <TabsTrigger value="curl" className="text-xs h-7">
+                  cURL
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -293,7 +301,11 @@ console.log("AutoAudit Response:", result);
                 className="absolute top-2 right-2 h-7 gap-1 text-[11px]"
                 onClick={() => copyToClipboard(pythonSnippet, "python")}
               >
-                {copiedCode === "python" ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
+                {copiedCode === "python" ? (
+                  <Check className="size-3 text-success" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
                 Copy
               </Button>
             </TabsContent>
@@ -308,7 +320,11 @@ console.log("AutoAudit Response:", result);
                 className="absolute top-2 right-2 h-7 gap-1 text-[11px]"
                 onClick={() => copyToClipboard(nodeSnippet, "node")}
               >
-                {copiedCode === "node" ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
+                {copiedCode === "node" ? (
+                  <Check className="size-3 text-success" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
                 Copy
               </Button>
             </TabsContent>
@@ -323,7 +339,11 @@ console.log("AutoAudit Response:", result);
                 className="absolute top-2 right-2 h-7 gap-1 text-[11px]"
                 onClick={() => copyToClipboard(curlSnippet, "curl")}
               >
-                {copiedCode === "curl" ? <Check className="size-3 text-success" /> : <Copy className="size-3" />}
+                {copiedCode === "curl" ? (
+                  <Check className="size-3 text-success" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
                 Copy
               </Button>
             </TabsContent>

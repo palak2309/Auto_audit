@@ -27,7 +27,10 @@ export function PageHeader({
       className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:flex sm:items-end sm:justify-between"
     >
       <div className="min-w-0">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-muted-foreground">
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-1 text-xs text-muted-foreground"
+        >
           <Link to="/" className="transition-colors hover:text-foreground">
             AutoAudit
           </Link>
@@ -44,7 +47,9 @@ export function PageHeader({
             </span>
           ))}
         </nav>
-        <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
+        <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight sm:text-[1.75rem]">
+          {title}
+        </h1>
         {description && (
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>
         )}

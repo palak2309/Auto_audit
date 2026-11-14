@@ -28,7 +28,9 @@ export function SyncTimeline({ runs, connections, onRetry, retryingId }: Timelin
   const failed = runs.filter((r) => r.status === "failed");
   const errored = connections.filter((c) => c.status === "error");
   const stale = connections.filter(
-    (c) => c.status !== "error" && (!c.lastSyncAt || Date.now() - new Date(c.lastSyncAt).getTime() > 24 * 3600 * 1000),
+    (c) =>
+      c.status !== "error" &&
+      (!c.lastSyncAt || Date.now() - new Date(c.lastSyncAt).getTime() > 24 * 3600 * 1000),
   );
 
   const actions: string[] = [];
@@ -37,9 +39,13 @@ export function SyncTimeline({ runs, connections, onRetry, retryingId }: Timelin
       `Retry ${errored.length} failing connection${errored.length > 1 ? "s" : ""} — the last import did not complete.`,
     );
   if (stale.length)
-    actions.push(`Re-sync ${stale.map((c) => providerMeta(c.provider)?.name ?? c.provider).join(", ")} — data is over a day old.`);
-  if (!connections.length) actions.push("Connect your first accounting or ERP account to start importing real data.");
-  if (!actions.length && runs.length) actions.push("All connections are healthy — no action needed right now.");
+    actions.push(
+      `Re-sync ${stale.map((c) => providerMeta(c.provider)?.name ?? c.provider).join(", ")} — data is over a day old.`,
+    );
+  if (!connections.length)
+    actions.push("Connect your first accounting or ERP account to start importing real data.");
+  if (!actions.length && runs.length)
+    actions.push("All connections are healthy — no action needed right now.");
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
@@ -47,20 +53,28 @@ export function SyncTimeline({ runs, connections, onRetry, retryingId }: Timelin
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-semibold">Integration status timeline</h2>
           <ToneBadge tone={failed.length ? "danger" : "success"} size="sm" dot>
-            {failed.length ? `${failed.length} failed run${failed.length > 1 ? "s" : ""}` : "Healthy"}
+            {failed.length
+              ? `${failed.length} failed run${failed.length > 1 ? "s" : ""}`
+              : "Healthy"}
           </ToneBadge>
         </div>
 
         {runs.length === 0 ? (
           <p className="mt-6 text-xs text-muted-foreground">
-            No sync runs yet. Once you connect an account, every import appears here with its outcome.
+            No sync runs yet. Once you connect an account, every import appears here with its
+            outcome.
           </p>
         ) : (
           <ol className="mt-5 space-y-4">
             {runs.slice(0, 8).map((run) => {
-              const tone = run.status === "success" ? "success" : run.status === "failed" ? "danger" : "brand";
+              const tone =
+                run.status === "success" ? "success" : run.status === "failed" ? "danger" : "brand";
               const Icon =
-                run.status === "success" ? CheckCircle2 : run.status === "failed" ? AlertTriangle : Loader2;
+                run.status === "success"
+                  ? CheckCircle2
+                  : run.status === "failed"
+                    ? AlertTriangle
+                    : Loader2;
               return (
                 <li key={run.id} className="relative flex gap-3 pl-1">
                   <span className="flex flex-col items-center">
@@ -82,8 +96,8 @@ export function SyncTimeline({ runs, connections, onRetry, retryingId }: Timelin
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {run.invoices} invoices · {run.payments} payments · {run.vendors} vendors · {run.contracts}{" "}
-                      contracts
+                      {run.invoices} invoices · {run.payments} payments · {run.vendors} vendors ·{" "}
+                      {run.contracts} contracts
                     </p>
                     {run.error && (
                       <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md bg-destructive/10 p-2">
@@ -129,7 +143,9 @@ export function SyncTimeline({ runs, connections, onRetry, retryingId }: Timelin
           </div>
           <div className="rounded-md border border-border p-3">
             <dt className="text-muted-foreground">Issues detected</dt>
-            <dd className="mt-1 text-lg font-semibold text-destructive">{errored.length + failed.length}</dd>
+            <dd className="mt-1 text-lg font-semibold text-destructive">
+              {errored.length + failed.length}
+            </dd>
           </div>
         </dl>
       </div>

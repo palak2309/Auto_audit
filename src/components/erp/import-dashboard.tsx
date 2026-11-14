@@ -21,7 +21,6 @@ const METRICS = [
 export function ImportDashboard({ connections, counts, importing, runs = [] }: Props) {
   if (!connections.length) return null;
 
-
   const totals = counts.reduce(
     (acc, c) => ({
       invoices: acc.invoices + c.invoices,
@@ -83,7 +82,8 @@ export function ImportDashboard({ connections, counts, importing, runs = [] }: P
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-medium">{providerMeta(c.provider)?.name ?? c.provider}</span>
                 <span className="text-muted-foreground">
-                  {cc?.invoices ?? 0} inv · {cc?.payments ?? 0} pay · {cc?.vendors ?? 0} ven · {cc?.contracts ?? 0} con
+                  {cc?.invoices ?? 0} inv · {cc?.payments ?? 0} pay · {cc?.vendors ?? 0} ven ·{" "}
+                  {cc?.contracts ?? 0} con
                 </span>
                 <span className="text-muted-foreground">
                   {active
@@ -111,7 +111,6 @@ export function ImportDashboard({ connections, counts, importing, runs = [] }: P
           );
         })}
       </ul>
-
     </section>
   );
 }

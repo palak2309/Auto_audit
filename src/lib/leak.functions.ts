@@ -1,10 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  requirePermission,
-  roleOf,
-  type Ctx,
-} from "@/lib/admin.functions";
+import { requirePermission, roleOf, type Ctx } from "@/lib/admin.functions";
 import {
   type LeakStatus,
   type RecoveryStage,
@@ -95,17 +91,12 @@ export const updateLeakStatus = createServerFn({ method: "POST" })
  */
 export const assignLeak = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(
-    (input: {
-      leakId: string;
-      memberUserId: string | null;
-    }) => {
-      if (!input.leakId || typeof input.leakId !== "string") {
-        throw new Error("leakId is required");
-      }
-      return input;
-    },
-  )
+  .validator((input: { leakId: string; memberUserId: string | null }) => {
+    if (!input.leakId || typeof input.leakId !== "string") {
+      throw new Error("leakId is required");
+    }
+    return input;
+  })
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
     const role = await requirePermission(ctx, "edit");
@@ -124,23 +115,18 @@ export const assignLeak = createServerFn({ method: "POST" })
  */
 export const addLeakNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(
-    (input: {
-      leakId: string;
-      note: string;
-    }) => {
-      if (!input.leakId || typeof input.leakId !== "string") {
-        throw new Error("leakId is required");
-      }
-      if (!input.note || typeof input.note !== "string" || !input.note.trim()) {
-        throw new Error("Note content cannot be empty");
-      }
-      return {
-        leakId: input.leakId,
-        note: input.note.trim(),
-      };
-    },
-  )
+  .validator((input: { leakId: string; note: string }) => {
+    if (!input.leakId || typeof input.leakId !== "string") {
+      throw new Error("leakId is required");
+    }
+    if (!input.note || typeof input.note !== "string" || !input.note.trim()) {
+      throw new Error("Note content cannot be empty");
+    }
+    return {
+      leakId: input.leakId,
+      note: input.note.trim(),
+    };
+  })
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
     const role = await requirePermission(ctx, "edit");
@@ -262,15 +248,17 @@ export const getLeakDetails = createServerFn({ method: "GET" })
 export const listDurableLeaks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator(
-    (input: {
-      status?: LeakStatus | undefined;
-      severity?: "critical" | "high" | "medium" | "low" | undefined;
-      type?: string | undefined;
-      search?: string | undefined;
-      assignedTo?: string | undefined;
-      limit?: number | undefined;
-      offset?: number | undefined;
-    } = {}) => input,
+    (
+      input: {
+        status?: LeakStatus | undefined;
+        severity?: "critical" | "high" | "medium" | "low" | undefined;
+        type?: string | undefined;
+        search?: string | undefined;
+        assignedTo?: string | undefined;
+        limit?: number | undefined;
+        offset?: number | undefined;
+      } = {},
+    ) => input,
   )
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
@@ -297,12 +285,14 @@ export const listDurableLeaks = createServerFn({ method: "GET" })
 export const listRecoveryCases = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator(
-    (input: {
-      stage?: RecoveryStage | undefined;
-      search?: string | undefined;
-      limit?: number | undefined;
-      offset?: number | undefined;
-    } = {}) => input,
+    (
+      input: {
+        stage?: RecoveryStage | undefined;
+        search?: string | undefined;
+        limit?: number | undefined;
+        offset?: number | undefined;
+      } = {},
+    ) => input,
   )
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;

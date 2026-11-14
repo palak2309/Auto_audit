@@ -48,7 +48,11 @@ export function DataTable<T>({
     if (!query.trim() || searchKeys.length === 0) return data;
     const q = query.toLowerCase();
     return data.filter((row) =>
-      searchKeys.some((key) => String(row[key] ?? "").toLowerCase().includes(q)),
+      searchKeys.some((key) =>
+        String(row[key] ?? "")
+          .toLowerCase()
+          .includes(q),
+      ),
     );
   }, [data, query, searchKeys]);
 
@@ -128,7 +132,10 @@ export function DataTable<T>({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={cn("px-4 py-3.5 align-middle", col.align === "right" && "text-right")}
+                      className={cn(
+                        "px-4 py-3.5 align-middle",
+                        col.align === "right" && "text-right",
+                      )}
                     >
                       {col.render(row)}
                     </td>

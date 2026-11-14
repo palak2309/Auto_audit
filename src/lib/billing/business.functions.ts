@@ -35,7 +35,8 @@ export const getBusinessProfile = createServerFn({ method: "GET" })
       state: "Maharashtra",
       invoice_prefix: "INV",
       invoice_template: "classic",
-      invoice_terms: "1. Goods once sold will not be taken back or exchanged.\n2. All disputes subject to local jurisdiction.",
+      invoice_terms:
+        "1. Goods once sold will not be taken back or exchanged.\n2. All disputes subject to local jurisdiction.",
     };
 
     const { data: created, error: createError } = await admin

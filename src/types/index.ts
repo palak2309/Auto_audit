@@ -1,21 +1,12 @@
 export type RoleId =
-  | "admin"
-  | "cfo"
-  | "finance_manager"
-  | "accountant"
-  | "procurement_manager"
-  | "auditor"
-  | "viewer";
+  "admin" | "cfo" | "finance_manager" | "accountant" | "procurement_manager" | "auditor" | "viewer";
 
 export type Severity = "critical" | "high" | "medium" | "low";
-export type LeakStatus = "detected" | "new" | "investigating" | "recovering" | "recovered" | "dismissed";
+export type LeakStatus =
+  "detected" | "new" | "investigating" | "recovering" | "recovered" | "dismissed";
 
 export type RecoveryStage =
-  | "identified"
-  | "vendor_contacted"
-  | "claim_filed"
-  | "credit_issued"
-  | "recovered";
+  "identified" | "vendor_contacted" | "claim_filed" | "credit_issued" | "recovered";
 
 export type LeakCategory =
   | "Duplicate Payment"

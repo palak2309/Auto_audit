@@ -258,9 +258,7 @@ function LeaksPage() {
       header: "Assignee",
       render: (r) => (
         <span className="text-xs text-muted-foreground">
-          {r.assigned_to && memberMap[r.assigned_to]
-            ? memberMap[r.assigned_to]?.fullName
-            : "—"}
+          {r.assigned_to && memberMap[r.assigned_to] ? memberMap[r.assigned_to]?.fullName : "—"}
         </span>
       ),
     },
@@ -317,8 +315,8 @@ function LeaksPage() {
           <Plug className="size-6 text-primary" />
           <h2 className="text-base font-semibold">No connected ERP systems</h2>
           <p className="max-w-md text-sm text-muted-foreground">
-            Connect Zoho Books, Xero, or QuickBooks to sync transactions and run automated
-            leak detection into your durable register.
+            Connect Zoho Books, Xero, or QuickBooks to sync transactions and run automated leak
+            detection into your durable register.
           </p>
           <Button asChild className="mt-2">
             <Link to="/integrations" search={{ connect: undefined, message: undefined }}>

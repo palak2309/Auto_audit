@@ -67,7 +67,10 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { can } = useMockAuth();
 
   const visibleGroups = navGroups
-    .map((group) => ({ ...group, items: group.items.filter((i) => !i.permission || can(i.permission)) }))
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((i) => !i.permission || can(i.permission)),
+    }))
     .filter((group) => group.items.length > 0);
 
   const fetchMetrics = useServerFn(getDurableMetrics);
@@ -93,7 +96,6 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               {group.label}
             </p>
             <ul className="space-y-0.5">
-
               {group.items.map((item) => {
                 const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
                 return (
@@ -115,7 +117,10 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                         />
                       )}
                       <item.icon
-                        className={cn("size-4 shrink-0", active ? "text-sidebar-primary" : "text-sidebar-foreground/65")}
+                        className={cn(
+                          "size-4 shrink-0",
+                          active ? "text-sidebar-primary" : "text-sidebar-foreground/65",
+                        )}
                       />
                       <span className="min-w-0 flex-1 truncate">{item.label}</span>
                       {item.badge && (
@@ -150,13 +155,25 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="pt-2 px-1 text-[11px] text-sidebar-foreground/65 flex flex-wrap gap-x-2 gap-y-1">
-        <Link to="/privacy-policy" onClick={onNavigate} className="hover:text-foreground underline">Privacy</Link>
+        <Link to="/privacy-policy" onClick={onNavigate} className="hover:text-foreground underline">
+          Privacy
+        </Link>
         <span>•</span>
-        <Link to="/terms-and-conditions" onClick={onNavigate} className="hover:text-foreground underline">Terms</Link>
+        <Link
+          to="/terms-and-conditions"
+          onClick={onNavigate}
+          className="hover:text-foreground underline"
+        >
+          Terms
+        </Link>
         <span>•</span>
-        <Link to="/cookie-policy" onClick={onNavigate} className="hover:text-foreground underline">Cookies</Link>
+        <Link to="/cookie-policy" onClick={onNavigate} className="hover:text-foreground underline">
+          Cookies
+        </Link>
         <span>•</span>
-        <Link to="/refund-policy" onClick={onNavigate} className="hover:text-foreground underline">Refunds</Link>
+        <Link to="/refund-policy" onClick={onNavigate} className="hover:text-foreground underline">
+          Refunds
+        </Link>
       </div>
     </div>
   );

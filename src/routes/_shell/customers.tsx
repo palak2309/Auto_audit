@@ -20,7 +20,13 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   listCustomers,
   getCustomer,
@@ -36,7 +42,11 @@ export const Route = createFileRoute("/_shell/customers")({
   head: () => ({
     meta: [
       { title: "Customers — Auto Audit" },
-      { name: "description", content: "Manage customer directory, contact info, GSTIN, credit limits and outstanding receivables." },
+      {
+        name: "description",
+        content:
+          "Manage customer directory, contact info, GSTIN, credit limits and outstanding receivables.",
+      },
     ],
   }),
   component: CustomersPage,
@@ -204,7 +214,12 @@ function CustomersPage() {
         description="Manage your client directory, GST numbers, contact info and track receivables."
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={customers.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={customers.length === 0}
+            >
               <Download className="w-4 h-4 mr-1.5" />
               Export CSV
             </Button>
@@ -296,7 +311,9 @@ function CustomersPage() {
                         )}
                       </td>
                       <td className="py-3 px-3 text-xs">
-                        <div className="font-mono font-medium text-foreground">{c.gstin || "-"}</div>
+                        <div className="font-mono font-medium text-foreground">
+                          {c.gstin || "-"}
+                        </div>
                         <div className="text-muted-foreground text-[11px]">{c.billing_state}</div>
                       </td>
                       <td className="py-3 px-3 text-right font-mono text-muted-foreground text-xs">
@@ -401,7 +418,9 @@ function CustomersPage() {
                   placeholder="e.g. 27AAAAA0000A1Z5"
                   maxLength={15}
                   value={formData.gstin}
-                  onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gstin: e.target.value.toUpperCase() })
+                  }
                 />
               </div>
 
@@ -465,7 +484,9 @@ function CustomersPage() {
                     step="0.01"
                     placeholder="Positive if customer owes money"
                     value={formData.openingBalance}
-                    onChange={(e) => setFormData({ ...formData, openingBalance: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, openingBalance: parseFloat(e.target.value) || 0 })
+                    }
                   />
                 </div>
               )}
@@ -477,7 +498,9 @@ function CustomersPage() {
                   step="0.01"
                   min="0"
                   value={formData.creditLimit}
-                  onChange={(e) => setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })
+                  }
                 />
               </div>
 
@@ -487,7 +510,9 @@ function CustomersPage() {
                   type="number"
                   min="0"
                   value={formData.paymentTermsDays}
-                  onChange={(e) => setFormData({ ...formData, paymentTermsDays: parseInt(e.target.value) || 30 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, paymentTermsDays: parseInt(e.target.value) || 30 })
+                  }
                 />
               </div>
             </div>
@@ -510,10 +535,16 @@ function CustomersPage() {
               <div>
                 <DialogTitle>Customer Ledger Statement</DialogTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {selectedCustomer?.name} {selectedCustomer?.company_name && `(${selectedCustomer.company_name})`}
+                  {selectedCustomer?.name}{" "}
+                  {selectedCustomer?.company_name && `(${selectedCustomer.company_name})`}
                 </p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => window.print()} className="print:hidden">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.print()}
+                className="print:hidden"
+              >
                 <Printer className="w-4 h-4 mr-1.5" />
                 Print Statement
               </Button>
@@ -526,16 +557,28 @@ function CustomersPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3 p-3 bg-muted/50 rounded-lg text-center">
                 <div>
-                  <span className="text-[11px] text-muted-foreground uppercase">Total Invoiced (Debits)</span>
-                  <p className="font-mono font-bold text-foreground">{currencyIn(ledgerData.totalDebits, "INR")}</p>
+                  <span className="text-[11px] text-muted-foreground uppercase">
+                    Total Invoiced (Debits)
+                  </span>
+                  <p className="font-mono font-bold text-foreground">
+                    {currencyIn(ledgerData.totalDebits, "INR")}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-muted-foreground uppercase">Total Received (Credits)</span>
-                  <p className="font-mono font-bold text-emerald-600">{currencyIn(ledgerData.totalCredits, "INR")}</p>
+                  <span className="text-[11px] text-muted-foreground uppercase">
+                    Total Received (Credits)
+                  </span>
+                  <p className="font-mono font-bold text-emerald-600">
+                    {currencyIn(ledgerData.totalCredits, "INR")}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-muted-foreground uppercase">Closing Balance Due</span>
-                  <p className="font-mono font-bold text-rose-600">{currencyIn(ledgerData.closingBalance, "INR")}</p>
+                  <span className="text-[11px] text-muted-foreground uppercase">
+                    Closing Balance Due
+                  </span>
+                  <p className="font-mono font-bold text-rose-600">
+                    {currencyIn(ledgerData.closingBalance, "INR")}
+                  </p>
                 </div>
               </div>
 
@@ -573,7 +616,9 @@ function CustomersPage() {
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground">No ledger transactions found</div>
+            <div className="py-8 text-center text-muted-foreground">
+              No ledger transactions found
+            </div>
           )}
         </DialogContent>
       </Dialog>

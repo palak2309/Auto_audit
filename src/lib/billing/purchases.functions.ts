@@ -40,23 +40,27 @@ export interface CreatePurchaseBillInput {
 
 export const listPurchaseBills = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input?: {
-    documentType?: string | undefined;
-    status?: string | undefined;
-    supplierId?: string | undefined;
-    search?: string | undefined;
-    fromDate?: string | undefined;
-    toDate?: string | undefined;
-    limit?: number | undefined;
-  }) => input ?? {})
+  .validator(
+    (input?: {
+      documentType?: string | undefined;
+      status?: string | undefined;
+      supplierId?: string | undefined;
+      search?: string | undefined;
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      limit?: number | undefined;
+    }) => input ?? {},
+  )
   .handler(async ({ data, context }) => {
     const admin = await getAdmin();
     let query = admin
       .from("purchase_bills")
-      .select(`
+      .select(
+        `
         *,
         supplier:suppliers(id, name, company_name, phone, gstin)
-      `)
+      `,
+      )
       .eq("user_id", context.userId)
       .order("bill_date", { ascending: false })
       .order("created_at", { ascending: false });
@@ -107,10 +111,12 @@ export const getPurchaseBill = createServerFn({ method: "POST" })
 
     const { data: bill, error: billErr } = await admin
       .from("purchase_bills")
-      .select(`
+      .select(
+        `
         *,
         supplier:suppliers(*)
-      `)
+      `,
+      )
       .eq("id", data.id)
       .eq("user_id", context.userId)
       .single();
@@ -219,7 +225,7 @@ export const createPurchaseBill = createServerFn({ method: "POST" })
     let billNumber = data.billNumber?.trim();
     if (!billNumber) {
       const currentYear = new Date().getFullYear();
-      let prefix = docType === "debit_note" ? "DN" : docType === "purchase_order" ? "PO" : "BILL";
+      const prefix = docType === "debit_note" ? "DN" : docType === "purchase_order" ? "PO" : "BILL";
       const { count } = await admin
         .from("purchase_bills")
         .select("id", { count: "exact", head: true })
@@ -297,9 +303,7 @@ export const createPurchaseBill = createServerFn({ method: "POST" })
       };
     });
 
-    const { error: itemsErr } = await admin
-      .from("purchase_bill_items")
-      .insert(itemInserts);
+    const { error: itemsErr } = await admin.from("purchase_bill_items").insert(itemInserts);
 
     if (itemsErr) {
       console.error("Error inserting bill items:", itemsErr);
