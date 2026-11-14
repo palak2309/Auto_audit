@@ -146,7 +146,7 @@ function LoginPage() {
         message.toLowerCase().includes("networkerror")
       ) {
         message =
-          "Cannot reach Supabase. Please add your real Supabase Anon Key to .env (from your open Supabase dashboard tab), or click 'Sign in with Demo Account' below.";
+          "Cannot reach Supabase. Please check your network connection or verify your Supabase configuration.";
       } else if (
         state === "unconfirmed" ||
         signInError.message?.toLowerCase().includes("email not confirmed")
@@ -168,19 +168,6 @@ function LoginPage() {
     setLoading(false);
     toast.success("Signed in successfully.");
     void navigate({ to: "/" });
-  };
-
-  const google = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-
-    if (error) {
-      toast.error(`Google sign-in failed: ${error.message}`);
-    }
   };
 
   return (
@@ -283,10 +270,6 @@ function LoginPage() {
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing in…" : "Sign in"}
-        </Button>
-
-        <Button type="button" variant="outline" className="w-full" onClick={google}>
-          Continue with Google
         </Button>
       </form>
     </AuthLayout>
