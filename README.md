@@ -11,6 +11,12 @@
 
 ---
 
+### 🌐 Live Production Application
+- 🚀 **Official Vercel Deployment**: [https://auto-audit-nu.vercel.app/](https://auto-audit-nu.vercel.app/)
+- 🔐 **Sign-in / Demo Portal**: [https://auto-audit-nu.vercel.app/login](https://auto-audit-nu.vercel.app/login)
+
+---
+
 ## 1. Project Overview
 
 **Auto Audit** is a modern, enterprise-ready web platform engineered to detect, audit, and recover organizational financial leakages across accounting and Enterprise Resource Planning (ERP) systems. 
